@@ -20,6 +20,9 @@ Before starting any design, coding, or refactoring task, read the relevant skill
 6. **Editorial Visuals & 3D Immersion**:
    - **Diagram Design** (`cathrynlavery/diagram-design`): 45 visual diagram and schematic formats rendered as self-contained SVG/HTML.
    - **Dioramas** (`blendi-remade/dioramas`): Cinematic 3D landing page framework (Three.js r186, N8AO, GSAP, Lenis, AgX tone mapping).
+7. **Engineering Reliability Runtime** (`udaysharmadev/Gravitas`): Model-agnostic reliability runtime with 6 invariants, scope recon, and post-mutation verification.
+8. **App Cloning & Reverse-Engineering** (`Jakeschincariol/replica-skill`): 11 clean-room skills to reverse-engineer, design, test, brand, launch, and monetize web apps without touching proprietary code or assets.
+9. **Visual & Audio Verification Engine** (`oxbshw/watch-skill`): DeepWatch video/audio ingestion, scene-aware frame OCR, persistent index, verification contracts, and THE LOOP (capture -> critique -> fix -> verify).
 
 ---
 
@@ -56,6 +59,22 @@ Before starting any design, coding, or refactoring task, read the relevant skill
 | `gravitas-highstakes` | Gravitas | Tier-2 checkpoint protocol for irreversible/high-risk migrations and deletions. |
 | `gravitas-typescript` | Gravitas | Strict TypeScript recon, boundary contracts, and test verification. |
 | `gravitas-python` | Gravitas | Python environment recon, type checks (mypy/pyright), and pytest suites. |
+| `replica-recon` | Replica Skill | Clean-room app recon: feature matrix, user flows, and route hierarchy. |
+| `replica-architect` | Replica Skill | Tech stack, state model, and API boundary definitions. |
+| `replica-design` | Replica Skill | Design system tokens, color palettes, and accessible typography reconstruction. |
+| `replica-build` | Replica Skill | UI construction, responsive component composition, and route wiring. |
+| `replica-backend` | Replica Skill | Backend APIs, data schemas, auth, and webhook contracts. |
+| `replica-brand` | Replica Skill | Distinct identity, name generator, and tone guide free of trademark violations. |
+| `replica-deploy` | Replica Skill | Preflight checklists, hosting configurations, SSL, and DNS automation. |
+| `replica-diff` | Replica Skill | Quantitative visual and functional parity scoring (`parity.py`, `imgdiff.py`). |
+| `replica-entrepreneur` | Replica Skill | Negative review mining and differentiator feature design. |
+| `replica-launch` | Replica Skill | Landing page copywriting, store listings, and launch collateral. |
+| `replica-test` | Replica Skill | End-to-end test scenarios and parity regression verification. |
+| `watch` / `watching-videos` | Watch Skill | Video ingestion, scene-aware frame extraction, OCR, Whisper transcription, and indexation. |
+| `the-loop` | Watch Skill | Autonomous observe -> critique -> fix -> verify feedback loop. |
+| `asking-with-evidence` | Watch Skill | Query indexed video evidence with exact timestamps and visual receipts. |
+| `extracting-structure` | Watch Skill | Structured JSON/schema extraction from video timelines. |
+| `video-memory` | Watch Skill | Cross-video knowledge retrieval, library indexing, and timeline synthesis. |
 
 ---
 
@@ -100,4 +119,15 @@ When developing or modifying this website:
 - **Check Color Contrast**:
   ```bash
   python3 .agents/skills/antislop-human/contrast-check.py "#FFFFFF" "#0D1117"
+  ```
+- **Verify Replica Feature Parity & Tokens**:
+  ```bash
+  python3 .agents/skills/replica-diff/parity.py features.csv
+  python3 .agents/skills/replica-design/contrast.py tokens.json
+  ```
+- **Watch Skill Verification & Video Intelligence**:
+  ```bash
+  watch-skill doctor
+  watch-skill watch "https://video-url"
+  watch-skill ask <video_id> "What happened at 01:23?"
   ```
