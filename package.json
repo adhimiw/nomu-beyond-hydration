@@ -13,7 +13,8 @@
     "taste:lint": "node .agents/skills/design-taste-frontend/scripts/lint.mjs",
     "uiux:search": "python3 .agents/skills/ui-ux-pro-max/scripts/search.py",
     "a11y:contrast": "python3 .agents/skills/antislop-human/contrast-check.py",
-    "diagram:check": "python3 .agents/skills/diagram-design/scripts/self_check.py"
+    "diagram:check": "python3 .agents/skills/diagram-design/scripts/self_check.py",
+    "gravitas": "gravitas"
   },
   "devDependencies": {
     "vite": "^6.0.0"

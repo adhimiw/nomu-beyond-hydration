@@ -52,6 +52,10 @@ Before starting any design, coding, or refactoring task, read the relevant skill
 | `systemic-issue-triage` | Gentle-AI | Root cause triage and systematic bug resolution. |
 | `diagram-design` | Diagram Design | Rendering 45 editorial diagram types (architecture, flow, sequence, mindmap, Gantt) as SVG/HTML. |
 | `dioramas-3d-web` (`dioramas`) | Dioramas 3D | Cinematic 3D landing pages with Three.js r186, N8AO, GSAP, Lenis, and postprocessing. |
+| `gravitas` | Gravitas | Engineering reliability runtime: grounded edits, declared scope, post-mutation verification, and 6 invariants. |
+| `gravitas-highstakes` | Gravitas | Tier-2 checkpoint protocol for irreversible/high-risk migrations and deletions. |
+| `gravitas-typescript` | Gravitas | Strict TypeScript recon, boundary contracts, and test verification. |
+| `gravitas-python` | Gravitas | Python environment recon, type checks (mypy/pyright), and pytest suites. |
 
 ---
 
