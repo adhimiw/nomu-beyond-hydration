@@ -1,99 +1,139 @@
 import * as THREE from 'three';
 
 export const FLAVORS = {
-  yuzu: {
-    id: 'yuzu',
-    name: 'Golden Yuzu',
+  lemongrass: {
+    id: 'lemongrass',
+    name: 'Lemongrass',
     kanjiMark: '野武',
-    flavorKanji: '柚子',
-    subtitle: 'Crisp Citrus & Woodsy Hinoki',
-    tagline: 'Cold-pressed Tokushima yuzu rind with wild mountain hinoki extract.',
-    primaryColor: '#F59E0B',
-    secondaryColor: '#D97706',
-    bgColor: '#1A1408',
-    glowColor: 0xF59E0B,
-    liquidColor: 0xEAB308,
-    accentHex: '#FBBF24',
+    flavorKanji: '檸檬草',
+    subtitle: 'Crisp, Citrusy & Uplifting',
+    tagline: 'Restorative small-batch infusion for mental clarity, focus, and clean energy.',
+    primaryColor: '#8EB021',
+    secondaryColor: '#658212',
+    bgColor: '#121708',
+    glowColor: 0x8EB021,
+    liquidColor: 0x9ACD32,
+    accentHex: '#E9F3D0',
+    tag: 'LEMONGRASS',
+    price: 95,
     tastingNotes: {
-      top: 'Cold-pressed Tokushima Yuzu rind',
-      heart: 'Mountain Hinoki cypress extract',
-      base: 'Subtle Himalayan pink salt & prebiotic fiber'
+      top: 'Cold-pressed Nilgiri lemongrass stalks',
+      heart: 'Citrus peel & wild holy basil (Tulsi)',
+      base: 'Bioavailable electrolyte salts & prebiotic fiber'
     },
     meters: {
-      citrus: 94,
-      sweetness: 22,
-      effervescence: 78,
-      botanical: 88
+      citrus: 92,
+      sweetness: 18,
+      effervescence: 76,
+      botanical: 94
     },
     nutrition: {
-      calories: 12,
+      calories: 10,
       carbs: '2g',
       sugars: '0g',
       electrolytes: '520mg',
       prebiotics: '2g'
     }
   },
-  peach: {
-    id: 'peach',
-    name: 'Peach Sencha',
-    kanjiMark: '姫',
-    flavorKanji: '白桃',
-    subtitle: 'White Peach & Ceremonial Uji Sencha',
-    tagline: 'Fukushima white peach nectar balanced with single-estate ceremonial green tea.',
-    primaryColor: '#F472B6',
-    secondaryColor: '#DB2777',
-    bgColor: '#1C0E14',
-    glowColor: 0xF472B6,
-    liquidColor: 0xFB7185,
-    accentHex: '#F9A8D4',
+  chamomile: {
+    id: 'chamomile',
+    name: 'Chamomile',
+    kanjiMark: '花',
+    flavorKanji: 'カモミール',
+    subtitle: 'Gentle, Floral & Soothing',
+    tagline: 'Calming botanical infusion crafted for evening relaxation, mindful stress relief, and deep rest.',
+    primaryColor: '#D99B26',
+    secondaryColor: '#B47B16',
+    bgColor: '#1A1408',
+    glowColor: 0xD99B26,
+    liquidColor: 0xF59E0B,
+    accentHex: '#FDF3D6',
+    tag: 'CHAMOMILE',
+    price: 95,
     tastingNotes: {
-      top: 'Fukushima white peach essence',
-      heart: 'Single-origin Uji Sencha tea',
-      base: 'Organic chamomile & elderflower infusion'
+      top: 'Whole sun-dried Roman chamomile blossoms',
+      heart: 'Subtle sweet lavender & elderflower',
+      base: 'Natural magnesium chelate & Himalayan minerals'
     },
     meters: {
-      citrus: 35,
-      sweetness: 46,
-      effervescence: 68,
-      botanical: 82
+      citrus: 20,
+      sweetness: 35,
+      effervescence: 62,
+      botanical: 88
     },
     nutrition: {
-      calories: 14,
-      carbs: '3g',
+      calories: 12,
+      carbs: '2g',
       sugars: '0g',
       electrolytes: '500mg',
       prebiotics: '2g'
     }
   },
-  shiso: {
-    id: 'shiso',
-    name: 'Shiso Wild Berry',
-    kanjiMark: '紫',
-    flavorKanji: '紫蘇',
-    subtitle: 'Red Shiso & Mountain Forest Berry',
-    tagline: 'Japanese red akajiso leaf, wild alpine blackberries, and aged ume plum.',
-    primaryColor: '#941B3B',
-    secondaryColor: '#680E23',
-    bgColor: '#17080D',
-    glowColor: 0x941B3B,
-    liquidColor: 0x881337,
-    accentHex: '#C23B5A',
+  vetiver: {
+    id: 'vetiver',
+    name: 'Vetiver',
+    kanjiMark: '根',
+    flavorKanji: '香根草',
+    subtitle: 'Earthy, Cooling & Deeply Grounding',
+    tagline: 'Traditional Indian Ayurvedic cooling root for internal heat balance, gut ease, and deep restorative calm.',
+    primaryColor: '#4A6B52',
+    secondaryColor: '#2F4B36',
+    bgColor: '#0D140E',
+    glowColor: 0x4A6B52,
+    liquidColor: 0x556B2F,
+    accentHex: '#E1ECE4',
+    tag: 'VETIVER',
+    price: 95,
     tastingNotes: {
-      top: 'Crushed Japanese red shiso leaf',
-      heart: 'Wild Alpine blackberries',
-      base: 'Aged ume plum extract & sea minerals'
+      top: 'Organic South Indian vetiver (khus) roots',
+      heart: 'Cooling cucumber rind & mint leaf',
+      base: 'Potassium citrate & restorative sea trace minerals'
     },
     meters: {
-      citrus: 58,
-      sweetness: 28,
-      effervescence: 82,
-      botanical: 95
+      citrus: 24,
+      sweetness: 15,
+      effervescence: 70,
+      botanical: 96
     },
     nutrition: {
-      calories: 14,
-      carbs: '2g',
+      calories: 8,
+      carbs: '1.5g',
       sugars: '0g',
       electrolytes: '540mg',
+      prebiotics: '2g'
+    }
+  },
+  grapefruit: {
+    id: 'grapefruit',
+    name: 'Grapefruit',
+    kanjiMark: '果',
+    flavorKanji: 'グレープフルーツ',
+    subtitle: 'Zesty, Ruby Pink & Effervescent',
+    tagline: 'Invigorating citrus antioxidant infusion with natural ruby red grapefruit extract for all-day revival.',
+    primaryColor: '#E05A47',
+    secondaryColor: '#B83827',
+    bgColor: '#1A0B09',
+    glowColor: 0xE05A47,
+    liquidColor: 0xE11D48,
+    accentHex: '#FDE7E3',
+    tag: 'GRAPEFRUIT',
+    price: 95,
+    tastingNotes: {
+      top: 'Cold-pressed Ruby Red grapefruit essence',
+      heart: 'Hibiscus calyx & pink peppercorn touch',
+      base: 'Electrolyte blend & zinc picolinate'
+    },
+    meters: {
+      citrus: 90,
+      sweetness: 26,
+      effervescence: 84,
+      botanical: 86
+    },
+    nutrition: {
+      calories: 12,
+      carbs: '2.5g',
+      sugars: '0g',
+      electrolytes: '510mg',
       prebiotics: '2g'
     }
   }
@@ -104,8 +144,9 @@ export class NomuCanScene {
     this.container = document.getElementById(containerId);
     if (!this.container) return;
 
-    this.currentFlavor = FLAVORS.yuzu;
+    this.currentFlavor = FLAVORS.lemongrass;
     this.viewMode = 'normal'; // 'normal' | 'frost' | 'exploded'
+    this.finishMode = 'matte'; // 'matte' (Signature Ceramic White) | 'glass' (Botanical Fluid)
     this.isAutoRotating = true;
     this.isDragging = false;
     this.pointer = { x: 0, y: 0, prevX: 0, prevY: 0, targetRotY: 0, targetRotX: 0 };
@@ -232,7 +273,7 @@ export class NomuCanScene {
     ctx.lineWidth = 2;
     ctx.strokeRect(120, 60, canvas.width - 240, canvas.height - 120);
 
-    // Left Panel: Japanese Heritage & Botanical Provenance (x ~ 260)
+    // Left Panel: Craft Botanical Provenance (x ~ 260)
     const leftX = 260;
     ctx.textAlign = 'left';
 
@@ -240,20 +281,20 @@ export class NomuCanScene {
     ctx.fillStyle = '#18181B';
     ctx.font = '700 24px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
     ctx.letterSpacing = '5px';
-    ctx.fillText('PRODUCT OF JAPAN', leftX, 180);
+    ctx.fillText('HERB-INFUSED WATER', leftX, 180);
 
     ctx.font = '500 20px "Noto Serif JP", serif';
     ctx.letterSpacing = '8px';
     ctx.fillStyle = '#52525B';
-    ctx.fillText('機能性天然電解質飲料', leftX, 230);
-    ctx.fillText('徳島県産 柑橘抽出', leftX, 270);
-    ctx.fillText('宇治有機茶葉配合', leftX, 310);
+    ctx.fillText('機能性天然ハーブ飲料', leftX, 230);
+    ctx.fillText('純国産ボタニカル水', leftX, 270);
+    ctx.fillText('飲む · BEYOND HYDRATION', leftX, 310);
 
     ctx.font = '400 18px monospace';
     ctx.fillStyle = '#71717A';
-    ctx.fillText('LOT: NM-2026-X8', leftX, 380);
-    ctx.fillText('HARVEST: AUTUMN FLUSH', leftX, 410);
-    ctx.fillText('SERIES: 01 TOKYO BOTANICAL', leftX, 440);
+    ctx.fillText('ORIGIN: CHENNAI, INDIA', leftX, 380);
+    ctx.fillText('BATCH: SMALL BATCH 01', leftX, 410);
+    ctx.fillText('NO PRESERVATIVES · ZERO SUGAR', leftX, 440);
     ctx.restore();
 
     // CENTER PANEL: Authentic Kanji Frame + Logo + Wordmark (x = 1024)
@@ -300,7 +341,7 @@ export class NomuCanScene {
     ctx.fillText('BEYOND HYDRATION', centerX, 610);
 
     // Flavor Capsule Label
-    ctx.fillStyle = '#18181B';
+    ctx.fillStyle = flavor.primaryColor || '#18181B';
     const pillW = 440;
     const pillH = 64;
     const pillX = centerX - pillW / 2;
@@ -414,6 +455,14 @@ export class NomuCanScene {
     const glassGeom = new THREE.LatheGeometry(glassPoints, segments);
     this.frostBumpTexture = this.createFrostBumpTexture();
 
+    // Matte Porcelain Material (Matches client video hero bottle aesthetic)
+    this.matteMaterial = new THREE.MeshStandardMaterial({
+      color: 0xFAFAFD,
+      roughness: 0.32,
+      metalness: 0.02
+    });
+
+    // Translucent Glass Material
     this.glassMaterial = new THREE.MeshPhysicalMaterial({
       color: 0xffffff,
       transmission: 0.94,
@@ -427,7 +476,8 @@ export class NomuCanScene {
       clearcoatRoughness: 0.05
     });
 
-    this.glassMesh = new THREE.Mesh(glassGeom, this.glassMaterial);
+    // Default to sleek matte porcelain bottle (matches client video hero bottle aesthetic)
+    this.glassMesh = new THREE.Mesh(glassGeom, this.matteMaterial);
     this.glassMesh.castShadow = true;
     this.glassMesh.receiveShadow = true;
     this.bottleGroup.add(this.glassMesh);
@@ -455,6 +505,7 @@ export class NomuCanScene {
     });
 
     this.liquidMesh = new THREE.Mesh(liquidGeom, this.liquidMaterial);
+    this.liquidMesh.visible = false; // Hidden in default matte finish
     this.bottleGroup.add(this.liquidMesh);
 
     // 3. AUTHENTIC WRAP-AROUND BOTANICAL CRAFT LABEL
@@ -635,14 +686,39 @@ export class NomuCanScene {
   setViewMode(mode) {
     this.viewMode = mode;
     if (mode === 'frost') {
+      this.glassMesh.material = this.glassMaterial;
+      this.liquidMesh.visible = true;
+      if (this.particlesMesh) this.particlesMesh.visible = true;
       this.glassMaterial.roughness = 0.38;
       this.glassMaterial.bumpMap = this.frostBumpTexture;
       this.glassMaterial.bumpScale = 0.035;
       this.glassMaterial.needsUpdate = true;
     } else {
-      this.glassMaterial.roughness = 0.08;
-      this.glassMaterial.bumpMap = null;
-      this.glassMaterial.needsUpdate = true;
+      if (this.finishMode === 'glass') {
+        this.glassMesh.material = this.glassMaterial;
+        this.liquidMesh.visible = true;
+        if (this.particlesMesh) this.particlesMesh.visible = true;
+        this.glassMaterial.roughness = 0.08;
+        this.glassMaterial.bumpMap = null;
+        this.glassMaterial.needsUpdate = true;
+      } else {
+        this.glassMesh.material = this.matteMaterial;
+        this.liquidMesh.visible = false;
+        if (this.particlesMesh) this.particlesMesh.visible = false;
+      }
+    }
+  }
+
+  setFinishMode(finish) {
+    this.finishMode = finish;
+    if (finish === 'glass') {
+      this.glassMesh.material = this.glassMaterial;
+      this.liquidMesh.visible = true;
+      if (this.particlesMesh) this.particlesMesh.visible = true;
+    } else {
+      this.glassMesh.material = this.matteMaterial;
+      this.liquidMesh.visible = false;
+      if (this.particlesMesh) this.particlesMesh.visible = false;
     }
   }
 
