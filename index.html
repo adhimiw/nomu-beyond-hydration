@@ -12,8 +12,8 @@
 </head>
 <body data-flavor="vetiver">
 
-  <!-- Header: Clean Architectural Navbar -->
-  <header class="site-header" data-ui>
+  <!-- Main Site Header -->
+  <header class="site-header">
     <div class="container header-inner">
       <a href="#" class="brand-group" aria-label="Nomu Beyond Hydration">
         <div class="brand-logo-badge">
@@ -25,10 +25,11 @@
         </div>
       </a>
 
+      <!-- Center Flavour Quick-Tabs -->
       <nav class="site-nav" aria-label="Primary Navigation">
         <ul class="nav-list">
           <li><a href="#about" class="nav-link">ABOUT</a></li>
-          <li><a href="#flavours" class="nav-link">FLAVOURS</a></li>
+          <li><a href="#showcase" class="nav-link">FLAVOURS</a></li>
           <li><a href="#shop" class="nav-link">BUILD RITUAL</a></li>
           <li><a href="#sensory" class="nav-link">SENSORY LAB</a></li>
           <li><a href="#contact" class="nav-link">CONTACT</a></li>
@@ -36,142 +37,146 @@
       </nav>
 
       <div class="header-actions">
-        <a href="#shop" class="btn btn-crimson btn-sm">ORDER NOW</a>
+        <a href="#shop" class="btn btn-black-pill">ORDER NOW</a>
       </div>
     </div>
   </header>
 
   <main id="main-content">
 
-    <!-- Section 1: Selaras-Inspired Editorial Hero Section (Real Photography Frame) -->
-    <section class="editorial-hero" id="about">
-      <div class="container">
+    <!-- Section 1: Hero Section (Dribbble Bottle Stage + Retro-Chic Lookism) -->
+    <section class="hero-dribbble-stage" id="about">
+      <div class="container hero-stage-container">
         
-        <!-- Top Editorial Header Bar -->
-        <div class="hero-top-row">
-          <div class="hero-title-group">
-            <h1 class="hero-main-title">
-              BEYOND HYDRATION <span class="kanji-pill">飲む</span>
-            </h1>
-            <p class="hero-tagline-sub">Cold-steeped herb-infused botanical water crafted in Chennai for daily bodily restoration.</p>
-          </div>
-          <div class="hero-top-action">
-            <a href="#flavours" class="btn btn-dark-pill">EXPLORE 4 FLAVOURS &rarr;</a>
-          </div>
+        <!-- Background Sun Disk & Starburst Glyph -->
+        <div class="sun-disk-bg" aria-hidden="true"></div>
+        <div class="starburst-glyph" aria-hidden="true">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0L14 9L23 5L17 12L24 16L15 17L16 24L11 18L5 23L7 14L0 13L8 9L3 2L10 6Z"/>
+          </svg>
         </div>
 
-        <!-- Centerpiece Photography Stage -->
-        <div class="hero-visual-frame">
-          <img 
-            src="/img/nomu/nomu_bottles_hero_real.jpg" 
-            alt="NOMU Herb-Infused Botanical Water flight with sun caustics and fresh herbs" 
-            class="hero-photo-cover" 
-            loading="eager" 
-          />
+        <!-- Big Curved Display Headline across Stage -->
+        <div class="hero-curved-title-wrap">
+          <h1 class="hero-curved-title">
+            BEYOND HYDRATION <span class="hero-kanji-glyph">飲む</span>
+          </h1>
+          <p class="hero-subline">Cold-steeped botanical water crafted in Chennai for natural bodily restoration.</p>
+        </div>
+
+        <!-- 3-Column Interactive Stage Grid -->
+        <div class="hero-interactive-grid">
           
-          <!-- Bottom-Left Lead Overlay -->
-          <div class="hero-overlay-lead">
-            <h2 class="hero-lead-text">Feel Better, Live NOMU</h2>
-          </div>
-
-          <!-- Floating Translucent Glass Product Card -->
-          <div class="hero-glass-card" data-ui>
-            <div class="glass-card-header">
-              <div class="glass-thumb-box">
-                <img src="/img/bottles/lemongrass_packshot.jpg" alt="NOMU Botanical Water Packshot" class="glass-thumb-img" />
+          <!-- Left Column: Video & Process Card -->
+          <div class="hero-col-left">
+            <div class="hero-media-card">
+              <div class="hero-video-box">
+                <video 
+                  src="/video/nomu_showcase.mp4" 
+                  poster="/img/nomu/nomu_bottles_hero_real.jpg"
+                  class="hero-video-player" 
+                  autoplay 
+                  loop 
+                  muted 
+                  playsinline
+                ></video>
+                <div class="play-indicator-badge">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="5 3 19 12 5 21 5 3"/>
+                  </svg>
+                </div>
               </div>
-              <div class="glass-header-text">
-                <span class="glass-badge">100% Botanical Hydrosol</span>
-                <h3 class="glass-product-title">Whole Herb Infusion</h3>
+              <div class="hero-card-meta">
+                <h3 class="hero-card-title" id="hero-media-title">South Indian Khus Harvest</h3>
+                <p class="hero-card-caption" id="hero-media-desc">
+                  Ancient Vetiver roots cold-steeped in micro-batches to extract cooling essential minerals.
+                </p>
               </div>
             </div>
-            <p class="glass-card-desc">
-              Cold-steeped organic herbs, zero added sugar, small-batch brewed in Chennai to restore bodily balance naturally.
-            </p>
-            <div class="glass-card-footer">
-              <div class="glass-price-group">
-                <span class="glass-price-label">STARTS FROM</span>
-                <span class="glass-price-val">₹95 <small>/ bottle</small></span>
-              </div>
-              <a href="#shop" class="glass-action-btn" aria-label="Order on WhatsApp">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="12" y1="5" x2="12" y2="19"></line>
-                  <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-              </a>
+
+            <div class="hero-manifesto-side">
+              <span>Ideas, visions, and botanical restoration for daily equilibrium.</span>
             </div>
           </div>
+
+          <!-- Center Column: Standing Isolated Bottle Packshot -->
+          <div class="hero-col-center">
+            <div class="hero-bottle-pedestal">
+              <img 
+                src="/img/bottles/vetiver_isolated.png" 
+                alt="NOMU Botanical Water Bottle" 
+                class="hero-bottle-packshot" 
+                id="hero-bottle-img" 
+              />
+              <div class="hero-contact-shadow" aria-hidden="true"></div>
+            </div>
+          </div>
+
+          <!-- Right Column: Editorial Note & CTA -->
+          <div class="hero-col-right">
+            <div class="hero-editorial-card">
+              <h2 class="hero-editorial-heading" id="hero-right-title">Pure by Nature.</h2>
+              <div class="hero-right-thumb-wrap">
+                <img 
+                  src="/img/ingredients/vetiver_khus_root.png" 
+                  alt="Harvested Botanical Herbs" 
+                  class="hero-right-thumb-img" 
+                  id="hero-right-thumb" 
+                />
+              </div>
+              <p class="hero-editorial-body" id="hero-right-desc">
+                Four ancient whole herbs cold-steeped to restore your body's natural rhythm. Zero added sugar, zero artificial dyes, small-batch bottled in Chennai.
+              </p>
+              <a href="#showcase" class="btn btn-ivory-pill">EXPLORE THE INFUSIONS &rarr;</a>
+            </div>
+
+            <div class="hero-curious-side">
+              <span>A space for curious minds, active bodies, and daily mindfulness.</span>
+            </div>
+          </div>
+
         </div>
 
-        <!-- Trust Pillars Strip -->
-        <div class="hero-trust-bar">
-          <div class="trust-item">
-            <span class="trust-check" aria-hidden="true">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>
-            </span>
-            <span class="trust-text"><strong>100% Whole Herb Infusion</strong> · No artificial extracts or concentrates</span>
+        <!-- Bottom Controls & Progress -->
+        <div class="hero-bottom-bar">
+          <div class="hero-bottom-left">
+            <a 
+              href="https://wa.me/919840000000?text=Hi%20NOMU%2C%20I%20would%20like%20to%20order%20NOMU%20Botanical%20Water." 
+              target="_blank" 
+              rel="noopener" 
+              class="hero-circle-btn" 
+              id="hero-whatsapp-btn"
+              aria-label="Order on WhatsApp"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </a>
+            <span class="hero-btn-label">ORDER ON WHATSAPP</span>
           </div>
-          <div class="trust-item">
-            <span class="trust-check" aria-hidden="true">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>
-            </span>
-            <span class="trust-text"><strong>Zero Added Sugar</strong> · Pure restorative hydration</span>
+
+          <!-- Category Quick Switcher -->
+          <div class="hero-flavour-pills" role="tablist" aria-label="Flavour Stage Selector">
+            <button class="hero-pill-tab is-active" data-hero-nav="vetiver">VETIVER</button>
+            <button class="hero-pill-tab" data-hero-nav="chamomile">CHAMOMILE</button>
+            <button class="hero-pill-tab" data-hero-nav="grapefruit">GRAPEFRUIT</button>
+            <button class="hero-pill-tab" data-hero-nav="lemongrass">LEMONGRASS</button>
           </div>
-          <div class="trust-item">
-            <span class="trust-check" aria-hidden="true">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>
-            </span>
-            <span class="trust-text"><strong>Small-Batch Bottled</strong> · Freshly crafted in Chennai</span>
+
+          <!-- Counter & Progress Line -->
+          <div class="hero-counter-box">
+            <span class="hero-counter-val" id="hero-index-counter">Blend 1 of 4</span>
+            <div class="hero-progress-track">
+              <div class="hero-progress-fill" id="hero-progress-bar" style="width: 25%"></div>
+            </div>
           </div>
-        </div>
-
-        <!-- Brand Manifesto Statement -->
-        <div class="manifesto-banner">
-          <blockquote class="manifesto-quote">
-            NOMU is here to bring you back into balance naturally, gently, intentionally.
-          </blockquote>
-        </div>
-
-        <!-- 4 Architectural Feature Pillars -->
-        <div class="pillars-grid">
-          <article class="pillar-card">
-            <h3 class="pillar-title">Pure by Nature</h3>
-            <p class="pillar-sub">Seasonally Mindful</p>
-            <p class="pillar-desc">
-              We gently extract active botanicals through slow cold-steeping, preserving delicate volatile aromatics and beneficial plant phytochemicals.
-            </p>
-          </article>
-
-          <article class="pillar-card">
-            <h3 class="pillar-title">Ancient Roots</h3>
-            <p class="pillar-sub">Ayurvedic Wisdom</p>
-            <p class="pillar-desc">
-              Rooted in indigenous Indian wellness heritage, blending Khus roots, holy basil, and soothing blossoms for deep functional restoration.
-            </p>
-          </article>
-
-          <article class="pillar-card">
-            <h3 class="pillar-title">Small-Batch Craft</h3>
-            <p class="pillar-sub">Bottled in Chennai</p>
-            <p class="pillar-desc">
-              Crafted in controlled micro-batches to guarantee unmatched freshness, crisp palate clarity, and zero synthetic preservatives.
-            </p>
-          </article>
-
-          <article class="pillar-card">
-            <h3 class="pillar-title">Consciously Crafted</h3>
-            <p class="pillar-sub">Responsible Production</p>
-            <p class="pillar-desc">
-              Housed in endlessly recyclable glass bottles, respecting planetary ecosystems while delivering premium clean hydration.
-            </p>
-          </article>
         </div>
 
       </div>
     </section>
 
-    <!-- Ticker Ribbon (Continuous Marquee) -->
-    <div class="ticker-ribbon" data-ui aria-hidden="true">
+    <!-- Section 2: Continuous Marquee Ribbon -->
+    <div class="ticker-ribbon" aria-hidden="true">
       <div class="ticker-track">
         <div class="ticker-item">NO PRESERVATIVES <span>·</span></div>
         <div class="ticker-item">HERB-INFUSED <span>·</span></div>
@@ -180,7 +185,7 @@
         <div class="ticker-item">飲む · READY TO DRINK <span>·</span></div>
         <div class="ticker-item">ZERO SUGAR <span>·</span></div>
         <div class="ticker-item">100% BOTANICAL <span>·</span></div>
-        <!-- Seamless duplicate loop -->
+        <!-- Loop duplicate -->
         <div class="ticker-item">NO PRESERVATIVES <span>·</span></div>
         <div class="ticker-item">HERB-INFUSED <span>·</span></div>
         <div class="ticker-item">CHENNAI, INDIA <span>·</span></div>
@@ -191,217 +196,490 @@
       </div>
     </div>
 
-    <!-- Section 2: Re-built Dribbble-Style Interactive Flavor Showcase -->
-    <section id="flavours" class="dribbble-showcase-section" data-theme="vetiver">
+    <!-- Section 3: Expanding Accordion Flavor Showcase (Dribbble Video 2 Reference) -->
+    <section id="showcase" class="accordion-showcase-section">
       <div class="container">
         
-        <!-- Showcase Header with Tab Navigation -->
-        <div class="showcase-header">
-          <div class="showcase-header-left">
-            <h2 class="showcase-heading">Four Herbs. Zero Nonsense.</h2>
-            <p class="showcase-sub">Cold-steeped botanical hydrosols crafted for daily bodily balance.</p>
-          </div>
-
-          <!-- Top Category Tabs (Dribbble pill style) -->
-          <div class="showcase-tabs" role="tablist" aria-label="Select Flavour Blend" data-ui>
-            <button class="showcase-tab is-active" data-flavor-tab="vetiver" role="tab" aria-selected="true">
-              <span class="tab-label">VETIVER</span>
-            </button>
-            <button class="showcase-tab" data-flavor-tab="chamomile" role="tab" aria-selected="false">
-              <span class="tab-label">CHAMOMILE</span>
-            </button>
-            <button class="showcase-tab" data-flavor-tab="grapefruit" role="tab" aria-selected="false">
-              <span class="tab-label">GRAPEFRUIT</span>
-            </button>
-            <button class="showcase-tab" data-flavor-tab="lemongrass" role="tab" aria-selected="false">
-              <span class="tab-label">LEMONGRASS</span>
-            </button>
-          </div>
+        <div class="showcase-section-header">
+          <h2 class="showcase-title-main">FOUR HERBS. ZERO NONSENSE.</h2>
+          <p class="showcase-sub-main">
+            Click or hover any bottle to explore its botanical architecture, aromatic profile, and palate spectrum.
+          </p>
         </div>
 
-        <!-- Main 3-Column Interactive Stage -->
-        <div class="dribbble-stage-grid">
+        <!-- 4-Pillar Expanding Stage Container -->
+        <div class="accordion-stage-wrap">
           
-          <!-- Column 1: Left Ingredient & Media Card -->
-          <div class="stage-col-media">
-            <div class="ingredient-media-card" data-ui>
-              <div class="media-preview-box">
-                <video 
-                  id="showcase-video-preview" 
-                  src="/video/nomu_showcase.mp4" 
-                  poster="/img/nomu/nomu_bottles_hero_real.jpg"
-                  class="media-video-loop" 
-                  autoplay 
-                  loop 
-                  muted 
-                  playsinline
-                ></video>
-                <div class="media-card-badge">
-                  <span class="pulse-dot"></span>
-                  <span id="showcase-badge-text">Cold Steep Lab</span>
+          <!-- Pillar 01: Vetiver -->
+          <div class="accordion-pillar is-expanded theme-vetiver" data-pillar-index="0" aria-expanded="true">
+            <!-- Collapsed Mini Preview -->
+            <div class="pillar-collapsed-view">
+              <div class="pillar-mini-bottle">
+                <img src="/img/bottles/vetiver_isolated.png" alt="Vetiver Packshot" class="mini-bottle-img" />
+              </div>
+              <div class="pillar-mini-meta">
+                <span class="pillar-index-tag">Blend I</span>
+                <h3 class="pillar-mini-name">Vetiver</h3>
+                <span class="pillar-mini-sub">(Khus Root)</span>
+                <span class="pillar-view-btn">View More</span>
+              </div>
+            </div>
+
+            <!-- Expanded Full Stage View -->
+            <div class="pillar-expanded-view">
+              <div class="pillar-expanded-left">
+                <div class="pillar-splash-bottle-wrap">
+                  <img src="/img/bottles/vetiver_isolated.png" alt="NOMU Vetiver Large Bottle" class="pillar-large-bottle" />
+                  <img src="/img/ingredients/vetiver_khus_root.png" alt="Vetiver Khus Roots" class="pillar-ingredient-splash" />
+                  <div class="pillar-bottle-shadow" aria-hidden="true"></div>
                 </div>
               </div>
-              <div class="ingredient-card-caption">
-                <h3 class="ingredient-caption-title" id="showcase-media-title">Extraction Method</h3>
-                <p class="ingredient-caption-desc" id="showcase-media-desc">
-                  Ancient South Indian Khus roots traditionally cold-steeped to dissipate internal heat and anchor the mind.
+
+              <div class="pillar-expanded-right">
+                <div class="pillar-expanded-header">
+                  <span class="pillar-giant-index">I</span>
+                  <div class="pillar-expanded-titles">
+                    <h3 class="pillar-full-name">Vetiver <small>香根草 · 根</small></h3>
+                    <span class="pillar-mood-pill">Mood: Ground</span>
+                  </div>
+                </div>
+
+                <p class="pillar-positioning-quote">"Earthy, Cooling & Deeply Grounding"</p>
+                <p class="pillar-narrative-text">
+                  Ancient South Indian Khus roots traditionally cold-steeped to dissipate internal heat, anchor the mind, and restore constitutional balance.
                 </p>
+
+                <!-- Aromatic Architecture -->
+                <div class="pillar-aroma-block">
+                  <div class="pillar-aroma-row">
+                    <span class="pillar-aroma-label">Top Note</span>
+                    <span class="pillar-aroma-val">Organic South Indian Vetiver (Khus) roots</span>
+                  </div>
+                  <div class="pillar-aroma-row">
+                    <span class="pillar-aroma-label">Heart Note</span>
+                    <span class="pillar-aroma-val">Cooling cucumber rind & fresh mint leaf</span>
+                  </div>
+                  <div class="pillar-aroma-row">
+                    <span class="pillar-aroma-label">Base Note</span>
+                    <span class="pillar-aroma-val">Potassium citrate & restorative sea trace minerals</span>
+                  </div>
+                </div>
+
+                <!-- Palate Spectrum Mini-Grid -->
+                <div class="pillar-spectrum-grid">
+                  <div class="pillar-meter-col">
+                    <div class="meter-info">
+                      <span>Citrus</span>
+                      <strong>24%</strong>
+                    </div>
+                    <div class="meter-track"><div class="meter-fill" style="width: 24%"></div></div>
+                  </div>
+                  <div class="pillar-meter-col">
+                    <div class="meter-info">
+                      <span>Sweetness</span>
+                      <strong>15%</strong>
+                    </div>
+                    <div class="meter-track"><div class="meter-fill" style="width: 15%"></div></div>
+                  </div>
+                  <div class="pillar-meter-col">
+                    <div class="meter-info">
+                      <span>Effervescence</span>
+                      <strong>70%</strong>
+                    </div>
+                    <div class="meter-track"><div class="meter-fill" style="width: 70%"></div></div>
+                  </div>
+                  <div class="pillar-meter-col">
+                    <div class="meter-info">
+                      <span>Depth</span>
+                      <strong>96%</strong>
+                    </div>
+                    <div class="meter-track"><div class="meter-fill" style="width: 96%"></div></div>
+                  </div>
+                </div>
+
+                <!-- CTA -->
+                <div class="pillar-action-row">
+                  <span class="pillar-price-tag">SINGLE ₹95 · 3-PACK ₹270 · 12-PACK ₹999</span>
+                  <a 
+                    href="https://wa.me/919840000000?text=Hi%20NOMU%2C%20I%20would%20like%20to%20order%20NOMU%20Vetiver." 
+                    target="_blank" 
+                    rel="noopener" 
+                    class="btn btn-ivory-pill"
+                  >
+                    ORDER VETIVER ON WHATSAPP &rarr;
+                  </a>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- Column 2: Center Isolated Bottle Packshot Stage -->
-          <div class="stage-col-bottle">
-            <div class="bottle-stage-pod">
-              <img 
-                src="/img/bottles/vetiver_isolated.png" 
-                alt="NOMU Vetiver Botanical Water Bottle" 
-                class="isolated-bottle-img" 
-                id="showcase-bottle-img" 
-              />
-              <div class="bottle-ground-shadow" aria-hidden="true"></div>
+          <!-- Pillar 02: German Chamomile -->
+          <div class="accordion-pillar theme-chamomile" data-pillar-index="1" aria-expanded="false">
+            <!-- Collapsed Mini Preview -->
+            <div class="pillar-collapsed-view">
+              <div class="pillar-mini-bottle">
+                <img src="/img/bottles/chamomile_isolated.png" alt="Chamomile Packshot" class="mini-bottle-img" />
+              </div>
+              <div class="pillar-mini-meta">
+                <span class="pillar-index-tag">Blend II</span>
+                <h3 class="pillar-mini-name">Chamomile</h3>
+                <span class="pillar-mini-sub">(Blossoms)</span>
+                <span class="pillar-view-btn">View More</span>
+              </div>
+            </div>
+
+            <!-- Expanded Full Stage View -->
+            <div class="pillar-expanded-view">
+              <div class="pillar-expanded-left">
+                <div class="pillar-splash-bottle-wrap">
+                  <img src="/img/bottles/chamomile_isolated.png" alt="NOMU Chamomile Large Bottle" class="pillar-large-bottle" />
+                  <img src="/img/ingredients/chatgpt_hero_visual.webp" alt="German Chamomile Flowers" class="pillar-ingredient-splash" />
+                  <div class="pillar-bottle-shadow" aria-hidden="true"></div>
+                </div>
+              </div>
+
+              <div class="pillar-expanded-right">
+                <div class="pillar-expanded-header">
+                  <span class="pillar-giant-index">II</span>
+                  <div class="pillar-expanded-titles">
+                    <h3 class="pillar-full-name">German Chamomile <small>洋甘菊 · 花</small></h3>
+                    <span class="pillar-mood-pill">Mood: Unwind</span>
+                  </div>
+                </div>
+
+                <p class="pillar-positioning-quote">"Floral, Delicate & Gently Calming"</p>
+                <p class="pillar-narrative-text">
+                  Sun-dried German chamomile blossoms delivering apigenin-rich relaxation, settling digestion and quieting evening neural chatter.
+                </p>
+
+                <div class="pillar-aroma-block">
+                  <div class="pillar-aroma-row">
+                    <span class="pillar-aroma-label">Top Note</span>
+                    <span class="pillar-aroma-val">German chamomile flower blossoms</span>
+                  </div>
+                  <div class="pillar-aroma-row">
+                    <span class="pillar-aroma-label">Heart Note</span>
+                    <span class="pillar-aroma-val">Delicate lavender & soft floral aromatics</span>
+                  </div>
+                  <div class="pillar-aroma-row">
+                    <span class="pillar-aroma-label">Base Note</span>
+                    <span class="pillar-aroma-val">Gentle botanical infusion & subtle mineral finish</span>
+                  </div>
+                </div>
+
+                <div class="pillar-spectrum-grid">
+                  <div class="pillar-meter-col">
+                    <div class="meter-info">
+                      <span>Citrus</span>
+                      <strong>12%</strong>
+                    </div>
+                    <div class="meter-track"><div class="meter-fill" style="width: 12%"></div></div>
+                  </div>
+                  <div class="pillar-meter-col">
+                    <div class="meter-info">
+                      <span>Sweetness</span>
+                      <strong>28%</strong>
+                    </div>
+                    <div class="meter-track"><div class="meter-fill" style="width: 28%"></div></div>
+                  </div>
+                  <div class="pillar-meter-col">
+                    <div class="meter-info">
+                      <span>Effervescence</span>
+                      <strong>35%</strong>
+                    </div>
+                    <div class="meter-track"><div class="meter-fill" style="width: 35%"></div></div>
+                  </div>
+                  <div class="pillar-meter-col">
+                    <div class="meter-info">
+                      <span>Depth</span>
+                      <strong>92%</strong>
+                    </div>
+                    <div class="meter-track"><div class="meter-fill" style="width: 92%"></div></div>
+                  </div>
+                </div>
+
+                <div class="pillar-action-row">
+                  <span class="pillar-price-tag">SINGLE ₹95 · 3-PACK ₹270 · 12-PACK ₹999</span>
+                  <a 
+                    href="https://wa.me/919840000000?text=Hi%20NOMU%2C%20I%20would%20like%20to%20order%20NOMU%20Chamomile." 
+                    target="_blank" 
+                    rel="noopener" 
+                    class="btn btn-ivory-pill"
+                  >
+                    ORDER CHAMOMILE ON WHATSAPP &rarr;
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
 
-          <!-- Column 3: Right Botanical Monograph & Ordering -->
-          <div class="stage-col-info">
-            <div class="monograph-card" data-ui>
-              
-              <div class="monograph-header">
-                <div class="blend-num-pill">
-                  <span id="showcase-blend-num">Herb Blend · Blend I</span>
-                </div>
-                <div class="mood-badge" id="showcase-mood-badge">
-                  <span>Mood: Ground</span>
+          <!-- Pillar 03: Grapefruit -->
+          <div class="accordion-pillar theme-grapefruit" data-pillar-index="2" aria-expanded="false">
+            <!-- Collapsed Mini Preview -->
+            <div class="pillar-collapsed-view">
+              <div class="pillar-mini-bottle">
+                <img src="/img/bottles/grapefruit_isolated.png" alt="Grapefruit Packshot" class="mini-bottle-img" />
+              </div>
+              <div class="pillar-mini-meta">
+                <span class="pillar-index-tag">Blend III</span>
+                <h3 class="pillar-mini-name">Grapefruit</h3>
+                <span class="pillar-mini-sub">(Ruby Peel)</span>
+                <span class="pillar-view-btn">View More</span>
+              </div>
+            </div>
+
+            <!-- Expanded Full Stage View -->
+            <div class="pillar-expanded-view">
+              <div class="pillar-expanded-left">
+                <div class="pillar-splash-bottle-wrap">
+                  <img src="/img/bottles/grapefruit_isolated.png" alt="NOMU Grapefruit Large Bottle" class="pillar-large-bottle" />
+                  <img src="/img/ingredients/lemongrass_grapefruit_herbs.jpg" alt="Ruby Grapefruit Peel" class="pillar-ingredient-splash" />
+                  <div class="pillar-bottle-shadow" aria-hidden="true"></div>
                 </div>
               </div>
 
-              <h3 class="monograph-name">
-                <span id="showcase-name">VETIVER</span> 
-                <span class="monograph-kanji" id="showcase-kanji">香根草 · 根</span>
-              </h3>
-
-              <p class="monograph-positioning" id="showcase-positioning">
-                "Earthy, Cooling & Deeply Grounding"
-              </p>
-
-              <p class="monograph-narrative" id="showcase-narrative">
-                Ancient South Indian Khus roots traditionally cold-steeped to dissipate internal heat, anchor the mind, and restore constitutional balance.
-              </p>
-
-              <!-- Aromatic Notes Architecture -->
-              <div class="monograph-aroma-stack">
-                <h4 class="aroma-section-title">Aromatic Architecture:</h4>
-                <div class="aroma-item">
-                  <span class="aroma-tag">Top Note</span>
-                  <span class="aroma-text" id="showcase-aroma-top">Organic South Indian Vetiver (Khus) roots</span>
+              <div class="pillar-expanded-right">
+                <div class="pillar-expanded-header">
+                  <span class="pillar-giant-index">III</span>
+                  <div class="pillar-expanded-titles">
+                    <h3 class="pillar-full-name">Grapefruit <small>葡萄柚 · 果</small></h3>
+                    <span class="pillar-mood-pill">Mood: Uplift</span>
+                  </div>
                 </div>
-                <div class="aroma-item">
-                  <span class="aroma-tag">Heart Note</span>
-                  <span class="aroma-text" id="showcase-aroma-heart">Cooling cucumber rind & fresh mint leaf</span>
+
+                <p class="pillar-positioning-quote">"Zesty, Vibrant & Naturally Uplifting"</p>
+                <p class="pillar-narrative-text">
+                  Cold-extracted ruby grapefruit peel and tart botanical infusions to awaken palate senses, invigorate metabolic alertness, and sparkle.
+                </p>
+
+                <div class="pillar-aroma-block">
+                  <div class="pillar-aroma-row">
+                    <span class="pillar-aroma-label">Top Note</span>
+                    <span class="pillar-aroma-val">Ruby grapefruit citrus essence</span>
+                  </div>
+                  <div class="pillar-aroma-row">
+                    <span class="pillar-aroma-label">Heart Note</span>
+                    <span class="pillar-aroma-val">Hibiscus petals & refreshing citrus peel</span>
+                  </div>
+                  <div class="pillar-aroma-row">
+                    <span class="pillar-aroma-label">Base Note</span>
+                    <span class="pillar-aroma-val">Delicate botanical finish & natural mineral balance</span>
+                  </div>
                 </div>
-                <div class="aroma-item">
-                  <span class="aroma-tag">Base Note</span>
-                  <span class="aroma-text" id="showcase-aroma-base">Potassium citrate & restorative sea trace minerals</span>
+
+                <div class="pillar-spectrum-grid">
+                  <div class="pillar-meter-col">
+                    <div class="meter-info">
+                      <span>Citrus</span>
+                      <strong>96%</strong>
+                    </div>
+                    <div class="meter-track"><div class="meter-fill" style="width: 96%"></div></div>
+                  </div>
+                  <div class="pillar-meter-col">
+                    <div class="meter-info">
+                      <span>Sweetness</span>
+                      <strong>35%</strong>
+                    </div>
+                    <div class="meter-track"><div class="meter-fill" style="width: 35%"></div></div>
+                  </div>
+                  <div class="pillar-meter-col">
+                    <div class="meter-info">
+                      <span>Effervescence</span>
+                      <strong>65%</strong>
+                    </div>
+                    <div class="meter-track"><div class="meter-fill" style="width: 65%"></div></div>
+                  </div>
+                  <div class="pillar-meter-col">
+                    <div class="meter-info">
+                      <span>Depth</span>
+                      <strong>72%</strong>
+                    </div>
+                    <div class="meter-track"><div class="meter-fill" style="width: 72%"></div></div>
+                  </div>
+                </div>
+
+                <div class="pillar-action-row">
+                  <span class="pillar-price-tag">SINGLE ₹95 · 3-PACK ₹270 · 12-PACK ₹999</span>
+                  <a 
+                    href="https://wa.me/919840000000?text=Hi%20NOMU%2C%20I%20would%20like%20to%20order%20NOMU%20Grapefruit." 
+                    target="_blank" 
+                    rel="noopener" 
+                    class="btn btn-ivory-pill"
+                  >
+                    ORDER GRAPEFRUIT ON WHATSAPP &rarr;
+                  </a>
                 </div>
               </div>
-
-              <!-- Palate Spectrum Meters -->
-              <div class="monograph-spectrum-box">
-                <div class="spectrum-meter">
-                  <div class="spectrum-meta">
-                    <span>Citrus Brightness</span>
-                    <strong id="showcase-meter-citrus-val">24%</strong>
-                  </div>
-                  <div class="spectrum-track">
-                    <div class="spectrum-fill" id="showcase-meter-citrus-bar" style="width: 24%"></div>
-                  </div>
-                </div>
-
-                <div class="spectrum-meter">
-                  <div class="spectrum-meta">
-                    <span>Natural Sweetness</span>
-                    <strong id="showcase-meter-sweet-val">15%</strong>
-                  </div>
-                  <div class="spectrum-track">
-                    <div class="spectrum-fill" id="showcase-meter-sweet-bar" style="width: 15%"></div>
-                  </div>
-                </div>
-
-                <div class="spectrum-meter">
-                  <div class="spectrum-meta">
-                    <span>Effervescence</span>
-                    <strong id="showcase-meter-eff-val">70%</strong>
-                  </div>
-                  <div class="spectrum-track">
-                    <div class="spectrum-fill" id="showcase-meter-eff-bar" style="width: 70%"></div>
-                  </div>
-                </div>
-
-                <div class="spectrum-meter">
-                  <div class="spectrum-meta">
-                    <span>Botanical Depth</span>
-                    <strong id="showcase-meter-depth-val">96%</strong>
-                  </div>
-                  <div class="spectrum-track">
-                    <div class="spectrum-fill" id="showcase-meter-depth-bar" style="width: 96%"></div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Direct Pricing & WhatsApp Order CTA -->
-              <div class="monograph-action-strip">
-                <div class="monograph-price-info">
-                  <span class="price-mrp">SINGLE ₹95 · 3-PACK ₹270 · 12-PACK ₹999</span>
-                  <span class="price-dispatch">Handcrafted & Bottled in Chennai</span>
-                </div>
-                <a 
-                  href="https://wa.me/919840000000?text=Hi%20NOMU%2C%20I%20would%20like%20to%20order%20NOMU%20Vetiver%20(Single%20₹95%20%2F%203-Pack%20₹270%20%2F%2012-Pack%20₹999)." 
-                  target="_blank" 
-                  rel="noopener" 
-                  class="btn btn-crimson btn-block" 
-                  id="showcase-whatsapp-btn"
-                >
-                  <span id="showcase-whatsapp-label">ORDER VETIVER ON WHATSAPP</span>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                  </svg>
-                </a>
-              </div>
-
             </div>
           </div>
 
-        </div>
+          <!-- Pillar 04: Lemongrass -->
+          <div class="accordion-pillar theme-lemongrass" data-pillar-index="3" aria-expanded="false">
+            <!-- Collapsed Mini Preview -->
+            <div class="pillar-collapsed-view">
+              <div class="pillar-mini-bottle">
+                <img src="/img/bottles/lemongrass_isolated.png" alt="Lemongrass Packshot" class="mini-bottle-img" />
+              </div>
+              <div class="pillar-mini-meta">
+                <span class="pillar-index-tag">Blend IV</span>
+                <h3 class="pillar-mini-name">Lemongrass</h3>
+                <span class="pillar-mini-sub">(Nilgiri Stalks)</span>
+                <span class="pillar-view-btn">View More</span>
+              </div>
+            </div>
 
-        <!-- Bottom Controls: Arrows + Dots -->
-        <div class="showcase-nav-footer">
-          <button class="showcase-nav-arrow" id="showcase-prev-btn" aria-label="Previous Herb">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
-            </svg>
-            <span>PREVIOUS</span>
-          </button>
+            <!-- Expanded Full Stage View -->
+            <div class="pillar-expanded-view">
+              <div class="pillar-expanded-left">
+                <div class="pillar-splash-bottle-wrap">
+                  <img src="/img/bottles/lemongrass_isolated.png" alt="NOMU Lemongrass Large Bottle" class="pillar-large-bottle" />
+                  <img src="/img/ingredients/lemongrass_grapefruit_herbs.jpg" alt="Nilgiri Mountain Lemongrass Stalks" class="pillar-ingredient-splash" />
+                  <div class="pillar-bottle-shadow" aria-hidden="true"></div>
+                </div>
+              </div>
 
-          <div class="showcase-dots" role="tablist" aria-label="Flavour Pagination" data-ui>
-            <button class="showcase-dot is-active" data-dot="0" aria-label="Herb Blend 1: Vetiver"></button>
-            <button class="showcase-dot" data-dot="1" aria-label="Herb Blend 2: Chamomile"></button>
-            <button class="showcase-dot" data-dot="2" aria-label="Herb Blend 3: Grapefruit"></button>
-            <button class="showcase-dot" data-dot="3" aria-label="Herb Blend 4: Lemongrass"></button>
+              <div class="pillar-expanded-right">
+                <div class="pillar-expanded-header">
+                  <span class="pillar-giant-index">IV</span>
+                  <div class="pillar-expanded-titles">
+                    <h3 class="pillar-full-name">Lemongrass <small>柠檬草 · 叶</small></h3>
+                    <span class="pillar-mood-pill">Mood: Refresh</span>
+                  </div>
+                </div>
+
+                <p class="pillar-positioning-quote">"Crisp, Herbal & Naturally Refreshing"</p>
+                <p class="pillar-narrative-text">
+                  High-altitude Nilgiri lemongrass distilled with holy basil to deliver sharp focus, cellular hydration, and clean herbal vitality.
+                </p>
+
+                <div class="pillar-aroma-block">
+                  <div class="pillar-aroma-row">
+                    <span class="pillar-aroma-label">Top Note</span>
+                    <span class="pillar-aroma-val">Fresh Nilgiri lemongrass stalks</span>
+                  </div>
+                  <div class="pillar-aroma-row">
+                    <span class="pillar-aroma-label">Heart Note</span>
+                    <span class="pillar-aroma-val">Citrus peel & wild holy basil (Tulsi)</span>
+                  </div>
+                  <div class="pillar-aroma-row">
+                    <span class="pillar-aroma-label">Base Note</span>
+                    <span class="pillar-aroma-val">Subtle herbal undertones & clean mineral finish</span>
+                  </div>
+                </div>
+
+                <div class="pillar-spectrum-grid">
+                  <div class="pillar-meter-col">
+                    <div class="meter-info">
+                      <span>Citrus</span>
+                      <strong>82%</strong>
+                    </div>
+                    <div class="meter-track"><div class="meter-fill" style="width: 82%"></div></div>
+                  </div>
+                  <div class="pillar-meter-col">
+                    <div class="meter-info">
+                      <span>Sweetness</span>
+                      <strong>22%</strong>
+                    </div>
+                    <div class="meter-track"><div class="meter-fill" style="width: 22%"></div></div>
+                  </div>
+                  <div class="pillar-meter-col">
+                    <div class="meter-info">
+                      <span>Effervescence</span>
+                      <strong>55%</strong>
+                    </div>
+                    <div class="meter-track"><div class="meter-fill" style="width: 55%"></div></div>
+                  </div>
+                  <div class="pillar-meter-col">
+                    <div class="meter-info">
+                      <span>Depth</span>
+                      <strong>85%</strong>
+                    </div>
+                    <div class="meter-track"><div class="meter-fill" style="width: 85%"></div></div>
+                  </div>
+                </div>
+
+                <div class="pillar-action-row">
+                  <span class="pillar-price-tag">SINGLE ₹95 · 3-PACK ₹270 · 12-PACK ₹999</span>
+                  <a 
+                    href="https://wa.me/919840000000?text=Hi%20NOMU%2C%20I%20would%20like%20to%20order%20NOMU%20Lemongrass." 
+                    target="_blank" 
+                    rel="noopener" 
+                    class="btn btn-ivory-pill"
+                  >
+                    ORDER LEMONGRASS ON WHATSAPP &rarr;
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <button class="showcase-nav-arrow" id="showcase-next-btn" aria-label="Next Herb">
-            <span>NEXT</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </button>
         </div>
 
       </div>
     </section>
 
-    <!-- Section 3: Build Your Ritual (Interactive Shop & WhatsApp Builder) -->
+    <!-- Section 4: Brand Manifesto & Botanical Philosophy -->
+    <section class="manifesto-pillars-section">
+      <div class="container">
+        
+        <div class="manifesto-split-layout">
+          <div class="manifesto-statement-col">
+            <h2 class="manifesto-headline">RESTORE NATURAL EQUILIBRIUM</h2>
+            <p class="manifesto-statement-p">
+              NOMU is here to bring you back into balance naturally, gently, intentionally. Crafted in Chennai with 100% whole herbs, no added sugar, and zero synthetic preservatives.
+            </p>
+            <div class="manifesto-art-frame">
+              <img src="/img/nomu/nomu_bottles_hero_real.jpg" alt="NOMU Botanical Water Collection" class="manifesto-art-img" />
+            </div>
+          </div>
+
+          <div class="manifesto-narrative-col">
+            <div class="manifesto-principle-row">
+              <div class="manifesto-principle-tag">Pillar 1</div>
+              <div class="manifesto-principle-body">
+                <h3 class="manifesto-principle-title">Pure by Nature</h3>
+                <p class="manifesto-principle-desc">
+                  Seasonally mindful botanicals gently cold-steeped to extract cooling minerals, volatile terpenes, and active plant compounds.
+                </p>
+              </div>
+            </div>
+
+            <div class="manifesto-principle-row">
+              <div class="manifesto-principle-tag">Pillar 2</div>
+              <div class="manifesto-principle-body">
+                <h3 class="manifesto-principle-title">Ancient Ayurvedic Roots</h3>
+                <p class="manifesto-principle-desc">
+                  Rooted in Indian botanical tradition, blending sacred Khus roots, holy basil (Tulsi), and calming blossoms for whole-body restoration.
+                </p>
+              </div>
+            </div>
+
+            <div class="manifesto-principle-row">
+              <div class="manifesto-principle-tag">Pillar 3</div>
+              <div class="manifesto-principle-body">
+                <h3 class="manifesto-principle-title">Chennai Small-Batch Craft</h3>
+                <p class="manifesto-principle-desc">
+                  Micro-brewed in Chennai to guarantee crisp palate clarity, peak botanical vitality, and zero artificial preservatives or sugars.
+                </p>
+              </div>
+            </div>
+
+            <div class="manifesto-principle-row">
+              <div class="manifesto-principle-tag">Pillar 4</div>
+              <div class="manifesto-principle-body">
+                <h3 class="manifesto-principle-title">Consciously Bottled</h3>
+                <p class="manifesto-principle-desc">
+                  Housed exclusively in endlessly recyclable glass bottles, honoring biological and environmental harmony.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section 5: Build Your Ritual (WhatsApp Pack Builder) -->
     <section id="shop" class="builder-section">
       <div class="container">
         <div class="section-header text-center">
@@ -411,7 +689,7 @@
 
         <div class="builder-layout">
           <!-- Left: Studio Stage with Packshot -->
-          <div class="builder-viewport-card" data-ui>
+          <div class="builder-viewport-card">
             <div class="builder-3d-stage" id="builder-3d-box">
               <img 
                 src="/img/bottles/vetiver_packshot.jpg" 
@@ -421,12 +699,12 @@
               />
             </div>
             <div class="builder-finish-selector">
-              <span class="builder-craft-badge">100% Whole Herb Infusion · Chennai</span>
+              <span class="builder-craft-badge">100% Whole Herb Infusion · Small-Batch Chennai</span>
             </div>
           </div>
 
           <!-- Right: Configurator Controls -->
-          <div class="builder-config-card" data-ui>
+          <div class="builder-config-card">
             <h3 class="step-title">Choose your herbal infusion</h3>
             <div class="pills-selector-grid" role="tablist" aria-label="Select Flavour" data-ui>
               <button class="choice-pill-btn is-active" data-cfg-flavor="vetiver" role="tab" aria-selected="true">
@@ -496,7 +774,7 @@
             </div>
 
             <!-- Direct WhatsApp CTA Button -->
-            <a href="https://wa.me/919840000000?text=Hi%20NOMU%2C%20I%20would%20like%20to%20order%3A%201x%203-Pack%20Ritual%20Box%20of%20Vetiver%20(Total%3A%20₹270)." target="_blank" rel="noopener" class="btn btn-crimson btn-large btn-block" id="whatsapp-submit-btn">
+            <a href="https://wa.me/919840000000?text=Hi%20NOMU%2C%20I%20would%20like%20to%20order%3A%201x%203-Pack%20Ritual%20Box%20of%20Vetiver%20(Total%3A%20₹270)." target="_blank" rel="noopener" class="btn btn-burnt-orange btn-large btn-block" id="whatsapp-submit-btn">
               <span>ORDER ON WHATSAPP</span>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                 <path d="M5 12h14M12 5l7 7-7 7"/>
@@ -507,7 +785,7 @@
       </div>
     </section>
 
-    <!-- Section 4: Sensory Tasting Lab (#sensory) -->
+    <!-- Section 6: Sensory Tasting Lab (#sensory) -->
     <section class="lab-section" id="sensory">
       <div class="container">
         <div class="section-header text-center">
@@ -517,7 +795,7 @@
 
         <div class="lab-layout">
           <!-- Active Flavor Focus Card -->
-          <div class="lab-display-card" id="lab-card" data-ui>
+          <div class="lab-display-card" id="lab-card">
             <div class="lab-card-header">
               <div>
                 <h3 class="lab-flavor-name" id="lab-name">Vetiver</h3>
@@ -526,7 +804,7 @@
                   <span class="lab-kanji-sub" id="lab-kanji">香根草 · 根</span>
                 </div>
               </div>
-              <span class="lab-tagline" id="lab-tagline" style="color:#CBD5E1;font-weight:700;">Earthy, Cooling & Deeply Grounding</span>
+              <span class="lab-tagline" id="lab-tagline">Earthy, Cooling & Deeply Grounding</span>
             </div>
 
             <!-- Notes Hierarchy -->
@@ -619,7 +897,7 @@
       </div>
     </section>
 
-    <!-- Section 5: Brand Statement Banner (NOMU 飲む) -->
+    <!-- Section 7: Brand Statement Banner (NOMU 飲む) -->
     <section class="brand-banner-section">
       <div class="container">
         <h2 class="brand-banner-title">NOMU <span>飲む</span></h2>
@@ -627,7 +905,7 @@
       </div>
     </section>
 
-    <!-- Section 6: Contact Details (#contact) -->
+    <!-- Section 8: Contact Details (#contact) -->
     <section id="contact" class="contact-section">
       <div class="container">
         <div class="section-header text-center">
@@ -642,7 +920,7 @@
               <h3 class="contact-channel-title">Direct WhatsApp Line</h3>
               <p class="contact-channel-body">Direct chat for immediate orders, custom ritual mix boxes, and express delivery inquiries across Chennai.</p>
             </div>
-            <a href="https://wa.me/919840000000" target="_blank" rel="noopener" class="btn btn-crimson btn-block">Chat on WhatsApp</a>
+            <a href="https://wa.me/919840000000" target="_blank" rel="noopener" class="btn btn-burnt-orange btn-block">Chat on WhatsApp</a>
           </div>
 
           <!-- Channel 2: Instagram -->
@@ -651,7 +929,7 @@
               <h3 class="contact-channel-title">Instagram Dispatch</h3>
               <p class="contact-channel-body">Follow our journey, small-batch bottling runs, and community events @drinkitnomu.</p>
             </div>
-            <a href="https://www.instagram.com/drinkitnomu/" target="_blank" rel="noopener" class="btn btn-crimson btn-block">Follow @drinkitnomu</a>
+            <a href="https://www.instagram.com/drinkitnomu/" target="_blank" rel="noopener" class="btn btn-burnt-orange btn-block">Follow @drinkitnomu</a>
           </div>
 
           <!-- Channel 3: Chennai Workshop -->
@@ -689,10 +967,10 @@
       <div class="footer-col">
         <h4 class="footer-heading">Flavours</h4>
         <ul class="footer-links">
-          <li><a href="#flavours">Vetiver</a></li>
-          <li><a href="#flavours">German Chamomile</a></li>
-          <li><a href="#flavours">Grapefruit</a></li>
-          <li><a href="#flavours">Lemongrass</a></li>
+          <li><a href="#showcase">Vetiver</a></li>
+          <li><a href="#showcase">German Chamomile</a></li>
+          <li><a href="#showcase">Grapefruit</a></li>
+          <li><a href="#showcase">Lemongrass</a></li>
         </ul>
       </div>
 
@@ -700,7 +978,7 @@
         <h4 class="footer-heading">Navigation</h4>
         <ul class="footer-links">
           <li><a href="#about">About</a></li>
-          <li><a href="#flavours">Flavours</a></li>
+          <li><a href="#showcase">Flavours</a></li>
           <li><a href="#shop">Shop on WhatsApp</a></li>
           <li><a href="#sensory">Sensory Lab</a></li>
           <li><a href="#contact">Contact</a></li>
