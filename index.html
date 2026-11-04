@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="NOMU — Beyond Hydration. Herb-infused water crafted as a daily wellness ritual. Natural, flavorful, and premium. 4 herbs, zero nonsense." />
-  <title>NOMU — Beyond Hydration | Functional Herb-Infused Botanical Water</title>
+  <meta name="description" content="NOMU: Beyond Hydration. Herb-infused botanical water crafted as a daily wellness ritual. Pure, natural, and small-batch bottled in Chennai. Four herbs, zero nonsense." />
+  <title>NOMU · Beyond Hydration | Functional Herb-Infused Botanical Water</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Serif+JP:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/src/style.css" />
 </head>
-<body data-flavor="lemongrass">
+<body data-flavor="vetiver">
 
-  <!-- Header -->
-  <header class="site-header">
+  <!-- Header: Clean Architectural Navbar -->
+  <header class="site-header" data-ui>
     <div class="container header-inner">
       <a href="#" class="brand-group" aria-label="Nomu Beyond Hydration">
         <div class="brand-logo-badge">
@@ -28,9 +28,9 @@
       <nav class="site-nav" aria-label="Primary Navigation">
         <ul class="nav-list">
           <li><a href="#about" class="nav-link">ABOUT</a></li>
-          <li><a href="#mission" class="nav-link">MISSION</a></li>
           <li><a href="#flavours" class="nav-link">FLAVOURS</a></li>
-          <li><a href="#shop" class="nav-link">SHOP</a></li>
+          <li><a href="#shop" class="nav-link">BUILD RITUAL</a></li>
+          <li><a href="#sensory" class="nav-link">SENSORY LAB</a></li>
           <li><a href="#contact" class="nav-link">CONTACT</a></li>
         </ul>
       </nav>
@@ -43,81 +43,128 @@
 
   <main id="main-content">
 
-    <!-- Hero Section (Full Crimson Impact · 3D WebGL Bottle) -->
-    <section class="hero-stage" id="about">
-      <div class="container hero-grid">
+    <!-- Section 1: Selaras-Inspired Editorial Hero Section (Real Photography Frame) -->
+    <section class="editorial-hero" id="about">
+      <div class="container">
         
-        <!-- Left Column: Editorial Presentation -->
-        <div class="hero-info">
-          <h1 class="hero-headline">BEYOND HYDRATION</h1>
+        <!-- Top Editorial Header Bar -->
+        <div class="hero-top-row">
+          <div class="hero-title-group">
+            <h1 class="hero-main-title">
+              BEYOND HYDRATION <span class="kanji-pill">飲む</span>
+            </h1>
+            <p class="hero-tagline-sub">Cold-steeped herb-infused botanical water crafted in Chennai for daily bodily restoration.</p>
+          </div>
+          <div class="hero-top-action">
+            <a href="#flavours" class="btn btn-dark-pill">EXPLORE 4 FLAVOURS &rarr;</a>
+          </div>
+        </div>
 
-          <p class="hero-description">
-            Herb-infused botanical water crafted as a daily wellness ritual. Pure, natural, flavorful, and small-batch bottled in Chennai.
-          </p>
-
-          <div class="hero-cta-group">
-            <a href="#shop" class="btn btn-white btn-large">SHOP THE FLAVOURS</a>
-            <a href="#mission" class="btn btn-ghost-white btn-large">OUR STORY</a>
+        <!-- Centerpiece Photography Stage -->
+        <div class="hero-visual-frame">
+          <img 
+            src="/img/nomu/nomu_bottles_hero_real.jpg" 
+            alt="NOMU Herb-Infused Botanical Water flight with sun caustics and fresh herbs" 
+            class="hero-photo-cover" 
+            loading="eager" 
+          />
+          
+          <!-- Bottom-Left Lead Overlay -->
+          <div class="hero-overlay-lead">
+            <h2 class="hero-lead-text">Feel Better, Live NOMU</h2>
           </div>
 
-          <div class="hero-specs-strip">
-            <div class="spec-cell">
-              <span class="spec-number">100%</span>
-              <span class="spec-label">Botanical Infusion</span>
+          <!-- Floating Translucent Glass Product Card -->
+          <div class="hero-glass-card" data-ui>
+            <div class="glass-card-header">
+              <div class="glass-thumb-box">
+                <img src="/img/bottles/lemongrass_packshot.jpg" alt="NOMU Botanical Water Packshot" class="glass-thumb-img" />
+              </div>
+              <div class="glass-header-text">
+                <span class="glass-badge">100% Botanical Hydrosol</span>
+                <h3 class="glass-product-title">Whole Herb Infusion</h3>
+              </div>
             </div>
-            <div class="spec-cell">
-              <span class="spec-number">0g</span>
-              <span class="spec-label">Added Sugar</span>
-            </div>
-            <div class="spec-cell">
-              <span class="spec-number">₹95</span>
-              <span class="spec-label">MRP Per Bottle</span>
-            </div>
-            <div class="spec-cell">
-              <span class="spec-number">Chennai</span>
-              <span class="spec-label">Small-Batch Craft</span>
+            <p class="glass-card-desc">
+              Cold-steeped organic herbs, zero added sugar, small-batch brewed in Chennai to restore bodily balance naturally.
+            </p>
+            <div class="glass-card-footer">
+              <div class="glass-price-group">
+                <span class="glass-price-label">STARTS FROM</span>
+                <span class="glass-price-val">₹95 <small>/ bottle</small></span>
+              </div>
+              <a href="#shop" class="glass-action-btn" aria-label="Order on WhatsApp">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+              </a>
             </div>
           </div>
         </div>
 
-        <!-- Right Column: Interactive 3D WebGL Bottle Viewport -->
-        <div class="hero-3d-wrapper">
-          <div id="nomu-3d-canvas" class="webgl-canvas-box" aria-label="Interactive 3D NOMU Bottle Model"></div>
-
-          <!-- 3D HUD Controls -->
-          <div class="hud-controls-panel" data-ui aria-label="3D Model Viewer Controls">
-            <button class="hud-btn is-active" id="btn-toggle-rotate" title="Toggle Auto-Rotation">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
-              </svg>
-              <span>360° Rotate</span>
-            </button>
-            <button class="hud-btn" id="btn-toggle-finish" title="Toggle Bottle Finish">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <circle cx="12" cy="12" r="9"/>
-                <path d="M12 3a9 9 0 0 1 9 9h-9V3z"/>
-              </svg>
-              <span id="finish-mode-label">Matte / Glass</span>
-            </button>
-            <button class="hud-btn" id="btn-toggle-frost" title="Toggle Condensation Droplets">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07l14.14-14.14"/>
-              </svg>
-              <span>Frost Drops</span>
-            </button>
-            <button class="hud-btn" id="btn-toggle-explode" title="Exploded Layer Anatomy">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-                <polyline points="2 17 12 22 22 17"/>
-                <polyline points="2 12 12 17 22 12"/>
-              </svg>
-              <span>Anatomy</span>
-            </button>
+        <!-- Trust Pillars Strip -->
+        <div class="hero-trust-bar">
+          <div class="trust-item">
+            <span class="trust-check" aria-hidden="true">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+            <span class="trust-text"><strong>100% Whole Herb Infusion</strong> · No artificial extracts or concentrates</span>
           </div>
-
-          <div class="hud-drag-hint">
-            <span>Drag bottle to orbit 360° · Scroll to zoom</span>
+          <div class="trust-item">
+            <span class="trust-check" aria-hidden="true">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+            <span class="trust-text"><strong>Zero Added Sugar</strong> · Pure restorative hydration</span>
           </div>
+          <div class="trust-item">
+            <span class="trust-check" aria-hidden="true">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+            <span class="trust-text"><strong>Small-Batch Bottled</strong> · Freshly crafted in Chennai</span>
+          </div>
+        </div>
+
+        <!-- Brand Manifesto Statement -->
+        <div class="manifesto-banner">
+          <blockquote class="manifesto-quote">
+            NOMU is here to bring you back into balance naturally, gently, intentionally.
+          </blockquote>
+        </div>
+
+        <!-- 4 Architectural Feature Pillars -->
+        <div class="pillars-grid">
+          <article class="pillar-card">
+            <h3 class="pillar-title">Pure by Nature</h3>
+            <p class="pillar-sub">Seasonally Mindful</p>
+            <p class="pillar-desc">
+              We gently extract active botanicals through slow cold-steeping, preserving delicate volatile aromatics and beneficial plant phytochemicals.
+            </p>
+          </article>
+
+          <article class="pillar-card">
+            <h3 class="pillar-title">Ancient Roots</h3>
+            <p class="pillar-sub">Ayurvedic Wisdom</p>
+            <p class="pillar-desc">
+              Rooted in indigenous Indian wellness heritage, blending Khus roots, holy basil, and soothing blossoms for deep functional restoration.
+            </p>
+          </article>
+
+          <article class="pillar-card">
+            <h3 class="pillar-title">Small-Batch Craft</h3>
+            <p class="pillar-sub">Bottled in Chennai</p>
+            <p class="pillar-desc">
+              Crafted in controlled micro-batches to guarantee unmatched freshness, crisp palate clarity, and zero synthetic preservatives.
+            </p>
+          </article>
+
+          <article class="pillar-card">
+            <h3 class="pillar-title">Consciously Crafted</h3>
+            <p class="pillar-sub">Responsible Production</p>
+            <p class="pillar-desc">
+              Housed in endlessly recyclable glass bottles, respecting planetary ecosystems while delivering premium clean hydration.
+            </p>
+          </article>
         </div>
 
       </div>
@@ -130,141 +177,231 @@
         <div class="ticker-item">HERB-INFUSED <span>·</span></div>
         <div class="ticker-item">CHENNAI, INDIA <span>·</span></div>
         <div class="ticker-item">BEYOND HYDRATION <span>·</span></div>
-        <div class="ticker-item">飲む — READY TO DRINK <span>·</span></div>
+        <div class="ticker-item">飲む · READY TO DRINK <span>·</span></div>
         <div class="ticker-item">ZERO SUGAR <span>·</span></div>
         <div class="ticker-item">100% BOTANICAL <span>·</span></div>
-        <!-- Duplicate for seamless looping -->
+        <!-- Seamless duplicate loop -->
         <div class="ticker-item">NO PRESERVATIVES <span>·</span></div>
         <div class="ticker-item">HERB-INFUSED <span>·</span></div>
         <div class="ticker-item">CHENNAI, INDIA <span>·</span></div>
         <div class="ticker-item">BEYOND HYDRATION <span>·</span></div>
-        <div class="ticker-item">飲む — READY TO DRINK <span>·</span></div>
+        <div class="ticker-item">飲む · READY TO DRINK <span>·</span></div>
         <div class="ticker-item">ZERO SUGAR <span>·</span></div>
         <div class="ticker-item">100% BOTANICAL <span>·</span></div>
       </div>
     </div>
 
-    <!-- Section 2: Mission & Ritual Design -->
-    <section id="mission" class="mission-section">
+    <!-- Section 2: Re-built Dribbble-Style Interactive Flavor Showcase -->
+    <section id="flavours" class="dribbble-showcase-section" data-theme="vetiver">
       <div class="container">
-        <div class="section-header text-center">
-          <h2 class="section-title">A HYDRATION RITUAL, BY DESIGN.</h2>
-          <p class="section-sub">Water shouldn't just hydrate — it should restore balance to body, mind, and daily routine.</p>
-        </div>
-
-        <div class="mission-cards-grid">
-          <!-- Card 1: Crimson -->
-          <div class="mission-card is-crimson">
-            <div>
-              <p class="mission-card-lead">To redefine everyday hydration into a functional wellness ritual.</p>
-            </div>
-            <p class="mission-card-body">
-              Pure botanical water infused with whole real herbs, rooted in Indian botanical wellness wisdom and refined with Japanese minimalist precision.
-            </p>
+        
+        <!-- Showcase Header with Tab Navigation -->
+        <div class="showcase-header">
+          <div class="showcase-header-left">
+            <h2 class="showcase-heading">Four Herbs. Zero Nonsense.</h2>
+            <p class="showcase-sub">Cold-steeped botanical hydrosols crafted for daily bodily balance.</p>
           </div>
 
-          <!-- Card 2: Sand -->
-          <div class="mission-card is-sand">
-            <div>
-              <p class="mission-card-lead">Deliver clean, natural, herb-infused hydration that fits smoothly into modern lives.</p>
-            </div>
-            <p class="mission-card-body">
-              Crafted in small batches in Chennai, delivering functional hydration without compromising taste, purity, or complete wellness benefits.
-            </p>
+          <!-- Top Category Tabs (Dribbble pill style) -->
+          <div class="showcase-tabs" role="tablist" aria-label="Select Flavour Blend" data-ui>
+            <button class="showcase-tab is-active" data-flavor-tab="vetiver" role="tab" aria-selected="true">
+              <span class="tab-label">VETIVER</span>
+            </button>
+            <button class="showcase-tab" data-flavor-tab="chamomile" role="tab" aria-selected="false">
+              <span class="tab-label">CHAMOMILE</span>
+            </button>
+            <button class="showcase-tab" data-flavor-tab="grapefruit" role="tab" aria-selected="false">
+              <span class="tab-label">GRAPEFRUIT</span>
+            </button>
+            <button class="showcase-tab" data-flavor-tab="lemongrass" role="tab" aria-selected="false">
+              <span class="tab-label">LEMONGRASS</span>
+            </button>
           </div>
         </div>
+
+        <!-- Main 3-Column Interactive Stage -->
+        <div class="dribbble-stage-grid">
+          
+          <!-- Column 1: Left Ingredient & Media Card -->
+          <div class="stage-col-media">
+            <div class="ingredient-media-card" data-ui>
+              <div class="media-preview-box">
+                <video 
+                  id="showcase-video-preview" 
+                  src="/video/nomu_showcase.mp4" 
+                  poster="/img/nomu/nomu_bottles_hero_real.jpg"
+                  class="media-video-loop" 
+                  autoplay 
+                  loop 
+                  muted 
+                  playsinline
+                ></video>
+                <div class="media-card-badge">
+                  <span class="pulse-dot"></span>
+                  <span id="showcase-badge-text">Cold Steep Lab</span>
+                </div>
+              </div>
+              <div class="ingredient-card-caption">
+                <h3 class="ingredient-caption-title" id="showcase-media-title">Extraction Method</h3>
+                <p class="ingredient-caption-desc" id="showcase-media-desc">
+                  Ancient South Indian Khus roots traditionally cold-steeped to dissipate internal heat and anchor the mind.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 2: Center Isolated Bottle Packshot Stage -->
+          <div class="stage-col-bottle">
+            <div class="bottle-stage-pod">
+              <img 
+                src="/img/bottles/vetiver_isolated.png" 
+                alt="NOMU Vetiver Botanical Water Bottle" 
+                class="isolated-bottle-img" 
+                id="showcase-bottle-img" 
+              />
+              <div class="bottle-ground-shadow" aria-hidden="true"></div>
+            </div>
+          </div>
+
+          <!-- Column 3: Right Botanical Monograph & Ordering -->
+          <div class="stage-col-info">
+            <div class="monograph-card" data-ui>
+              
+              <div class="monograph-header">
+                <div class="blend-num-pill">
+                  <span id="showcase-blend-num">Herb Blend · Blend I</span>
+                </div>
+                <div class="mood-badge" id="showcase-mood-badge">
+                  <span>Mood: Ground</span>
+                </div>
+              </div>
+
+              <h3 class="monograph-name">
+                <span id="showcase-name">VETIVER</span> 
+                <span class="monograph-kanji" id="showcase-kanji">香根草 · 根</span>
+              </h3>
+
+              <p class="monograph-positioning" id="showcase-positioning">
+                "Earthy, Cooling & Deeply Grounding"
+              </p>
+
+              <p class="monograph-narrative" id="showcase-narrative">
+                Ancient South Indian Khus roots traditionally cold-steeped to dissipate internal heat, anchor the mind, and restore constitutional balance.
+              </p>
+
+              <!-- Aromatic Notes Architecture -->
+              <div class="monograph-aroma-stack">
+                <h4 class="aroma-section-title">Aromatic Architecture:</h4>
+                <div class="aroma-item">
+                  <span class="aroma-tag">Top Note</span>
+                  <span class="aroma-text" id="showcase-aroma-top">Organic South Indian Vetiver (Khus) roots</span>
+                </div>
+                <div class="aroma-item">
+                  <span class="aroma-tag">Heart Note</span>
+                  <span class="aroma-text" id="showcase-aroma-heart">Cooling cucumber rind & fresh mint leaf</span>
+                </div>
+                <div class="aroma-item">
+                  <span class="aroma-tag">Base Note</span>
+                  <span class="aroma-text" id="showcase-aroma-base">Potassium citrate & restorative sea trace minerals</span>
+                </div>
+              </div>
+
+              <!-- Palate Spectrum Meters -->
+              <div class="monograph-spectrum-box">
+                <div class="spectrum-meter">
+                  <div class="spectrum-meta">
+                    <span>Citrus Brightness</span>
+                    <strong id="showcase-meter-citrus-val">24%</strong>
+                  </div>
+                  <div class="spectrum-track">
+                    <div class="spectrum-fill" id="showcase-meter-citrus-bar" style="width: 24%"></div>
+                  </div>
+                </div>
+
+                <div class="spectrum-meter">
+                  <div class="spectrum-meta">
+                    <span>Natural Sweetness</span>
+                    <strong id="showcase-meter-sweet-val">15%</strong>
+                  </div>
+                  <div class="spectrum-track">
+                    <div class="spectrum-fill" id="showcase-meter-sweet-bar" style="width: 15%"></div>
+                  </div>
+                </div>
+
+                <div class="spectrum-meter">
+                  <div class="spectrum-meta">
+                    <span>Effervescence</span>
+                    <strong id="showcase-meter-eff-val">70%</strong>
+                  </div>
+                  <div class="spectrum-track">
+                    <div class="spectrum-fill" id="showcase-meter-eff-bar" style="width: 70%"></div>
+                  </div>
+                </div>
+
+                <div class="spectrum-meter">
+                  <div class="spectrum-meta">
+                    <span>Botanical Depth</span>
+                    <strong id="showcase-meter-depth-val">96%</strong>
+                  </div>
+                  <div class="spectrum-track">
+                    <div class="spectrum-fill" id="showcase-meter-depth-bar" style="width: 96%"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Direct Pricing & WhatsApp Order CTA -->
+              <div class="monograph-action-strip">
+                <div class="monograph-price-info">
+                  <span class="price-mrp">SINGLE ₹95 · 3-PACK ₹270 · 12-PACK ₹999</span>
+                  <span class="price-dispatch">Handcrafted & Bottled in Chennai</span>
+                </div>
+                <a 
+                  href="https://wa.me/919840000000?text=Hi%20NOMU%2C%20I%20would%20like%20to%20order%20NOMU%20Vetiver%20(Single%20₹95%20%2F%203-Pack%20₹270%20%2F%2012-Pack%20₹999)." 
+                  target="_blank" 
+                  rel="noopener" 
+                  class="btn btn-crimson btn-block" 
+                  id="showcase-whatsapp-btn"
+                >
+                  <span id="showcase-whatsapp-label">ORDER VETIVER ON WHATSAPP</span>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                  </svg>
+                </a>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Bottom Controls: Arrows + Dots -->
+        <div class="showcase-nav-footer">
+          <button class="showcase-nav-arrow" id="showcase-prev-btn" aria-label="Previous Herb">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            <span>PREVIOUS</span>
+          </button>
+
+          <div class="showcase-dots" role="tablist" aria-label="Flavour Pagination" data-ui>
+            <button class="showcase-dot is-active" data-dot="0" aria-label="Herb Blend 1: Vetiver"></button>
+            <button class="showcase-dot" data-dot="1" aria-label="Herb Blend 2: Chamomile"></button>
+            <button class="showcase-dot" data-dot="2" aria-label="Herb Blend 3: Grapefruit"></button>
+            <button class="showcase-dot" data-dot="3" aria-label="Herb Blend 4: Lemongrass"></button>
+          </div>
+
+          <button class="showcase-nav-arrow" id="showcase-next-btn" aria-label="Next Herb">
+            <span>NEXT</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
+
       </div>
     </section>
 
-    <!-- Section 3: Four Herbs. Zero Nonsense. -->
-    <section id="flavours" class="flavours-section">
-      <div class="container">
-        <div class="section-header text-center">
-          <h2 class="section-title">FOUR HERBS. ZERO NONSENSE.</h2>
-          <p class="section-sub">100% small-batch, herb-infused hydration. MRP ₹95 per bottle.</p>
-        </div>
-
-        <div class="herbs-grid">
-          <!-- Herb 1: Lemongrass -->
-          <article class="herb-card">
-            <div class="herb-visual-wrap">
-              <span class="herb-badge-pill tag-lemongrass">LEMONGRASS</span>
-              <img src="/img/nomu/nomu_hero_studio.jpg" alt="Lemongrass NOMU Bottle" class="herb-bottle-img" />
-            </div>
-            <div class="herb-content">
-              <div>
-                <h3 class="herb-name">LEMONGRASS</h3>
-                <p class="herb-subtitle">Crisp, citrusy and uplifting.</p>
-                <p class="herb-desc">Restorative herbal infusion for focus, clean energy, and digestive warmth.</p>
-              </div>
-              <div>
-                <div class="herb-price-strip">SINGLE ₹95 · 3-PACK ₹270 · 12-PACK ₹999</div>
-                <a href="#shop" class="btn btn-crimson btn-sm btn-block" data-select-flavor="lemongrass">ORDER ON WHATSAPP</a>
-              </div>
-            </div>
-          </article>
-
-          <!-- Herb 2: Chamomile -->
-          <article class="herb-card">
-            <div class="herb-visual-wrap">
-              <span class="herb-badge-pill tag-chamomile">CHAMOMILE</span>
-              <img src="/img/nomu/nomu_hero_studio.jpg" alt="Chamomile NOMU Bottle" class="herb-bottle-img" />
-            </div>
-            <div class="herb-content">
-              <div>
-                <h3 class="herb-name">CHAMOMILE</h3>
-                <p class="herb-subtitle">Gentle, floral and soothing.</p>
-                <p class="herb-desc">Calming botanical infusion crafted for evening relaxation, mindful stillness, and deep rest.</p>
-              </div>
-              <div>
-                <div class="herb-price-strip">SINGLE ₹95 · 3-PACK ₹270 · 12-PACK ₹999</div>
-                <a href="#shop" class="btn btn-crimson btn-sm btn-block" data-select-flavor="chamomile">ORDER ON WHATSAPP</a>
-              </div>
-            </div>
-          </article>
-
-          <!-- Herb 3: Vetiver -->
-          <article class="herb-card">
-            <div class="herb-visual-wrap">
-              <span class="herb-badge-pill tag-vetiver">VETIVER</span>
-              <img src="/img/nomu/nomu_hero_studio.jpg" alt="Vetiver NOMU Bottle" class="herb-bottle-img" />
-            </div>
-            <div class="herb-content">
-              <div>
-                <h3 class="herb-name">VETIVER</h3>
-                <p class="herb-subtitle">Earthy, cooling & deeply grounding.</p>
-                <p class="herb-desc">Traditional Indian Ayurvedic cooling root for gut balance, body heat dissipation, and calm.</p>
-              </div>
-              <div>
-                <div class="herb-price-strip">SINGLE ₹95 · 3-PACK ₹270 · 12-PACK ₹999</div>
-                <a href="#shop" class="btn btn-crimson btn-sm btn-block" data-select-flavor="vetiver">ORDER ON WHATSAPP</a>
-              </div>
-            </div>
-          </article>
-
-          <!-- Herb 4: Grapefruit -->
-          <article class="herb-card">
-            <div class="herb-visual-wrap">
-              <span class="herb-badge-pill tag-grapefruit">GRAPEFRUIT</span>
-              <img src="/img/nomu/nomu_hero_studio.jpg" alt="Grapefruit NOMU Bottle" class="herb-bottle-img" />
-            </div>
-            <div class="herb-content">
-              <div>
-                <h3 class="herb-name">GRAPEFRUIT</h3>
-                <p class="herb-subtitle">Zesty, ruby pink & effervescent.</p>
-                <p class="herb-desc">Invigorating citrus antioxidant infusion with natural ruby red grapefruit extract.</p>
-              </div>
-              <div>
-                <div class="herb-price-strip">SINGLE ₹95 · 3-PACK ₹270 · 12-PACK ₹999</div>
-                <a href="#shop" class="btn btn-crimson btn-sm btn-block" data-select-flavor="grapefruit">ORDER ON WHATSAPP</a>
-              </div>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- Section 4: Build Your Ritual (Interactive Shop & WhatsApp Builder) -->
+    <!-- Section 3: Build Your Ritual (Interactive Shop & WhatsApp Builder) -->
     <section id="shop" class="builder-section">
       <div class="container">
         <div class="section-header text-center">
@@ -273,58 +410,63 @@
         </div>
 
         <div class="builder-layout">
-          <!-- Left: Crimson Studio Stage with Live 3D Bottle Reaction -->
+          <!-- Left: Studio Stage with Packshot -->
           <div class="builder-viewport-card" data-ui>
             <div class="builder-3d-stage" id="builder-3d-box">
-              <img src="/img/nomu/nomu_hero_studio.jpg" alt="Selected NOMU Bottle Preview" id="builder-preview-img" style="width:100%;height:100%;object-fit:cover;border-radius:12px;" />
+              <img 
+                src="/img/bottles/vetiver_packshot.jpg" 
+                alt="Selected NOMU Bottle Preview" 
+                id="builder-preview-img" 
+                class="builder-bottle-preview"
+              />
             </div>
             <div class="builder-finish-selector">
-              <button class="btn btn-white btn-sm" id="builder-finish-toggle">Matte Ceramic Finish</button>
+              <span class="builder-craft-badge">100% Whole Herb Infusion · Chennai</span>
             </div>
           </div>
 
           <!-- Right: Configurator Controls -->
           <div class="builder-config-card" data-ui>
             <h3 class="step-title">Choose your herbal infusion</h3>
-            <div class="pills-selector-grid" role="tablist" aria-label="Select Flavour">
-              <button class="choice-pill-btn is-active" data-cfg-flavor="lemongrass" role="tab" aria-selected="true">
-                <span class="tab-dot" style="background:#8EB021"></span>
-                <span>Lemongrass</span>
-              </button>
-              <button class="choice-pill-btn" data-cfg-flavor="chamomile" role="tab" aria-selected="false">
-                <span class="tab-dot" style="background:#D99B26"></span>
-                <span>Chamomile</span>
-              </button>
-              <button class="choice-pill-btn" data-cfg-flavor="vetiver" role="tab" aria-selected="false">
-                <span class="tab-dot" style="background:#4A6B52"></span>
+            <div class="pills-selector-grid" role="tablist" aria-label="Select Flavour" data-ui>
+              <button class="choice-pill-btn is-active" data-cfg-flavor="vetiver" role="tab" aria-selected="true">
+                <span class="tab-dot" style="background:#443826"></span>
                 <span>Vetiver</span>
               </button>
+              <button class="choice-pill-btn" data-cfg-flavor="chamomile" role="tab" aria-selected="false">
+                <span class="tab-dot" style="background:#C88A1E"></span>
+                <span>Chamomile</span>
+              </button>
               <button class="choice-pill-btn" data-cfg-flavor="grapefruit" role="tab" aria-selected="false">
-                <span class="tab-dot" style="background:#E05A47"></span>
+                <span class="tab-dot" style="background:#D8262C"></span>
                 <span>Grapefruit</span>
+              </button>
+              <button class="choice-pill-btn" data-cfg-flavor="lemongrass" role="tab" aria-selected="false">
+                <span class="tab-dot" style="background:#3E7824"></span>
+                <span>Lemongrass</span>
               </button>
             </div>
 
             <h3 class="step-title">Select pack size</h3>
-            <div class="pills-selector-grid" style="grid-template-columns:1fr;margin-bottom:1.5rem;">
+            <div class="pills-selector-grid" style="grid-template-columns:1fr;margin-bottom:1.5rem;" data-ui>
               <button class="pack-choice-btn" data-cfg-pack="single" data-price="95">
-                <span class="pack-choice-title">SINGLE BOTTLE — ₹95</span>
+                <span class="pack-choice-title">SINGLE BOTTLE · ₹95</span>
                 <span class="pack-choice-desc">1x 330ml Glass Bottle · Perfect discovery trial</span>
               </button>
               <button class="pack-choice-btn is-active" data-cfg-pack="pack3" data-price="270">
-                <span class="pack-choice-title">3-PACK RITUAL BOX — ₹270</span>
+                <span class="pack-choice-title">3-PACK RITUAL BOX · ₹270</span>
                 <span class="pack-choice-desc">3x 330ml Bottles · 3-day daily wellness routine</span>
                 <span class="pack-choice-badge">MOST POPULAR · SAVE 5%</span>
               </button>
               <button class="pack-choice-btn" data-cfg-pack="pack12" data-price="999">
-                <span class="pack-choice-title">12-PACK PANTRY BOX — ₹999</span>
+                <span class="pack-choice-title">12-PACK PANTRY BOX · ₹999</span>
                 <span class="pack-choice-desc">12x 330ml Bottles · Full 2-week sustained ritual</span>
                 <span class="pack-choice-badge">FREE EXPRESS CHENNAI DELIVERY</span>
               </button>
             </div>
 
             <h3 class="step-title">Select quantity</h3>
-            <div class="stepper-row">
+            <div class="stepper-row" data-ui>
               <span style="font-weight:700;">Quantity of boxes:</span>
               <div class="stepper-group">
                 <button class="stepper-btn" id="btn-qty-minus" aria-label="Decrease quantity">−</button>
@@ -334,10 +476,10 @@
             </div>
 
             <!-- Live Calculation Summary -->
-            <div class="order-summary-box">
+            <div class="order-summary-box" data-ui>
               <div class="summary-row">
                 <span>Selected Flavour:</span>
-                <strong id="summary-flavor-name">Lemongrass</strong>
+                <strong id="summary-flavor-name">Vetiver</strong>
               </div>
               <div class="summary-row">
                 <span>Pack Option:</span>
@@ -354,7 +496,7 @@
             </div>
 
             <!-- Direct WhatsApp CTA Button -->
-            <a href="https://wa.me/919840000000?text=Hi%20NOMU%2C%20I%20would%20like%20to%20order%3A%201x%203-Pack%20Ritual%20Box%20of%20Lemongrass%20(Total%3A%20₹270)." target="_blank" rel="noopener" class="btn btn-crimson btn-large btn-block" id="whatsapp-submit-btn">
+            <a href="https://wa.me/919840000000?text=Hi%20NOMU%2C%20I%20would%20like%20to%20order%3A%201x%203-Pack%20Ritual%20Box%20of%20Vetiver%20(Total%3A%20₹270)." target="_blank" rel="noopener" class="btn btn-crimson btn-large btn-block" id="whatsapp-submit-btn">
               <span>ORDER ON WHATSAPP</span>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                 <path d="M5 12h14M12 5l7 7-7 7"/>
@@ -365,8 +507,8 @@
       </div>
     </section>
 
-    <!-- Section 5: Sensory Tasting Lab -->
-    <section class="lab-section">
+    <!-- Section 4: Sensory Tasting Lab (#sensory) -->
+    <section class="lab-section" id="sensory">
       <div class="container">
         <div class="section-header text-center">
           <h2 class="section-title">BOTANICAL PROFILE ARCHITECTURE</h2>
@@ -375,16 +517,16 @@
 
         <div class="lab-layout">
           <!-- Active Flavor Focus Card -->
-          <div class="lab-display-card" id="lab-card">
+          <div class="lab-display-card" id="lab-card" data-ui>
             <div class="lab-card-header">
               <div>
-                <h3 class="lab-flavor-name" id="lab-name">Lemongrass</h3>
+                <h3 class="lab-flavor-name" id="lab-name">Vetiver</h3>
                 <div class="lab-meta-row" style="display:flex;gap:0.75rem;align-items:center;margin-top:0.35rem;">
-                  <span class="flavor-serial" id="lab-serial">HERB BLEND 01</span>
-                  <span class="lab-kanji-sub" id="lab-kanji">檸檬草 · 野武</span>
+                  <span class="flavor-serial" id="lab-serial">HERB BLEND · BLEND I</span>
+                  <span class="lab-kanji-sub" id="lab-kanji">香根草 · 根</span>
                 </div>
               </div>
-              <span class="lab-tagline" id="lab-tagline" style="color:#CBD5E1;font-weight:700;">Crisp, Citrusy & Uplifting</span>
+              <span class="lab-tagline" id="lab-tagline" style="color:#CBD5E1;font-weight:700;">Earthy, Cooling & Deeply Grounding</span>
             </div>
 
             <!-- Notes Hierarchy -->
@@ -393,15 +535,15 @@
               <div class="notes-hierarchy">
                 <div class="note-row">
                   <span class="note-layer">Top Note</span>
-                  <span class="note-desc" id="note-top">Cold-pressed Nilgiri lemongrass stalks</span>
+                  <span class="note-desc" id="note-top">Organic South Indian Vetiver (Khus) roots</span>
                 </div>
                 <div class="note-row">
                   <span class="note-layer">Heart Note</span>
-                  <span class="note-desc" id="note-heart">Citrus peel & wild holy basil (Tulsi)</span>
+                  <span class="note-desc" id="note-heart">Cooling cucumber rind & fresh mint leaf</span>
                 </div>
                 <div class="note-row">
                   <span class="note-layer">Base Note</span>
-                  <span class="note-desc" id="note-base">Bioavailable electrolyte salts & prebiotic fiber</span>
+                  <span class="note-desc" id="note-base">Potassium citrate & restorative sea trace minerals</span>
                 </div>
               </div>
             </div>
@@ -413,30 +555,30 @@
                 <div class="meter-item">
                   <div class="meter-meta">
                     <span>Citrus Brightness</span>
-                    <strong id="val-citrus">92%</strong>
+                    <strong id="val-citrus">24%</strong>
                   </div>
-                  <div class="meter-track"><div class="meter-fill" id="bar-citrus" style="width: 92%"></div></div>
+                  <div class="meter-track"><div class="meter-fill" id="bar-citrus" style="width: 24%"></div></div>
                 </div>
                 <div class="meter-item">
                   <div class="meter-meta">
                     <span>Natural Sweetness</span>
-                    <strong id="val-sweetness">18%</strong>
+                    <strong id="val-sweetness">15%</strong>
                   </div>
-                  <div class="meter-track"><div class="meter-fill" id="bar-sweetness" style="width: 18%"></div></div>
+                  <div class="meter-track"><div class="meter-fill" id="bar-sweetness" style="width: 15%"></div></div>
                 </div>
                 <div class="meter-item">
                   <div class="meter-meta">
                     <span>Effervescence</span>
-                    <strong id="val-effervescence">76%</strong>
+                    <strong id="val-effervescence">70%</strong>
                   </div>
-                  <div class="meter-track"><div class="meter-fill" id="bar-effervescence" style="width: 76%"></div></div>
+                  <div class="meter-track"><div class="meter-fill" id="bar-effervescence" style="width: 70%"></div></div>
                 </div>
                 <div class="meter-item">
                   <div class="meter-meta">
                     <span>Botanical Depth</span>
-                    <strong id="val-botanical">94%</strong>
+                    <strong id="val-botanical">96%</strong>
                   </div>
-                  <div class="meter-track"><div class="meter-fill" id="bar-botanical" style="width: 94%"></div></div>
+                  <div class="meter-track"><div class="meter-fill" id="bar-botanical" style="width: 96%"></div></div>
                 </div>
               </div>
             </div>
@@ -444,32 +586,32 @@
 
           <!-- Flavor Rail -->
           <div class="flavor-side-rail">
-            <div class="rail-card is-active" data-rail="lemongrass">
-              <span class="rail-indicator" style="background:#8EB021"></span>
-              <div class="rail-text">
-                <strong>Lemongrass</strong>
-                <span>Nilgiri stalks, citrus peel, tulsi holy basil</span>
-              </div>
-            </div>
-            <div class="rail-card" data-rail="chamomile">
-              <span class="rail-indicator" style="background:#D99B26"></span>
-              <div class="rail-text">
-                <strong>Chamomile</strong>
-                <span>Roman blossoms, lavender, evening calming</span>
-              </div>
-            </div>
-            <div class="rail-card" data-rail="vetiver">
-              <span class="rail-indicator" style="background:#4A6B52"></span>
+            <div class="rail-card is-active" data-rail="vetiver" data-ui>
+              <span class="rail-indicator" style="background:#443826"></span>
               <div class="rail-text">
                 <strong>Vetiver</strong>
-                <span>South Indian roots, cucumber rind, cooling</span>
+                <span>South Indian Khus root, cucumber rind, cooling minerals</span>
               </div>
             </div>
-            <div class="rail-card" data-rail="grapefruit">
-              <span class="rail-indicator" style="background:#E05A47"></span>
+            <div class="rail-card" data-rail="chamomile" data-ui>
+              <span class="rail-indicator" style="background:#C88A1E"></span>
+              <div class="rail-text">
+                <strong>German Chamomile</strong>
+                <span>Blossoms, soft lavender, evening relaxation</span>
+              </div>
+            </div>
+            <div class="rail-card" data-rail="grapefruit" data-ui>
+              <span class="rail-indicator" style="background:#D8262C"></span>
               <div class="rail-text">
                 <strong>Grapefruit</strong>
-                <span>Ruby citrus essence, hibiscus, antioxidants</span>
+                <span>Ruby citrus essence, hibiscus, natural vibrancy</span>
+              </div>
+            </div>
+            <div class="rail-card" data-rail="lemongrass" data-ui>
+              <span class="rail-indicator" style="background:#3E7824"></span>
+              <div class="rail-text">
+                <strong>Lemongrass</strong>
+                <span>Nilgiri mountain stalks, citrus peel, tulsi holy basil</span>
               </div>
             </div>
           </div>
@@ -477,55 +619,7 @@
       </div>
     </section>
 
-    <!-- Section 6: Archival Instagram Dispatch -->
-    <section class="insta-gallery-section" id="journal">
-      <div class="container">
-        <div class="section-header text-center">
-          <h2 class="section-title">BOTANICAL JOURNAL</h2>
-          <p class="section-sub">Live documentation of extractions, bottling iterations, and brand culture.</p>
-        </div>
-
-        <div class="insta-grid">
-          <article class="insta-card">
-            <div class="insta-card-img-wrap">
-              <img src="/img/nomu/insta_bottles_table_clean.png" alt="NOMU Bottles Flight at Table" class="insta-card-img" />
-              <span class="insta-card-badge">TASTING LAB</span>
-            </div>
-            <div class="insta-card-body">
-              <h3 class="insta-card-title">Sensory Flight Benchmarking</h3>
-              <p class="insta-card-caption">Evaluating clean mouthfeel, aroma release, and mineral balance across our 4 botanical infusions.</p>
-              <span class="insta-card-tag">#DrinkItNomu · SmallBatch</span>
-            </div>
-          </article>
-
-          <article class="insta-card">
-            <div class="insta-card-img-wrap">
-              <img src="/img/nomu/insta_nomu_wordmark_clean.png" alt="NOMU Typography" class="insta-card-img" />
-              <span class="insta-card-badge">IDENTITY</span>
-            </div>
-            <div class="insta-card-body">
-              <h3 class="insta-card-title">Minimalist Japanese Architecture</h3>
-              <p class="insta-card-caption">Combining ancient brushwork with contemporary industrial design. 飲む (To Drink) — a mindful pause.</p>
-              <span class="insta-card-tag">#Identity · 飲む</span>
-            </div>
-          </article>
-
-          <article class="insta-card">
-            <div class="insta-card-img-wrap">
-              <img src="/img/nomu/insta_problem_clean.png" alt="Clean Hydration Manifesto" class="insta-card-img" />
-              <span class="insta-card-badge">MANIFESTO</span>
-            </div>
-            <div class="insta-card-body">
-              <h3 class="insta-card-title">The Hydration Dilemma</h3>
-              <p class="insta-card-caption">Why conventional sports drinks fail: artificial dyes, sodium spikes, and synthetic sweeteners that cause gut distress.</p>
-              <span class="insta-card-tag">#CleanHydration · ZeroPreservatives</span>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- Section 7: Brand Statement Banner (NOMU 飲む) -->
+    <!-- Section 5: Brand Statement Banner (NOMU 飲む) -->
     <section class="brand-banner-section">
       <div class="container">
         <h2 class="brand-banner-title">NOMU <span>飲む</span></h2>
@@ -533,7 +627,7 @@
       </div>
     </section>
 
-    <!-- Section 8: Contact Details (#contact) -->
+    <!-- Section 6: Contact Details (#contact) -->
     <section id="contact" class="contact-section">
       <div class="container">
         <div class="section-header text-center">
@@ -545,8 +639,7 @@
           <!-- Channel 1: WhatsApp Concierge -->
           <div class="contact-channel-card">
             <div>
-              <span class="channel-badge">Direct Line</span>
-              <h3 class="contact-channel-title">WhatsApp Concierge</h3>
+              <h3 class="contact-channel-title">Direct WhatsApp Line</h3>
               <p class="contact-channel-body">Direct chat for immediate orders, custom ritual mix boxes, and express delivery inquiries across Chennai.</p>
             </div>
             <a href="https://wa.me/919840000000" target="_blank" rel="noopener" class="btn btn-crimson btn-block">Chat on WhatsApp</a>
@@ -555,7 +648,6 @@
           <!-- Channel 2: Instagram -->
           <div class="contact-channel-card">
             <div>
-              <span class="channel-badge">Visual Journal</span>
               <h3 class="contact-channel-title">Instagram Dispatch</h3>
               <p class="contact-channel-body">Follow our journey, small-batch bottling runs, and community events @drinkitnomu.</p>
             </div>
@@ -565,15 +657,12 @@
           <!-- Channel 3: Chennai Workshop -->
           <div class="contact-channel-card">
             <div>
-              <span class="channel-badge">Laboratory & Dispatch</span>
               <h3 class="contact-channel-title">Chennai Workshop</h3>
               <p class="contact-channel-body">Small-batch infusion laboratory and dispatch center located in Chennai, Tamil Nadu.</p>
             </div>
             <div class="channel-location-info">Chennai, Tamil Nadu, India</div>
           </div>
         </div>
-      </div>
-    </section>
       </div>
     </section>
 
@@ -590,7 +679,7 @@
           <img src="/img/nomu/nomu_wordmark_transparent.png" alt="NOMU" height="18" />
         </div>
         <p class="footer-mission" style="margin-top:0.85rem;">
-          Beyond Hydration. Clean herb-infused water crafted as a daily wellness ritual. 4 herbs, zero nonsense.
+          Beyond Hydration. Clean herb-infused water crafted as a daily wellness ritual. Four herbs, zero nonsense.
         </p>
         <p class="footer-sustainability">
           100% recyclable glass bottles with aluminum seal caps. Small-batch crafted in Chennai, India.
@@ -600,10 +689,10 @@
       <div class="footer-col">
         <h4 class="footer-heading">Flavours</h4>
         <ul class="footer-links">
-          <li><a href="#flavours">Lemongrass</a></li>
-          <li><a href="#flavours">Chamomile</a></li>
           <li><a href="#flavours">Vetiver</a></li>
+          <li><a href="#flavours">German Chamomile</a></li>
           <li><a href="#flavours">Grapefruit</a></li>
+          <li><a href="#flavours">Lemongrass</a></li>
         </ul>
       </div>
 
@@ -611,26 +700,21 @@
         <h4 class="footer-heading">Navigation</h4>
         <ul class="footer-links">
           <li><a href="#about">About</a></li>
-          <li><a href="#mission">Mission</a></li>
           <li><a href="#flavours">Flavours</a></li>
           <li><a href="#shop">Shop on WhatsApp</a></li>
+          <li><a href="#sensory">Sensory Lab</a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>
       </div>
 
       <div class="footer-col">
-        <h4 class="footer-heading">Dispatch</h4>
-        <p style="font-size:0.875rem;margin-bottom:1rem;color:var(--text-muted);">Stay informed on limited seasonal herbal releases.</p>
-        <a href="#contact" class="btn btn-crimson btn-sm">Connect With Us</a>
-      </div>
-    </div>
-
-    <div class="container footer-bottom">
-      <p>© 2026 Nomu Beverage Co. All rights reserved. Chennai, India. Follow on Instagram <a href="https://www.instagram.com/drinkitnomu/" target="_blank" rel="noopener">@drinkitnomu</a>.</p>
-      <div class="footer-compliance">
-        <span>WCAG 2.2 AA Compliant</span>
-        <span>·</span>
-        <span>Anti-Slop Taste Certified</span>
+        <h4 class="footer-heading">Small-Batch Dispatch</h4>
+        <p class="footer-address">
+          Crafted fresh in Chennai.<br />
+          Express local deliveries.<br />
+          Concierge: +91 98400 00000
+        </p>
+        <span class="footer-copyright">© 2026 NOMU BEVERAGES PRIVATE LIMITED. All rights reserved.</span>
       </div>
     </div>
   </footer>
