@@ -331,21 +331,44 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Bind Accordion Pillars (click & smooth debounced hover)
+  const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
   document.querySelectorAll('.accordion-pillar').forEach((pillar, idx) => {
     pillar.addEventListener('click', () => {
       clearTimeout(accordionHoverTimeout);
       setAccordionActive(idx);
     });
-    pillar.addEventListener('mouseenter', () => {
-      clearTimeout(accordionHoverTimeout);
-      accordionHoverTimeout = setTimeout(() => {
-        setAccordionActive(idx);
-      }, 120);
-    });
-    pillar.addEventListener('mouseleave', () => {
-      clearTimeout(accordionHoverTimeout);
-    });
+
+    if (canHover) {
+      pillar.addEventListener('mouseenter', () => {
+        clearTimeout(accordionHoverTimeout);
+        accordionHoverTimeout = setTimeout(() => {
+          setAccordionActive(idx);
+        }, 300); // Calm hover intent debounce (300ms) prevents accidental triggers
+      });
+      pillar.addEventListener('mouseleave', () => {
+        clearTimeout(accordionHoverTimeout);
+      });
+    }
   });
+
+  // Hero Explore Button -> Navigates to corresponding pillar in Section 3
+  const heroCtaBtn = document.getElementById('hero-cta-btn');
+  if (heroCtaBtn) {
+    heroCtaBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      setAccordionActive(heroActiveIndex);
+      const targetPillar = document.querySelectorAll('.accordion-pillar')[heroActiveIndex];
+      if (targetPillar) {
+        targetPillar.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        const showcaseSec = document.getElementById('showcase');
+        if (showcaseSec) {
+          showcaseSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    });
+  }
 
   // 3. Hero Navigation Bindings (Prev/Next fallback)
   const heroPrev = document.getElementById('hero-nav-prev');
