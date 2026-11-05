@@ -31,7 +31,6 @@
           <li><a href="#about" class="nav-link">ABOUT</a></li>
           <li><a href="#showcase" class="nav-link">FLAVOURS</a></li>
           <li><a href="#shop" class="nav-link">BUILD RITUAL</a></li>
-          <li><a href="#sensory" class="nav-link">SENSORY LAB</a></li>
           <li><a href="#contact" class="nav-link">CONTACT</a></li>
         </ul>
       </nav>
@@ -71,7 +70,7 @@
             <div class="hero-video-window">
               <video 
                 src="/video/nomu_showcase.mp4" 
-                poster="/img/nomu/nomu_bottles_hero_real.jpg"
+                poster="/img/nomu/nomu_film_poster.jpg"
                 class="hero-video-player" 
                 id="hero-video-player"
                 autoplay 
@@ -79,11 +78,6 @@
                 muted 
                 playsinline
               ></video>
-              <button class="hero-play-btn" id="hero-play-toggle" aria-label="Play or pause video">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                  <polygon points="5 3 19 12 5 21 5 3"/>
-                </svg>
-              </button>
             </div>
             <div class="hero-media-meta">
               <h3 class="hero-media-title" id="hero-media-title">South Indian Khus Harvest</h3>
@@ -479,7 +473,7 @@
               <div class="pillar-expanded-left">
                 <div class="pillar-splash-bottle-wrap">
                   <img src="/img/bottles/grapefruit_isolated.png" alt="NOMU Grapefruit Large Bottle" class="pillar-large-bottle" />
-                  <img src="/img/ingredients/lemongrass_grapefruit_herbs.jpg" alt="Ruby Grapefruit Peel" class="pillar-ingredient-splash" />
+                  <img src="/img/ingredients/grapefruit_harvest.jpg" alt="Ruby Grapefruit Peel" class="pillar-ingredient-splash" />
                   <div class="pillar-bottle-shadow" aria-hidden="true"></div>
                 </div>
               </div>
@@ -831,119 +825,7 @@
       </div>
     </section>
 
-    <!-- Section 6: Sensory Tasting Lab (#sensory) -->
-    <section class="lab-section" id="sensory">
-      <div class="container">
-        <div class="section-header text-center">
-          <h2 class="section-title">BOTANICAL ARCHITECTURE</h2>
-          <p class="section-sub">Explore the botanical profile, aromatic layers and palate spectrum of our 4 infusions.</p>
-        </div>
-
-        <div class="lab-layout">
-          <!-- Active Flavor Focus Card -->
-          <div class="lab-display-card" id="lab-card">
-            <div class="lab-card-header">
-              <div>
-                <h3 class="lab-flavor-name" id="lab-name">Vetiver</h3>
-                <div class="lab-meta-row" style="display:flex;gap:0.75rem;align-items:center;margin-top:0.35rem;">
-                  <span class="flavor-serial" id="lab-serial">HERB BLEND · BLEND I</span>
-                  <span class="lab-kanji-sub" id="lab-kanji">香根草 · 根</span>
-                </div>
-              </div>
-              <span class="lab-tagline" id="lab-tagline">Earthy, Cooling & Deeply Grounding</span>
-            </div>
-
-            <!-- Notes Hierarchy -->
-            <div class="tasting-notes-block">
-              <h4 class="notes-title">Aromatic Profile:</h4>
-              <div class="notes-hierarchy">
-                <div class="note-row">
-                  <span class="note-layer">Top Note</span>
-                  <span class="note-desc" id="note-top">Organic South Indian Vetiver (Khus) roots</span>
-                </div>
-                <div class="note-row">
-                  <span class="note-layer">Heart Note</span>
-                  <span class="note-desc" id="note-heart">Cooling cucumber rind & fresh mint leaf</span>
-                </div>
-                <div class="note-row">
-                  <span class="note-layer">Base Note</span>
-                  <span class="note-desc" id="note-base">Potassium citrate & restorative sea trace minerals</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Palate Spectrum -->
-            <div class="sensory-meters-block">
-              <h4 class="notes-title">Palate Spectrum:</h4>
-              <div class="meters-grid">
-                <div class="meter-item">
-                  <div class="meter-meta">
-                    <span>Citrus Brightness</span>
-                    <strong id="val-citrus">24%</strong>
-                  </div>
-                  <div class="meter-track"><div class="meter-fill" id="bar-citrus" style="width: 24%"></div></div>
-                </div>
-                <div class="meter-item">
-                  <div class="meter-meta">
-                    <span>Natural Sweetness</span>
-                    <strong id="val-sweetness">15%</strong>
-                  </div>
-                  <div class="meter-track"><div class="meter-fill" id="bar-sweetness" style="width: 15%"></div></div>
-                </div>
-                <div class="meter-item">
-                  <div class="meter-meta">
-                    <span>Effervescence</span>
-                    <strong id="val-effervescence">70%</strong>
-                  </div>
-                  <div class="meter-track"><div class="meter-fill" id="bar-effervescence" style="width: 70%"></div></div>
-                </div>
-                <div class="meter-item">
-                  <div class="meter-meta">
-                    <span>Botanical Depth</span>
-                    <strong id="val-botanical">96%</strong>
-                  </div>
-                  <div class="meter-track"><div class="meter-fill" id="bar-botanical" style="width: 96%"></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Flavor Rail -->
-          <div class="flavor-side-rail">
-            <div class="rail-card is-active" data-rail="vetiver" data-ui>
-              <span class="rail-indicator" style="background:#443826"></span>
-              <div class="rail-text">
-                <strong>Vetiver</strong>
-                <span>South Indian Khus root, cucumber rind, cooling minerals</span>
-              </div>
-            </div>
-            <div class="rail-card" data-rail="chamomile" data-ui>
-              <span class="rail-indicator" style="background:#C88A1E"></span>
-              <div class="rail-text">
-                <strong>German Chamomile</strong>
-                <span>Blossoms, soft lavender, evening relaxation</span>
-              </div>
-            </div>
-            <div class="rail-card" data-rail="grapefruit" data-ui>
-              <span class="rail-indicator" style="background:#D8262C"></span>
-              <div class="rail-text">
-                <strong>Grapefruit</strong>
-                <span>Ruby citrus essence, hibiscus, natural vibrancy</span>
-              </div>
-            </div>
-            <div class="rail-card" data-rail="lemongrass" data-ui>
-              <span class="rail-indicator" style="background:#3E7824"></span>
-              <div class="rail-text">
-                <strong>Lemongrass</strong>
-                <span>Nilgiri mountain stalks, citrus peel, tulsi holy basil</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Section 7: Brand Statement Banner (NOMU) -->
+    <!-- Section 6: Brand Statement Banner (NOMU) -->
     <section class="brand-banner-section">
       <div class="container">
         <h2 class="brand-banner-title">NOMU</h2>
@@ -1026,7 +908,6 @@
           <li><a href="#about">About</a></li>
           <li><a href="#showcase">Flavours</a></li>
           <li><a href="#shop">Shop on WhatsApp</a></li>
-          <li><a href="#sensory">Sensory Lab</a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>
       </div>

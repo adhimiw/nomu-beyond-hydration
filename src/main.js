@@ -22,7 +22,7 @@ export const FLAVORS = {
     mediaTitle: 'South Indian Khus Harvest',
     mediaDesc: 'Ancient Vetiver roots cold-steeped in micro-batches to extract cooling essential minerals and earthy aromatics.',
     mediaVideo: '/video/nomu_showcase.mp4',
-    mediaPoster: '/img/nomu/nomu_bottles_hero_real.jpg',
+    mediaPoster: '/img/nomu/nomu_film_poster.jpg',
     ctaText: 'EXPLORE VETIVER →',
     priceSingle: 95,
     pricePack3: 270,
@@ -164,7 +164,7 @@ const WHATSAPP_PHONE = '919840000000';
 
 document.addEventListener('DOMContentLoaded', () => {
   let heroActiveIndex = 0; // 0: Vetiver, 1: Chamomile, 2: Grapefruit, 3: Lemongrass
-  let accordionActiveIndex = 0; // For Section 2 (The Expanding Pillar Showcase)
+  let accordionActiveIndex = -1; // For Section 2 (The Expanding Pillar Showcase)
   let activePackKey = 'pack3';
   let quantity = 1;
   let isHeroAnimating = false;
@@ -190,27 +190,39 @@ document.addEventListener('DOMContentLoaded', () => {
       siteHeader.style.setProperty('--hero-bg', flavor.themeBg);
     }
 
-    // B. Animate Center Bottle Swap with Spring Scale
+    // B. Animate Coordinated Hero Swap Across All 3 Columns
     const heroBottle = document.getElementById('hero-bottle-img');
-    if (heroBottle) {
-      heroBottle.classList.add('is-swapping');
-      setTimeout(() => {
-        heroBottle.src = flavor.bottleImage;
-        heroBottle.alt = `NOMU ${flavor.name} Botanical Water Bottle`;
-        heroBottle.classList.remove('is-swapping');
-      }, 200);
-    }
-
-    // C. Animate Right Editorial Column with Staggered Slide-Fade
+    const leftCol = document.querySelector('.hero-col-left');
     const rightCol = document.getElementById('hero-col-right');
     const heroHeadline = document.getElementById('hero-right-title');
     const heroPhoto = document.getElementById('hero-right-thumb');
     const heroNarrative = document.getElementById('hero-right-desc');
     const heroCtaBtn = document.getElementById('hero-cta-btn');
+    const heroMediaTitle = document.getElementById('hero-media-title');
+    const heroMediaDesc = document.getElementById('hero-media-desc');
+    const heroVideoPlayer = document.getElementById('hero-video-player');
 
-    if (rightCol) {
-      rightCol.classList.add('anim-stagger-out');
-      setTimeout(() => {
+    if (heroBottle) heroBottle.classList.add('is-swapping');
+    if (leftCol) leftCol.classList.add('is-swapping');
+    if (rightCol) rightCol.classList.add('anim-stagger-out');
+
+    setTimeout(() => {
+      if (heroBottle) {
+        heroBottle.src = flavor.bottleImage;
+        heroBottle.alt = `NOMU ${flavor.name} Botanical Water Bottle`;
+        heroBottle.classList.remove('is-swapping');
+      }
+
+      if (leftCol) {
+        if (heroMediaTitle) heroMediaTitle.textContent = flavor.mediaTitle;
+        if (heroMediaDesc) heroMediaDesc.textContent = flavor.mediaDesc;
+        if (heroVideoPlayer && flavor.mediaPoster) {
+          heroVideoPlayer.poster = flavor.mediaPoster;
+        }
+        leftCol.classList.remove('is-swapping');
+      }
+
+      if (rightCol) {
         if (heroHeadline) heroHeadline.textContent = flavor.headline;
         if (heroPhoto) {
           heroPhoto.src = flavor.splashImage;
@@ -222,19 +234,8 @@ document.addEventListener('DOMContentLoaded', () => {
           heroCtaBtn.href = `#pillar-${flavorKey}`;
         }
         rightCol.classList.remove('anim-stagger-out');
-      }, 200);
-    }
-
-    // D. Update Left Media Window & Captions
-    const heroMediaTitle = document.getElementById('hero-media-title');
-    const heroMediaDesc = document.getElementById('hero-media-desc');
-    const heroVideoPlayer = document.getElementById('hero-video-player');
-
-    if (heroMediaTitle) heroMediaTitle.textContent = flavor.mediaTitle;
-    if (heroMediaDesc) heroMediaDesc.textContent = flavor.mediaDesc;
-    if (heroVideoPlayer && flavor.mediaPoster) {
-      heroVideoPlayer.poster = flavor.mediaPoster;
-    }
+      }
+    }, 220);
 
     // E. Synchronize Pagination Dots
     document.querySelectorAll('.hero-dot-btn').forEach((dot, dotIdx) => {
@@ -286,23 +287,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Hero Play/Pause Toggle Button
-  const heroPlayToggle = document.getElementById('hero-play-toggle');
-  const heroVideoPlayer = document.getElementById('hero-video-player');
-  if (heroPlayToggle && heroVideoPlayer) {
-    heroPlayToggle.addEventListener('click', () => {
-      if (heroVideoPlayer.paused) {
-        heroVideoPlayer.play();
-        heroPlayToggle.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
-        heroPlayToggle.setAttribute('aria-label', 'Pause video');
-      } else {
-        heroVideoPlayer.pause();
-        heroPlayToggle.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
-        heroPlayToggle.setAttribute('aria-label', 'Play video');
-      }
-    });
-  }
-
   // Hero Auto-Cycle Timer (6.5s interval, pauses on hover)
   function startHeroTimer() {
     if (heroCycleTimer) clearInterval(heroCycleTimer);
@@ -328,8 +312,11 @@ document.addEventListener('DOMContentLoaded', () => {
   startHeroTimer();
 
   // 2. Dribbble Expanding Accordion Showcase Controller (Video 2 reference)
+  let accordionHoverTimeout = null;
+
   function setAccordionActive(index) {
     if (index < 0 || index >= FLAVOR_KEYS.length) return;
+    if (index === accordionActiveIndex) return;
     accordionActiveIndex = index;
 
     const pillars = document.querySelectorAll('.accordion-pillar');
@@ -341,16 +328,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const activeKey = FLAVOR_KEYS[accordionActiveIndex];
     syncConfigurator(activeKey);
-    syncSensoryLab(activeKey);
   }
 
-  // Bind Accordion Pillars (click & hover)
+  // Bind Accordion Pillars (click & smooth debounced hover)
   document.querySelectorAll('.accordion-pillar').forEach((pillar, idx) => {
     pillar.addEventListener('click', () => {
+      clearTimeout(accordionHoverTimeout);
       setAccordionActive(idx);
     });
     pillar.addEventListener('mouseenter', () => {
-      setAccordionActive(idx);
+      clearTimeout(accordionHoverTimeout);
+      accordionHoverTimeout = setTimeout(() => {
+        setAccordionActive(idx);
+      }, 120);
+    });
+    pillar.addEventListener('mouseleave', () => {
+      clearTimeout(accordionHoverTimeout);
     });
   });
 
@@ -390,50 +383,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateOrderSummary();
   }
 
-  // 5. Sensory Tasting Lab Sync
-  function syncSensoryLab(flavorKey) {
-    const flavor = FLAVORS[flavorKey];
-    if (!flavor) return;
-
-    document.querySelectorAll('[data-rail]').forEach(card => {
-      card.classList.toggle('is-active', card.dataset.rail === flavorKey);
-    });
-
-    const labName = document.getElementById('lab-name');
-    const labKanji = document.getElementById('lab-kanji');
-    const labTagline = document.getElementById('lab-tagline');
-    const noteTop = document.getElementById('note-top');
-    const noteHeart = document.getElementById('note-heart');
-    const noteBase = document.getElementById('note-base');
-
-    if (labName) labName.textContent = flavor.name;
-    if (labKanji) labKanji.textContent = `${flavor.flavorKanji} · ${flavor.kanjiMark}`;
-    if (labTagline) labTagline.textContent = flavor.positioning;
-
-    if (noteTop) noteTop.textContent = flavor.tastingNotes.top;
-    if (noteHeart) noteHeart.textContent = flavor.tastingNotes.heart;
-    if (noteBase) noteBase.textContent = flavor.tastingNotes.base;
-
-    const valCitrus = document.getElementById('val-citrus');
-    const barCitrus = document.getElementById('bar-citrus');
-    const valSweet = document.getElementById('val-sweetness');
-    const barSweet = document.getElementById('bar-sweetness');
-    const valEff = document.getElementById('val-effervescence');
-    const barEff = document.getElementById('bar-effervescence');
-    const valBot = document.getElementById('val-botanical');
-    const barBot = document.getElementById('bar-botanical');
-
-    if (valCitrus) valCitrus.textContent = `${flavor.meters.citrus}%`;
-    if (barCitrus) barCitrus.style.width = `${flavor.meters.citrus}%`;
-    if (valSweet) valSweet.textContent = `${flavor.meters.sweetness}%`;
-    if (barSweet) barSweet.style.width = `${flavor.meters.sweetness}%`;
-    if (valEff) valEff.textContent = `${flavor.meters.effervescence}%`;
-    if (barEff) barEff.style.width = `${flavor.meters.effervescence}%`;
-    if (valBot) valBot.textContent = `${flavor.meters.botanical}%`;
-    if (barBot) barBot.style.width = `${flavor.meters.botanical}%`;
-  }
-
-  // 6. Order Summary Calculator
+  // 5. Order Summary Calculator
   function updateOrderSummary() {
     const flavorKey = FLAVOR_KEYS[accordionActiveIndex];
     const flavor = FLAVORS[flavorKey];
@@ -495,15 +445,6 @@ document.addEventListener('DOMContentLoaded', () => {
       updateOrderSummary();
     });
   }
-
-  // Sensory Rail Cards
-  document.querySelectorAll('[data-rail]').forEach(card => {
-    card.addEventListener('click', () => {
-      const key = card.dataset.rail;
-      const idx = FLAVOR_KEYS.indexOf(key);
-      if (idx !== -1) setAccordionActive(idx);
-    });
-  });
 
   // Keyboard navigation
   window.addEventListener('keydown', (e) => {

@@ -513,16 +513,17 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   display: grid;
   grid-template-columns: 1fr 1.15fr 1fr;
   gap: clamp(1.25rem, 2.8vw, 2.75rem);
-  align-items: center;
+  align-items: start;
   position: relative;
   z-index: 3;
 }
 
-/* Left Column: Floating Media Window with Frosted Play Button */
+/* Left Column: Floating Media Window */
 .hero-col-left {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  padding-top: clamp(0.5rem, 1.5vw, 1.5rem);
 }
 
 .hero-video-window {
@@ -542,31 +543,9 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   display: block;
 }
 
-.hero-play-btn {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.35);
-  border: 1.5px solid rgba(255, 255, 255, 0.75);
-  color: #FFFFFF;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.3s ease;
-}
-
-.hero-play-btn:hover {
-  transform: translate(-50%, -50%) scale(1.12);
-  background: rgba(255, 255, 255, 0.5);
-}
-
 .hero-media-meta {
   margin-bottom: 0.85rem;
+  min-height: 80px;
 }
 
 .hero-media-title {
@@ -614,14 +593,14 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   object-fit: contain;
   position: relative;
   z-index: 2;
-  transition: transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
+  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease;
   transform: scale(1) translateY(0);
   opacity: 1;
 }
 
 .hero-bottle-packshot.is-swapping {
-  transform: scale(0.88) translateY(14px);
-  opacity: 0.3;
+  transform: scale(0.96) translateY(6px);
+  opacity: 0.25;
 }
 
 .hero-contact-shadow {
@@ -672,6 +651,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   display: flex;
   flex-direction: column;
   justify-content: center;
+  padding-top: clamp(0.5rem, 1.5vw, 1.5rem);
 }
 
 .hero-editorial-heading {
@@ -683,6 +663,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   margin-bottom: 1.15rem;
   letter-spacing: -0.02em;
   max-width: 380px;
+  min-height: 52px;
 }
 
 .hero-ingredient-frame {
@@ -713,6 +694,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   color: rgba(255, 255, 255, 0.92);
   margin-bottom: 1.35rem;
   max-width: 420px;
+  min-height: 80px;
 }
 
 .btn-hero-outline {
@@ -745,34 +727,30 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   line-height: 1.45;
 }
 
-/* Staggered Slide-Fade Entrance */
+/* Coordinated Smooth Hero Crossfade */
+.hero-media-meta,
+.hero-manifesto-side,
 .hero-editorial-heading,
 .hero-ingredient-frame,
 .hero-editorial-narrative,
 .hero-cta-action {
-  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+  transition: opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1), transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
   transform: translateY(0);
   opacity: 1;
 }
 
-.hero-col-right.anim-stagger-out .hero-editorial-heading {
-  transform: translateY(12px);
-  opacity: 0;
-}
-
-.hero-col-right.anim-stagger-out .hero-ingredient-frame {
-  transform: translateY(16px);
-  opacity: 0;
-}
-
-.hero-col-right.anim-stagger-out .hero-editorial-narrative {
-  transform: translateY(20px);
-  opacity: 0;
-}
-
+.hero-col-right.anim-stagger-out .hero-editorial-heading,
+.hero-col-right.anim-stagger-out .hero-ingredient-frame,
+.hero-col-right.anim-stagger-out .hero-editorial-narrative,
 .hero-col-right.anim-stagger-out .hero-cta-action {
-  transform: translateY(24px);
-  opacity: 0;
+  opacity: 0.15;
+  transform: translateY(4px);
+}
+
+.hero-col-left.is-swapping .hero-media-meta,
+.hero-col-left.is-swapping .hero-manifesto-side {
+  opacity: 0.15;
+  transform: translateY(4px);
 }
 
 /* Bottom Controls & Accents */
@@ -1058,6 +1036,11 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   overflow: hidden;
 }
 
+.accordion-showcase-section .container {
+  max-width: min(1440px, 95vw);
+  width: 100%;
+}
+
 .showcase-section-header {
   text-align: center;
   max-width: 1060px;
@@ -1088,21 +1071,22 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 /* Accordion Stage Wrap */
 .accordion-stage-wrap {
   display: flex;
-  gap: 1.15rem;
+  gap: clamp(0.75rem, 1.2vw, 1.25rem);
   width: 100%;
-  min-height: 620px;
+  min-height: 640px;
   align-items: stretch;
 }
 
 /* Accordion Pillar Column */
 .accordion-pillar {
-  flex: 1;
-  min-width: 0;
-  border-radius: 22px;
+  flex: 0.32;
+  min-width: 62px;
+  max-width: 82px;
+  border-radius: 20px;
   overflow: hidden;
   position: relative;
   cursor: pointer;
-  transition: flex 0.55s var(--ease-spring), background-color 0.4s ease;
+  transition: flex 0.85s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.6s ease;
   display: flex;
   flex-direction: column;
 }
@@ -1123,9 +1107,10 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   background-color: #11230A;
 }
 
-/* Expanded Pillar */
+/* Expanded Pillar: Generous center stage allocation */
 .accordion-pillar.is-expanded {
-  flex: 3.6;
+  flex: 9.2;
+  max-width: none;
   cursor: default;
 }
 
@@ -1136,9 +1121,10 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   align-items: center;
   justify-content: space-between;
   height: 100%;
-  padding: 2.25rem 1rem;
+  padding: 1.25rem 0.25rem 1rem;
   width: 100%;
   transition: opacity 0.3s ease;
+  overflow: hidden;
 }
 
 .accordion-pillar.is-expanded .pillar-collapsed-view {
@@ -1150,10 +1136,11 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   display: flex;
   align-items: center;
   justify-content: center;
+  min-height: 0;
 }
 
 .mini-bottle-img {
-  max-height: 220px;
+  max-height: clamp(120px, 16vh, 150px);
   width: auto;
   object-fit: contain;
   transition: transform var(--trans-fast);
@@ -1168,37 +1155,43 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 0.35rem;
+  gap: 0.15rem;
+  width: 100%;
+  flex-shrink: 0;
 }
 
 .pillar-index-tag {
-  font-size: 1.05rem;
+  font-size: 0.75rem;
   font-weight: 800;
   color: var(--warm-ivory);
+  white-space: nowrap;
 }
 
 .pillar-mini-name {
-  font-size: 1.15rem;
+  font-size: clamp(0.75rem, 0.9vw, 0.8125rem);
   font-weight: 800;
   color: #FFFFFF;
+  white-space: nowrap;
 }
 
 .pillar-mini-sub {
-  font-size: 0.8125rem;
+  font-size: 0.65rem;
   color: #CBD5E1;
+  white-space: nowrap;
 }
 
 .pillar-view-btn {
   display: inline-block;
-  margin-top: 0.65rem;
-  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  font-size: 0.625rem;
   font-weight: 700;
   text-transform: none;
   letter-spacing: normal;
-  padding: 0.35rem 0.85rem;
+  padding: 0.15rem 0.45rem;
   border-radius: 9999px;
   background-color: rgba(230, 213, 189, 0.15);
   color: var(--warm-ivory);
+  white-space: nowrap;
   transition: background-color var(--trans-fast), color var(--trans-fast);
 }
 
@@ -1214,17 +1207,18 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 
 .accordion-pillar.is-expanded .pillar-expanded-view {
   display: grid;
-  grid-template-columns: 1fr 1.35fr;
-  gap: clamp(1.5rem, 3vw, 2.75rem);
+  grid-template-columns: minmax(180px, 220px) 1fr;
+  gap: clamp(1.25rem, 2.5vw, 2.5rem);
   align-items: center;
-  padding: clamp(1.75rem, 3.5vw, 3rem);
+  padding: clamp(1.5rem, 2.5vw, 2.5rem);
   height: 100%;
   width: 100%;
-  animation: pillarContentFade 0.45s ease both;
+  animation: pillarContentFade 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
+  overflow: hidden;
 }
 
 @keyframes pillarContentFade {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -1246,7 +1240,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 }
 
 .pillar-large-bottle {
-  max-height: 420px;
+  max-height: 410px;
   width: auto;
   object-fit: contain;
   position: relative;
@@ -1255,9 +1249,9 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 
 .pillar-ingredient-splash {
   position: absolute;
-  bottom: 20px;
-  width: 200px;
-  height: 200px;
+  bottom: 25px;
+  width: 185px;
+  height: 185px;
   object-fit: cover;
   border-radius: 50%;
   opacity: 0.9;
@@ -1269,7 +1263,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   position: absolute;
   bottom: 0;
   width: 150px;
-  height: 16px;
+  height: 14px;
   border-radius: 50%;
   background-color: rgba(0, 0, 0, 0.5);
   filter: blur(6px);
@@ -1281,132 +1275,160 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   display: flex;
   flex-direction: column;
   justify-content: center;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
 }
 
 .pillar-expanded-header {
   display: flex;
   align-items: baseline;
-  gap: 1.15rem;
-  margin-bottom: 0.65rem;
+  gap: 0.85rem;
+  margin-bottom: 0.45rem;
+  flex-wrap: wrap;
 }
 
 .pillar-giant-index {
-  font-size: clamp(2.75rem, 4.5vw, 3.8rem);
+  font-size: clamp(2rem, 3vw, 2.75rem);
   font-weight: 800;
   color: var(--warm-ivory);
   line-height: 1;
+  flex-shrink: 0;
 }
 
 .pillar-expanded-titles {
   display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  min-width: 0;
+  flex: 1;
 }
 
 .pillar-full-name {
   font-family: var(--font-display);
-  font-size: clamp(1.6rem, 2.5vw, 2.25rem);
+  font-size: clamp(1.35rem, 2vw, 1.85rem);
   font-weight: 800;
   color: #FFFFFF;
   line-height: 1.15;
+  white-space: normal;
+  overflow: visible;
+  word-break: break-word;
 }
 
 .pillar-full-name small {
   font-family: inherit;
-  font-size: 0.75em;
+  font-size: 0.65em;
   color: var(--warm-ivory);
-  margin-left: 0.5rem;
+  margin-left: 0.35rem;
   font-weight: 600;
+  white-space: nowrap;
+  display: inline-block;
 }
 
 .pillar-mood-pill {
   display: inline-block;
   align-self: flex-start;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 700;
   letter-spacing: normal;
   text-transform: none;
   background-color: rgba(230, 213, 189, 0.15);
   color: var(--warm-ivory);
-  padding: 0.25rem 0.75rem;
+  padding: 0.2rem 0.65rem;
   border-radius: 9999px;
+  white-space: nowrap;
 }
 
 .pillar-positioning-quote {
-  font-size: 1.15rem;
+  font-size: clamp(1rem, 1.25vw, 1.15rem);
   font-weight: 700;
   color: var(--warm-ivory);
   font-style: italic;
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
+  margin-top: 0.35rem;
+  margin-bottom: 0.35rem;
+  line-height: 1.35;
 }
 
 .pillar-narrative-text {
-  font-size: 0.875rem;
-  line-height: 1.6;
+  font-size: clamp(0.8125rem, 0.9vw, 0.875rem);
+  line-height: 1.55;
   color: #CBD5E1;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
+  max-width: 680px;
 }
 
 /* Aromatic Block */
 .pillar-aroma-block {
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(0, 0, 0, 0.35);
   border-radius: 12px;
-  padding: 0.85rem 1.15rem;
-  margin-bottom: 1.25rem;
+  padding: 0.65rem 1rem;
+  margin-bottom: 1rem;
+  max-width: 680px;
 }
 
 .pillar-aroma-row {
   display: flex;
   justify-content: space-between;
+  align-items: baseline;
   gap: 1rem;
-  font-size: 0.875rem;
-  padding: 0.5rem 0;
-}
-
-.pillar-aroma-row:not(:last-child) {
-  /* no hairline */
+  font-size: 0.8125rem;
+  padding: 0.35rem 0;
 }
 
 .pillar-aroma-label {
   font-weight: 800;
   color: var(--warm-ivory);
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .pillar-aroma-val {
-  color: #CBD5E1;
+  color: #E2E8F0;
   text-align: right;
+  line-height: 1.35;
 }
 
 /* Palate Spectrum Grid */
 .pillar-spectrum-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
+  gap: clamp(0.6rem, 1vw, 1rem);
+  margin-bottom: 1.25rem;
+  max-width: 680px;
 }
 
 .pillar-meter-col {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.3rem;
+  min-width: 0;
 }
 
 .pillar-meter-col .meter-info {
   display: flex;
   justify-content: space-between;
-  font-size: 0.8125rem;
+  align-items: baseline;
+  font-size: 0.75rem;
   color: #CBD5E1;
+  gap: 0.25rem;
+}
+
+.pillar-meter-col .meter-info span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .pillar-meter-col .meter-info strong {
   color: #FFFFFF;
   font-weight: 800;
+  font-size: 0.8125rem;
+  flex-shrink: 0;
 }
 
 .pillar-meter-col .meter-track {
-  height: 6px;
+  height: 5px;
   background-color: rgba(255, 255, 255, 0.15);
   border-radius: 3px;
   overflow: hidden;
@@ -1429,7 +1451,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 }
 
 .pillar-price-tag {
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 700;
   letter-spacing: normal;
   text-transform: none;
@@ -1846,211 +1868,6 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 }
 
 /* ==========================================================================
-   SECTION 4: SENSORY TASTING LAB (#sensory)
-   ========================================================================== */
-.lab-section {
-  background-color: var(--bg-ground);
-  color: #FFFFFF;
-  padding-top: var(--section-gap);
-  padding-bottom: var(--section-gap);
-}
-
-.lab-section .section-title {
-  color: #FFFFFF;
-  font-size: clamp(1.4rem, 3vw, 2.5rem);
-  word-break: break-word;
-}
-
-.lab-section .section-sub {
-  color: var(--text-muted);
-}
-
-.lab-layout {
-  display: grid;
-  grid-template-columns: 1.4fr 1fr;
-  gap: 2.5rem;
-  margin-top: 3.5rem;
-}
-
-.lab-display-card {
-  background: #15181E;
-  border-radius: 20px;
-  padding: clamp(1.75rem, 3.5vw, 2.5rem);
-  animation: cardEntrance 0.7s var(--ease-spring) both;
-}
-
-.lab-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.lab-flavor-name {
-  font-size: clamp(2rem, 3.5vw, 2.75rem);
-  font-weight: 800;
-  color: #FFFFFF;
-  line-height: 1.1;
-}
-
-.flavor-serial {
-  font-size: 0.8125rem;
-  font-weight: 800;
-  color: #FFFFFF;
-  background: var(--brand-crimson);
-  padding: 0.2rem 0.65rem;
-  border-radius: 9999px;
-}
-
-.lab-kanji-sub {
-  font-family: var(--font-serif-jp);
-  font-size: 0.875rem;
-  color: #CBD5E1;
-}
-
-.lab-tagline {
-  font-size: 0.9375rem;
-  color: #CBD5E1;
-}
-
-.tasting-notes-block {
-  margin-bottom: 2rem;
-  padding: 1.25rem;
-  background: #1C2029;
-  border-radius: 12px;
-}
-
-.notes-title {
-  font-size: 0.9375rem;
-  font-weight: 700;
-  color: #FFFFFF;
-  margin-bottom: 1rem;
-}
-
-.notes-hierarchy {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.note-row {
-  display: flex;
-  align-items: baseline;
-  gap: 1rem;
-}
-
-.note-layer {
-  font-size: 0.8125rem;
-  font-weight: 800;
-  color: #CBD5E1;
-  width: 80px;
-  flex-shrink: 0;
-}
-
-.note-desc {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: #FFFFFF;
-}
-
-.sensory-meters-block {
-  padding: 1.25rem;
-  background: #1C2029;
-  border-radius: 12px;
-}
-
-.meters-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.25rem;
-}
-
-.meter-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.meter-meta {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.8125rem;
-  color: #CBD5E1;
-}
-
-.meter-meta strong {
-  color: #FFFFFF;
-  font-weight: 800;
-}
-
-.meter-track {
-  width: 100%;
-  height: 6px;
-  background: rgba(255, 255, 255, 0.12);
-  border-radius: 9999px;
-  overflow: hidden;
-}
-
-.meter-fill {
-  height: 100%;
-  background: var(--brand-crimson);
-  border-radius: 9999px;
-  transition: width 0.4s var(--ease-spring);
-}
-
-/* Side Rail */
-.flavor-side-rail {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.rail-card {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1.25rem;
-  background: #15181E;
-  border-radius: 14px;
-  cursor: pointer;
-  transition: background-color var(--trans-fast);
-}
-
-.rail-card:hover {
-  background: #1C2029;
-}
-
-.rail-card.is-active {
-  background: #1C2029;
-}
-
-.rail-indicator {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.rail-text {
-  display: flex;
-  flex-direction: column;
-}
-
-.rail-text strong {
-  font-size: 1rem;
-  font-weight: 800;
-  color: #FFFFFF;
-}
-
-.rail-text span {
-  font-size: 0.8125rem;
-  color: #CBD5E1;
-  margin-top: 2px;
-}
-
-/* ==========================================================================
    SECTION 5: BRAND STATEMENT BANNER (NOMU)
    ========================================================================== */
 .brand-banner-section {
@@ -2254,10 +2071,6 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     grid-template-columns: 1fr;
   }
 
-  .lab-layout {
-    grid-template-columns: 1fr;
-  }
-
   .contact-channels-grid {
     grid-template-columns: 1fr;
   }
@@ -2317,4 +2130,3 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .accordion-pillar { animation: sectionFadeIn 0.65s var(--ease-spring) both; }
 .contact-channel-card { animation: sectionFadeIn 0.65s var(--ease-spring) both; }
 .builder-viewport-card { animation: sectionFadeIn 0.65s var(--ease-spring) both; }
-.lab-display-card { animation: sectionFadeIn 0.65s var(--ease-spring) both; }
