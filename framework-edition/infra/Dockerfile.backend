@@ -1,0 +1,70 @@
+# syntax=docker/dockerfile:1
+
+# -----------------------------------------------------------------------------
+# Stage 1: Vendor Dependencies
+# -----------------------------------------------------------------------------
+FROM composer:2.8 AS vendor
+WORKDIR /app
+COPY composer.json composer.lock* ./
+RUN composer install \
+    --no-dev \
+    --no-interaction \
+    --prefer-dist \
+    --optimize-autoloader \
+    --no-scripts
+
+# -----------------------------------------------------------------------------
+# Stage 2: Development Runner
+# -----------------------------------------------------------------------------
+FROM php:8.3-fpm-alpine AS development
+WORKDIR /var/www/html
+
+RUN apk add --no-cache \
+    git \
+    curl \
+    sqlite-dev \
+    libpng-dev \
+    libxml2-dev \
+    libzip-dev \
+    oniguruma-dev \
+    $PHPIZE_DEPS \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
+    && docker-php-ext-install pdo pdo_sqlite mbstring zip exif pcntl opcache \
+    && apk del $PHPIZE_DEPS
+
+COPY --from=composer:2.8 /usr/bin/composer /usr/bin/composer
+COPY ../infra/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+
+COPY . /var/www/html
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 775 /var/www/html/storage \
+    && chmod -R 775 /var/www/html/bootstrap/cache
+
+USER www-data
+EXPOSE 9000
+CMD ["php-fpm"]
+
+# -----------------------------------------------------------------------------
+# Stage 3: Production Runner
+# -----------------------------------------------------------------------------
+FROM php:8.3-fpm-alpine AS production
+WORKDIR /var/www/html
+
+RUN apk add --no-cache \
+    sqlite-libs \
+    libzip \
+    libpng \
+    && docker-php-ext-install pdo pdo_sqlite mbstring zip exif pcntl opcache
+
+COPY ../infra/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+COPY --from=vendor /app/vendor /var/www/html/vendor
+COPY . /var/www/html
+
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 775 /var/www/html/storage \
+    && chmod -R 775 /var/www/html/bootstrap/cache
+
+USER www-data
+EXPOSE 9000
+CMD ["php-fpm"]

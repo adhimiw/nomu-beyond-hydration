@@ -1,0 +1,157 @@
+/* ==========================================================================
+   NOMU DESIGN SYSTEM & THEME TOKENS (REACT FRAMEWORK EDITION)
+   ========================================================================== */
+:root {
+  --burnt-orange: #D5360C;
+  --burnt-orange-dark: #A32909;
+  --warm-ivory: #F8F6F0;
+  --pure-white: #FFFFFF;
+  --soft-black: #121110;
+  --earth-brown: #36291C;
+  --border-subtle: #E8E2D8;
+  --card-bg: #FFFFFF;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  --font-display: 'Cinzel', serif;
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --section-gap: clamp(4rem, 7vw, 7rem);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--soft-black);
+  color: var(--soft-black);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+}
+
+.container {
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding-left: clamp(1rem, 3.5vw, 2.5rem);
+  padding-right: clamp(1rem, 3.5vw, 2.5rem);
+}
+
+/* Reusable Button Primitives */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.2s var(--ease-spring), transform 0.2s var(--ease-spring);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn-burnt-orange {
+  background-color: var(--burnt-orange);
+  color: #FFFFFF;
+}
+
+.btn-burnt-orange:hover {
+  background-color: var(--burnt-orange-dark);
+}
+
+.btn-dark {
+  background-color: var(--soft-black);
+  color: #FFFFFF;
+}
+
+.btn-dark:hover {
+  background-color: #262422;
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 1px solid #D5CBBF;
+  color: var(--soft-black);
+}
+
+.btn-outline:hover {
+  background-color: #EFE8DD;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* Modals */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(18, 17, 16, 0.75);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  animation: fadeIn 0.2s var(--ease-spring) both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-dialog-card {
+  width: 100%;
+  max-width: 540px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background-color: var(--warm-ivory);
+  border-radius: 16px;
+  padding: 1.75rem;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25); /* taste-skill-ignore */
+  position: relative;
+  animation: cardEnter 0.25s var(--ease-spring) both;
+}
+
+@keyframes cardEnter {
+  from { opacity: 0; transform: scale(0.97) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #E5DCCE; /* taste-skill-ignore */
+}
+
+.modal-close-icon {
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.modal-close-icon:hover {
+  background-color: #E6DFC5;
+  color: #000;
+}

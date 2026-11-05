@@ -1,0 +1,99 @@
+version: '3.8'
+
+services:
+  # -------------------------------------------------------------------------
+  # Frontend Application (React 19 + TypeScript + Vite)
+  # -------------------------------------------------------------------------
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../infra/Dockerfile.frontend
+      target: development
+    container_name: nomu-framework-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8080/api
+      - NODE_ENV=development
+    networks:
+      - nomu-mesh
+
+  # -------------------------------------------------------------------------
+  # Backend API Application (Laravel 11 / PHP 8.3-FPM)
+  # -------------------------------------------------------------------------
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../infra/Dockerfile.backend
+      target: development
+    container_name: nomu-framework-backend
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./backend:/var/www/html
+      - ./backend/storage:/var/www/html/storage
+    environment:
+      - APP_NAME="NOMU Beyond Hydration"
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - APP_URL=http://localhost:8080
+      - DB_CONNECTION=sqlite
+      - DB_DATABASE=/var/www/html/database/database.sqlite
+      - CACHE_STORE=redis
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - NOMU_ADMIN_TOKEN=nomu_admin_sec_token_98400_botanical_2026
+      - NOMU_WHATSAPP_CONCIERGE=919840000000
+    depends_on:
+      - redis
+    networks:
+      - nomu-mesh
+
+  # -------------------------------------------------------------------------
+  # Redis In-Memory Cache & Session Store
+  # -------------------------------------------------------------------------
+  redis:
+    image: redis:7.2-alpine
+    container_name: nomu-framework-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - nomu-mesh
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # -------------------------------------------------------------------------
+  # Edge Reverse Proxy / Web Server (Nginx)
+  # -------------------------------------------------------------------------
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: nomu-framework-proxy
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./backend/public:/var/www/html/public:ro
+      - ./infra/nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - nomu-mesh
+
+networks:
+  nomu-mesh:
+    driver: bridge
+
+volumes:
+  redis-data:
+    driver: local
