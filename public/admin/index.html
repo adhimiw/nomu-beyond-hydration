@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NOMU — Content Management & Operations Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Cinzel:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #121110;
+      --bg-card: #1A1918;
+      --bg-elevated: #242220;
+      --border-subtle: #2C2926;
+      --text-main: #F4EFEB;
+      --text-muted: #8E8882;
+      --brand-orange: #D5360C;
+      --brand-orange-hover: #B82E0A;
+      --color-green: #2E7D32;
+      --color-gold: #D97706;
+      --color-blue: #2563EB;
+      --color-red: #DC2626;
+      --radius: 10px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Navigation Bar */
+    .admin-nav {
+      background-color: #171615;
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand-cluster {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .brand-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      background-color: var(--brand-orange);
+      color: #FFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.9rem;
+      font-family: 'Cinzel', serif;
+    }
+
+    .brand-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .brand-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.2rem 0.55rem;
+      border-radius: 9999px;
+      background-color: var(--bg-elevated);
+      color: var(--brand-orange);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .token-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 0.3rem 0.6rem;
+    }
+
+    .token-input {
+      background: none;
+      border: none;
+      color: var(--text-main);
+      font-size: 0.75rem;
+      width: 180px;
+      outline: none;
+    }
+
+    .btn-public-site {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 0.4rem 0.75rem;
+      border-radius: 6px;
+      transition: color 0.2s, background-color 0.2s;
+    }
+
+    .btn-public-site:hover {
+      color: #FFF;
+      background-color: var(--bg-elevated);
+    }
+
+    /* Tabs Bar */
+    .tabs-bar {
+      background-color: #171615;
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0 1.5rem;
+      display: flex;
+      gap: 1.5rem;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.9rem 0.2rem;
+      cursor: pointer;
+      position: relative;
+      white-space: nowrap;
+      transition: color 0.2s;
+    }
+
+    .tab-btn:hover { color: var(--text-main); }
+    .tab-btn.is-active {
+      color: #FFF;
+      font-weight: 700;
+    }
+
+    .tab-btn.is-active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background-color: var(--brand-orange);
+    }
+
+    .tab-count {
+      display: inline-block;
+      font-size: 0.7rem;
+      padding: 0.15rem 0.45rem;
+      border-radius: 9999px;
+      background-color: var(--bg-elevated);
+      color: var(--text-muted);
+      margin-left: 0.4rem;
+    }
+
+    /* Main Container */
+    .main-wrap {
+      flex: 1;
+      padding: 1.75rem;
+      max-width: 1300px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .tab-pane { display: none; }
+    .tab-pane.is-active { display: block; animation: fadeIn 0.25s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Cards & Grids */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .stat-lbl {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-val {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .stat-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Filter Toolbar */
+    .toolbar-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .search-input, .select-input {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      padding: 0.55rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .search-input:focus, .select-input:focus {
+      border-color: var(--brand-orange);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.55rem 1rem;
+      border-radius: 6px;
+      font-size: 0.825rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: background-color 0.2s, transform 0.15s;
+    }
+
+    .btn-orange {
+      background-color: var(--brand-orange);
+      color: #FFF;
+    }
+    .btn-orange:hover { background-color: var(--brand-orange-hover); }
+
+    .btn-secondary {
+      background-color: var(--bg-elevated);
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
+    }
+    .btn-secondary:hover { background-color: #2F2C29; }
+
+    /* Tables */
+    .table-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.85rem;
+    }
+
+    .data-table th {
+      background-color: #161514;
+      padding: 0.75rem 1rem;
+      font-weight: 700;
+      font-size: 0.725rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .data-table td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border-subtle);
+      vertical-align: middle;
+    }
+
+    .data-table tr:hover td {
+      background-color: rgba(255, 255, 255, 0.015);
+    }
+
+    .badge-status {
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      border-radius: 9999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .badge-pending { background-color: rgba(217, 119, 6, 0.15); color: #F59E0B; }
+    .badge-confirmed { background-color: rgba(37, 99, 235, 0.15); color: #60A5FA; }
+    .badge-dispatched { background-color: rgba(168, 85, 247, 0.15); color: #C084FC; }
+    .badge-delivered { background-color: rgba(46, 125, 50, 0.15); color: #4ADE80; }
+    .badge-rejected { background-color: rgba(220, 38, 38, 0.15); color: #F87171; }
+    .badge-approved { background-color: rgba(46, 125, 50, 0.15); color: #4ADE80; }
+
+    /* Review Cards Grid in Admin */
+    .admin-reviews-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .admin-review-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .review-top-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+
+    .review-author-line {
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .review-email-line {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .review-text-content {
+      font-size: 0.875rem;
+      line-height: 1.5;
+      color: #D1CBC5;
+    }
+
+    .review-action-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .btn-sm {
+      padding: 0.35rem 0.65rem;
+      font-size: 0.75rem;
+      border-radius: 4px;
+      cursor: pointer;
+      border: none;
+      font-weight: 700;
+    }
+
+    .btn-approve { background-color: #1E3A24; color: #4ADE80; }
+    .btn-approve:hover { background-color: #264A2E; }
+    .btn-reject { background-color: #3B1D1D; color: #F87171; }
+    .btn-reject:hover { background-color: #4C2626; }
+    .btn-del { background-color: var(--bg-elevated); color: var(--text-muted); }
+    .btn-del:hover { color: #FFF; }
+
+    /* CMS Form */
+    .cms-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .form-panel {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .panel-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .cms-field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .cms-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .cms-input, .cms-textarea, .cms-select {
+      background-color: #141312;
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      color: var(--text-main);
+      padding: 0.65rem 0.85rem;
+      font-family: inherit;
+      font-size: 0.875rem;
+      outline: none;
+    }
+
+    .cms-input:focus, .cms-textarea:focus { border-color: var(--brand-orange); }
+
+    /* Live Preview Panel */
+    .preview-panel {
+      background-color: #FAF8F5;
+      color: #121110;
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .preview-badge {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: var(--brand-orange);
+      text-transform: uppercase;
+    }
+
+    .preview-hero-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.75rem;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .preview-hero-sub {
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: #555;
+    }
+
+    /* Logs Terminal */
+    .logs-terminal {
+      background-color: #0E0D0C;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius);
+      padding: 1rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+      max-height: 500px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .log-row {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      padding: 0.25rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .log-time { color: #666; flex-shrink: 0; }
+    .log-lvl { font-weight: 700; flex-shrink: 0; width: 60px; }
+    .log-lvl-INFO { color: #60A5FA; }
+    .log-lvl-NOTICE { color: #F59E0B; }
+    .log-lvl-WARNING { color: #F97316; }
+    .log-lvl-ERROR { color: #EF4444; }
+    .log-act { color: #E5E7EB; font-weight: 600; flex-shrink: 0; }
+    .log-msg { color: #9CA3AF; }
+
+    @media (max-width: 900px) {
+      .cms-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <header class="admin-nav">
+    <div class="brand-cluster">
+      <div class="brand-mark">N</div>
+      <div>
+        <h1 class="brand-title">NOMU</h1>
+      </div>
+      <span class="brand-badge">OPERATIONS CONSOLE</span>
+    </div>
+
+    <div class="nav-actions">
+      <div class="token-input-wrap">
+        <span style="font-size:0.75rem;color:var(--text-muted);">Token:</span>
+        <input type="password" id="admin-token-input" class="token-input" value="nomu_admin_sec_token_98400_botanical_2026" placeholder="Admin Bearer Token" />
+      </div>
+      <a href="/" target="_blank" class="btn-public-site">View Storefront ↗</a>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="tabs-bar" role="tablist">
+    <button class="tab-btn is-active" data-tab="orders" role="tab">
+      Orders Ledger <span class="tab-count" id="count-orders">0</span>
+    </button>
+    <button class="tab-btn" data-tab="reviews" role="tab">
+      Review Moderation <span class="tab-count" id="count-pending-reviews">0</span>
+    </button>
+    <button class="tab-btn" data-tab="cms" role="tab">
+      Content Management (CMS)
+    </button>
+    <button class="tab-btn" data-tab="system" role="tab">
+      System Telemetry & Logs
+    </button>
+  </nav>
+
+  <!-- Main View Area -->
+  <main class="main-wrap">
+
+    <!-- TAB 1: ORDERS LEDGER -->
+    <section class="tab-pane is-active" id="pane-orders" role="tabpanel">
+      <!-- Top Stat Cards -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <span class="stat-lbl">Total Registered Orders</span>
+          <span class="stat-val" id="stat-total-orders">0</span>
+          <span class="stat-sub">Direct WhatsApp inquiries</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-lbl">Pending Confirmation</span>
+          <span class="stat-val" id="stat-pending-orders" style="color:#F59E0B;">0</span>
+          <span class="stat-sub">Awaiting dispatch concierge</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-lbl">Revenue Generated</span>
+          <span class="stat-val" id="stat-total-revenue" style="color:var(--brand-orange);">₹0</span>
+          <span class="stat-sub">Bottles ordered</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-lbl">Dispatched / Delivered</span>
+          <span class="stat-val" id="stat-delivered-orders" style="color:#4ADE80;">0</span>
+          <span class="stat-sub">Fulfilled in Chennai</span>
+        </div>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="toolbar-bar">
+        <div class="toolbar-left">
+          <input type="text" id="order-search-input" class="search-input" placeholder="Search customer, phone, ref..." />
+          <select id="order-status-filter" class="select-input">
+            <option value="all">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="dispatched">Dispatched</option>
+            <option value="delivered">Delivered</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+          <button type="button" class="btn btn-secondary" id="btn-refresh-orders">Refresh</button>
+        </div>
+        <div>
+          <button type="button" class="btn btn-orange" id="btn-export-orders-csv">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            Export CSV
+          </button>
+        </div>
+      </div>
+
+      <!-- Orders Table -->
+      <div class="table-card">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Order Ref</th>
+              <th>Customer</th>
+              <th>Phone</th>
+              <th>Ritual Items</th>
+              <th>Bottles</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="orders-table-body">
+            <tr>
+              <td colspan="9" style="text-align:center;padding:2rem;color:var(--text-muted);">
+                Loading orders ledger...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB 2: REVIEW MODERATION -->
+    <section class="tab-pane" id="pane-reviews" role="tabpanel">
+      <div class="toolbar-bar">
+        <div class="toolbar-left">
+          <select id="review-status-filter" class="select-input">
+            <option value="all">All Reviews</option>
+            <option value="pending" selected>Pending Moderation (Action Required)</option>
+            <option value="approved">Approved & Live</option>
+            <option value="rejected">Rejected</option>
+          </select>
+          <button type="button" class="btn btn-secondary" id="btn-refresh-reviews">Refresh</button>
+        </div>
+        <div style="font-size:0.85rem;color:var(--text-muted);">
+          Approved reviews immediately reflect on the live storefront tasting ledger.
+        </div>
+      </div>
+
+      <div class="admin-reviews-grid" id="admin-reviews-container">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- TAB 3: CONTENT MANAGEMENT SYSTEM (CMS) -->
+    <section class="tab-pane" id="pane-cms" role="tabpanel">
+      <div class="cms-grid">
+        <!-- Editor Form -->
+        <div class="form-panel">
+          <h2 class="panel-title">Hero Section & Global Configuration</h2>
+
+          <div class="cms-field-group">
+            <label class="cms-label">Hero Main Title Headline</label>
+            <input type="text" id="cms-hero-headline" class="cms-input" value="FOUR HERBS. ZERO NONSENSE." />
+          </div>
+
+          <div class="cms-field-group">
+            <label class="cms-label">Hero Subtitle & Brand Statement</label>
+            <textarea id="cms-hero-sub" class="cms-textarea" rows="2">Ancient South Indian botanical distillates crafted in small batches across Chennai.</textarea>
+          </div>
+
+          <div class="cms-field-group">
+            <label class="cms-label">Brand Ticker Ticker Bar Text</label>
+            <input type="text" id="cms-ticker-text" class="cms-input" value="100% RECYCLED GLASS · NO CHEMICALS · SMALL-BATCH DISTILLED · CHENNAI EXPRESS" />
+          </div>
+
+          <div class="cms-field-group">
+            <label class="cms-label">Typography Style Direction</label>
+            <select id="cms-font-family" class="cms-select">
+              <option value="editorial-serif">Editorial High-Taste Serif (Cinzel + Plus Jakarta Sans)</option>
+              <option value="modern-grotesk">Clean Modern Grotesk</option>
+              <option value="minimal-sans">Minimal Contemporary Sans</option>
+            </select>
+          </div>
+
+          <div class="cms-field-group">
+            <label class="cms-label">WhatsApp Concierge Phone Number</label>
+            <input type="text" id="cms-whatsapp-phone" class="cms-input" value="919840000000" />
+          </div>
+
+          <div style="display:flex;align-items:center;gap:1rem;margin-top:0.5rem;">
+            <button type="button" class="btn btn-orange" id="btn-save-cms">Save & Publish Changes</button>
+            <span id="cms-save-status" style="font-size:0.8rem;color:#4ADE80;" hidden>✓ Changes published successfully</span>
+          </div>
+        </div>
+
+        <!-- Live Preview Panel -->
+        <div class="preview-panel">
+          <span class="preview-badge">Live Storefront Preview</span>
+          <div style="background:#121110;color:#FFF;padding:1.5rem;border-radius:8px;">
+            <span style="font-size:0.7rem;color:#D5360C;font-weight:700;display:block;margin-bottom:0.4rem;">BOTANICAL ARCHITECTURE</span>
+            <h3 class="preview-hero-title" id="prev-title">FOUR HERBS. ZERO NONSENSE.</h3>
+            <p class="preview-hero-sub" id="prev-sub" style="color:#CCC;margin-top:0.6rem;">Ancient South Indian botanical distillates crafted in small batches across Chennai.</p>
+          </div>
+
+          <div style="background:#EFE8DD;padding:0.75rem 1rem;border-radius:6px;font-size:0.75rem;font-weight:700;letter-spacing:0.04em;">
+            TICKER: <span id="prev-ticker">100% RECYCLED GLASS · NO CHEMICALS · SMALL-BATCH DISTILLED · CHENNAI EXPRESS</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: SYSTEM TELEMETRY & LOGS -->
+    <section class="tab-pane" id="pane-system" role="tabpanel">
+      <!-- Runtime Stat Cards -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <span class="stat-lbl">PHP Engine Version</span>
+          <span class="stat-val" id="sys-php-version">PHP 8.3</span>
+          <span class="stat-sub" id="sys-sapi">CLI / FastCGI</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-lbl">Memory Consumption</span>
+          <span class="stat-val" id="sys-mem-val">0.0 MB</span>
+          <span class="stat-sub" id="sys-mem-peak">Peak: 0.0 MB</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-lbl">Database Engine</span>
+          <span class="stat-val">SQLite 3</span>
+          <span class="stat-sub">WAL Mode Enabled</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-lbl">OPcache Acceleration</span>
+          <span class="stat-val" id="sys-opcache-val" style="color:#4ADE80;">Active</span>
+          <span class="stat-sub">Bytecode Pre-compiled</span>
+        </div>
+      </div>
+
+      <div class="toolbar-bar">
+        <div class="toolbar-left">
+          <h3 style="font-size:1rem;font-weight:700;">System Event & Audit Logs</h3>
+          <select id="log-level-filter" class="select-input">
+            <option value="all">All Levels</option>
+            <option value="INFO">INFO</option>
+            <option value="NOTICE">NOTICE</option>
+            <option value="WARNING">WARNING</option>
+            <option value="ERROR">ERROR</option>
+          </select>
+          <button type="button" class="btn btn-secondary" id="btn-refresh-logs">Refresh Logs</button>
+        </div>
+        <div style="font-size:0.8rem;color:var(--text-muted);">
+          Records all order registrations, review moderations, and CMS configuration updates.
+        </div>
+      </div>
+
+      <div class="logs-terminal" id="logs-container">
+        <!-- Live log entries -->
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    const API_BASE = '/api';
+
+    function getAdminToken() {
+      return document.getElementById('admin-token-input').value.trim();
+    }
+
+    // Tabs Switcher
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('is-active'));
+        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('is-active'));
+
+        btn.classList.add('is-active');
+        const target = document.getElementById(`pane-${tab}`);
+        if (target) target.classList.add('is-active');
+
+        if (tab === 'orders') loadOrders();
+        if (tab === 'reviews') loadReviews();
+        if (tab === 'cms') loadCms();
+        if (tab === 'system') { loadSystemStatus(); loadSystemLogs(); }
+      });
+    });
+
+    // 1. ORDERS ENGINE
+    async function loadOrders() {
+      const status = document.getElementById('order-status-filter').value;
+      const search = document.getElementById('order-search-input').value.trim();
+      const token = getAdminToken();
+
+      const url = new URL(`${window.location.origin}${API_BASE}/admin/orders`);
+      if (status !== 'all') url.searchParams.set('status', status);
+      if (search) url.searchParams.set('search', search);
+
+      try {
+        const res = await fetch(url.toString(), {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+
+        if (data && data.orders) {
+          renderOrdersTable(data.orders);
+          updateOrderStats(data.orders);
+        }
+      } catch (err) {
+        document.getElementById('orders-table-body').innerHTML = `
+          <tr><td colspan="9" style="text-align:center;padding:2rem;color:#F87171;">Failed to load orders. Please verify server connection and token.</td></tr>
+        `;
+      }
+    }
+
+    function renderOrdersTable(orders) {
+      const tbody = document.getElementById('orders-table-body');
+      if (!orders || orders.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text-muted);">No orders matching your criteria.</td></tr>`;
+        return;
+      }
+
+      let html = '';
+      orders.forEach(o => {
+        let itemsSummary = '';
+        if (Array.isArray(o.items)) {
+          itemsSummary = o.items.map(it => `${it.quantity}x ${it.pack || ''} ${it.flavor || ''}`).join(', ');
+        } else {
+          itemsSummary = 'Custom Ritual Box';
+        }
+
+        const dateStr = o.created_at ? new Date(o.created_at).toLocaleString() : '';
+
+        html += `
+          <tr>
+            <td><strong>${o.order_ref}</strong></td>
+            <td>
+              <div><strong>${o.customer_name}</strong></div>
+              <div style="font-size:0.75rem;color:var(--text-muted);">${o.customer_email}</div>
+            </td>
+            <td>
+              <a href="https://wa.me/91${o.customer_phone}" target="_blank" style="color:#60A5FA;text-decoration:none;">
+                ${o.customer_phone} ↗
+              </a>
+            </td>
+            <td style="max-width:220px;font-size:0.8rem;" title="${o.delivery_address}">${itemsSummary}</td>
+            <td><strong>${o.total_bottles || 1}</strong></td>
+            <td><strong style="color:var(--brand-orange);">₹${o.total_amount}</strong></td>
+            <td><span class="badge-status badge-${o.status}">${o.status}</span></td>
+            <td style="font-size:0.75rem;color:var(--text-muted);">${dateStr}</td>
+            <td>
+              <select class="select-input" style="padding:0.25rem 0.45rem;font-size:0.75rem;" onchange="updateOrderStatus(${o.id}, this.value)">
+                <option value="pending" ${o.status === 'pending' ? 'selected' : ''}>Pending</option>
+                <option value="confirmed" ${o.status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
+                <option value="dispatched" ${o.status === 'dispatched' ? 'selected' : ''}>Dispatched</option>
+                <option value="delivered" ${o.status === 'delivered' ? 'selected' : ''}>Delivered</option>
+                <option value="cancelled" ${o.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+              </select>
+            </td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = html;
+    }
+
+    function updateOrderStats(orders) {
+      document.getElementById('count-orders').textContent = orders.length;
+      document.getElementById('stat-total-orders').textContent = orders.length;
+
+      let pending = 0;
+      let revenue = 0;
+      let delivered = 0;
+
+      orders.forEach(o => {
+        if (o.status === 'pending') pending++;
+        if (o.status === 'delivered' || o.status === 'confirmed' || o.status === 'dispatched') delivered++;
+        revenue += parseFloat(o.total_amount || 0);
+      });
+
+      document.getElementById('stat-pending-orders').textContent = pending;
+      document.getElementById('stat-delivered-orders').textContent = delivered;
+      document.getElementById('stat-total-revenue').textContent = `₹${revenue.toLocaleString()}`;
+    }
+
+    window.updateOrderStatus = async function(orderId, newStatus) {
+      const token = getAdminToken();
+      try {
+        const res = await fetch(`${API_BASE}/admin/orders/${orderId}/status`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ status: newStatus })
+        });
+        if (res.ok) {
+          loadOrders();
+        }
+      } catch (err) {
+        alert('Failed to update order status');
+      }
+    };
+
+    // CSV Export
+    document.getElementById('btn-export-orders-csv').addEventListener('click', () => {
+      const token = getAdminToken();
+      window.open(`${API_BASE}/admin/orders?export=csv&token=${encodeURIComponent(token)}`, '_blank');
+    });
+
+    document.getElementById('order-status-filter').addEventListener('change', loadOrders);
+    document.getElementById('order-search-input').addEventListener('input', debounce(loadOrders, 350));
+    document.getElementById('btn-refresh-orders').addEventListener('click', loadOrders);
+
+    // 2. REVIEWS ENGINE
+    async function loadReviews() {
+      const status = document.getElementById('review-status-filter').value;
+      const token = getAdminToken();
+
+      const url = new URL(`${window.location.origin}${API_BASE}/admin/reviews`);
+      if (status !== 'all') url.searchParams.set('status', status);
+
+      try {
+        const res = await fetch(url.toString(), {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (data && data.reviews) {
+          renderReviewsGrid(data.reviews);
+        }
+      } catch (err) {
+        document.getElementById('admin-reviews-container').innerHTML = `<p style="color:#F87171;">Failed to load reviews.</p>`;
+      }
+    }
+
+    function renderReviewsGrid(reviews) {
+      const cont = document.getElementById('admin-reviews-container');
+      const pendingCount = reviews.filter(r => r.status === 'pending').length;
+      document.getElementById('count-pending-reviews').textContent = pendingCount;
+
+      if (!reviews || reviews.length === 0) {
+        cont.innerHTML = `<p style="color:var(--text-muted);grid-column:1/-1;">No reviews found matching this status.</p>`;
+        return;
+      }
+
+      let html = '';
+      reviews.forEach(r => {
+        const starStr = '★'.repeat(r.rating || 5);
+        html += `
+          <div class="admin-review-card">
+            <div>
+              <div class="review-top-meta">
+                <span class="badge-status badge-${r.status}">${r.status}</span>
+                <span style="color:#F59E0B;font-size:0.9rem;">${starStr}</span>
+              </div>
+              <div class="review-author-line">${r.customer_name} <span style="color:var(--brand-orange);font-size:0.75rem;">(${r.flavor_key})</span></div>
+              <div class="review-email-line">${r.customer_email} · ${new Date(r.created_at).toLocaleDateString()}</div>
+              <div style="font-weight:700;margin:0.5rem 0 0.25rem 0;font-size:0.9rem;">"${r.headline}"</div>
+              <p class="review-text-content">${r.review_text}</p>
+            </div>
+            <div class="review-action-row">
+              ${r.status !== 'approved' ? `<button type="button" class="btn-sm btn-approve" onclick="moderateReview(${r.id}, 'approve')">✓ Approve</button>` : ''}
+              ${r.status !== 'rejected' ? `<button type="button" class="btn-sm btn-reject" onclick="moderateReview(${r.id}, 'reject')">✕ Reject</button>` : ''}
+              <button type="button" class="btn-sm btn-del" onclick="moderateReview(${r.id}, 'delete')">Delete</button>
+            </div>
+          </div>
+        `;
+      });
+      cont.innerHTML = html;
+    }
+
+    window.moderateReview = async function(id, action) {
+      const token = getAdminToken();
+      try {
+        const res = await fetch(`${API_BASE}/admin/reviews/${id}/moderate`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ action: action })
+        });
+        if (res.ok) {
+          loadReviews();
+        }
+      } catch (err) {
+        alert('Action failed');
+      }
+    };
+
+    document.getElementById('review-status-filter').addEventListener('change', loadReviews);
+    document.getElementById('btn-refresh-reviews').addEventListener('click', loadReviews);
+
+    // 3. CMS CONTENT ENGINE
+    async function loadCms() {
+      try {
+        const res = await fetch(`${API_BASE}/content`);
+        const data = await res.json();
+        if (data) {
+          if (data.hero_headline) document.getElementById('cms-hero-headline').value = data.hero_headline;
+          if (data.hero_sub) document.getElementById('cms-hero-sub').value = data.hero_sub;
+          if (data.ticker_text) document.getElementById('cms-ticker-text').value = data.ticker_text;
+          if (data.font_family) document.getElementById('cms-font-family').value = data.font_family;
+          if (data.whatsapp_phone) document.getElementById('cms-whatsapp-phone').value = data.whatsapp_phone;
+          updatePreview();
+        }
+      } catch (e) {}
+    }
+
+    function updatePreview() {
+      document.getElementById('prev-title').textContent = document.getElementById('cms-hero-headline').value;
+      document.getElementById('prev-sub').textContent = document.getElementById('cms-hero-sub').value;
+      document.getElementById('prev-ticker').textContent = document.getElementById('cms-ticker-text').value;
+    }
+
+    document.getElementById('cms-hero-headline').addEventListener('input', updatePreview);
+    document.getElementById('cms-hero-sub').addEventListener('input', updatePreview);
+    document.getElementById('cms-ticker-text').addEventListener('input', updatePreview);
+
+    document.getElementById('btn-save-cms').addEventListener('click', async () => {
+      const token = getAdminToken();
+      const payload = {
+        hero_headline: document.getElementById('cms-hero-headline').value,
+        hero_sub: document.getElementById('cms-hero-sub').value,
+        ticker_text: document.getElementById('cms-ticker-text').value,
+        font_family: document.getElementById('cms-font-family').value,
+        whatsapp_phone: document.getElementById('cms-whatsapp-phone').value
+      };
+
+      try {
+        const res = await fetch(`${API_BASE}/admin/content`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          const status = document.getElementById('cms-save-status');
+          status.removeAttribute('hidden');
+          setTimeout(() => status.setAttribute('hidden', ''), 3000);
+        }
+      } catch (err) {
+        alert('Failed to save CMS configuration');
+      }
+    });
+
+    // 4. SYSTEM TELEMETRY & LOGS
+    async function loadSystemStatus() {
+      const token = getAdminToken();
+      try {
+        const res = await fetch(`${API_BASE}/admin/system/status`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (data && data.runtime) {
+          document.getElementById('sys-php-version').textContent = data.runtime.php_version || 'PHP 8.3';
+          document.getElementById('sys-sapi').textContent = `${data.runtime.sapi || 'FPM'} (${data.runtime.os || ''})`;
+          document.getElementById('sys-mem-val').textContent = `${data.runtime.memory_allocated_mb || 0} MB`;
+          document.getElementById('sys-mem-peak').textContent = `Peak: ${data.runtime.memory_peak_mb || 0} MB`;
+          document.getElementById('sys-opcache-val').textContent = data.runtime.opcache_active ? 'Active' : 'Standby';
+        }
+      } catch (e) {}
+    }
+
+    async function loadSystemLogs() {
+      const level = document.getElementById('log-level-filter').value;
+      const token = getAdminToken();
+      const url = new URL(`${window.location.origin}${API_BASE}/admin/system/logs`);
+      if (level !== 'all') url.searchParams.set('level', level);
+
+      try {
+        const res = await fetch(url.toString(), {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (data && data.logs) {
+          renderLogs(data.logs);
+        }
+      } catch (e) {}
+    }
+
+    function renderLogs(logs) {
+      const cont = document.getElementById('logs-container');
+      if (!logs || logs.length === 0) {
+        cont.innerHTML = `<div style="color:#666;">No audit log records found.</div>`;
+        return;
+      }
+
+      let html = '';
+      logs.forEach(l => {
+        const timeStr = l.created_at ? new Date(l.created_at).toLocaleTimeString() : '';
+        html += `
+          <div class="log-row">
+            <span class="log-time">[${timeStr}]</span>
+            <span class="log-lvl log-lvl-${l.level}">${l.level}</span>
+            <span class="log-act">${l.action}</span>
+            <span class="log-msg">${l.message} (${l.ip_address || '127.0.0.1'})</span>
+          </div>
+        `;
+      });
+      cont.innerHTML = html;
+    }
+
+    document.getElementById('log-level-filter').addEventListener('change', loadSystemLogs);
+    document.getElementById('btn-refresh-logs').addEventListener('click', loadSystemLogs);
+
+    function debounce(fn, ms) {
+      let timeout;
+      return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => fn.apply(this, args), ms);
+      };
+    }
+
+    // Initial load
+    loadOrders();
+    loadReviews();
+    loadCms();
+  </script>
+</body>
+</html>

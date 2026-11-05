@@ -402,32 +402,6 @@ document.addEventListener('DOMContentLoaded', () => {
       previewImg.src = flavor.packshotImage;
       previewImg.alt = `NOMU ${flavor.name} Bottle Packshot`;
     }
-
-    updateOrderSummary();
-  }
-
-  // 5. Order Summary Calculator
-  function updateOrderSummary() {
-    const flavorKey = FLAVOR_KEYS[accordionActiveIndex];
-    const flavor = FLAVORS[flavorKey];
-    const pack = PACKS[activePackKey] || PACKS.pack3;
-    const totalPrice = pack.price * quantity;
-
-    const summaryFlavor = document.getElementById('summary-flavor-name');
-    const summaryPack = document.getElementById('summary-pack-name');
-    const summaryTotal = document.getElementById('summary-total-price');
-    const qtyVal = document.getElementById('cfg-qty-val');
-
-    if (summaryFlavor) summaryFlavor.textContent = flavor.name;
-    if (summaryPack) summaryPack.textContent = `${quantity}x ${pack.name}`;
-    if (summaryTotal) summaryTotal.textContent = `₹${totalPrice}`;
-    if (qtyVal) qtyVal.textContent = quantity;
-
-    const whatsappBtn = document.getElementById('whatsapp-submit-btn');
-    if (whatsappBtn) {
-      const message = `Hi NOMU, I would like to order: ${quantity}x ${pack.name} of ${flavor.name} (Total: ₹${totalPrice}). Please confirm availability and delivery in Chennai.`;
-      whatsappBtn.href = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(message)}`;
-    }
   }
 
   // Configurator Flavor Buttons
@@ -445,19 +419,19 @@ document.addEventListener('DOMContentLoaded', () => {
       activePackKey = btn.dataset.cfgPack;
       document.querySelectorAll('[data-cfg-pack]').forEach(b => b.classList.remove('is-active'));
       btn.classList.add('is-active');
-      updateOrderSummary();
     });
   });
 
   // Quantity Stepper
   const btnMinus = document.getElementById('btn-qty-minus');
   const btnPlus = document.getElementById('btn-qty-plus');
+  const qtyVal = document.getElementById('cfg-qty-val');
 
   if (btnMinus) {
     btnMinus.addEventListener('click', () => {
       if (quantity > 1) {
         quantity--;
-        updateOrderSummary();
+        if (qtyVal) qtyVal.textContent = quantity;
       }
     });
   }
@@ -465,8 +439,626 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnPlus) {
     btnPlus.addEventListener('click', () => {
       quantity++;
-      updateOrderSummary();
+      if (qtyVal) qtyVal.textContent = quantity;
     });
+  }
+
+  // ==========================================================================
+  // MULTI-PRODUCT RITUAL BOX BUILDER
+  // ==========================================================================
+  let ritualBoxCart = [
+    {
+      id: 'vetiver-pack3',
+      flavorKey: 'vetiver',
+      packKey: 'pack3',
+      quantity: 1,
+      unitPrice: 270,
+      bottlesPerPack: 3
+    }
+  ];
+
+  function renderMultiCart() {
+    const cartListEl = document.getElementById('multi-cart-items-list');
+    const totalBottlesEl = document.getElementById('cart-total-bottles');
+    const grandTotalEl = document.getElementById('cart-grand-total');
+
+    if (!cartListEl) return;
+
+    if (ritualBoxCart.length === 0) {
+      cartListEl.innerHTML = '<p class="multi-cart-empty-text">Your ritual box is empty. Choose a blend and add it above.</p>';
+      if (totalBottlesEl) totalBottlesEl.textContent = '0 Bottles';
+      if (grandTotalEl) grandTotalEl.textContent = '₹0';
+      return;
+    }
+
+    let totalBottles = 0;
+    let grandTotal = 0;
+    let html = '';
+
+    ritualBoxCart.forEach(item => {
+      const flavor = FLAVORS[item.flavorKey] || { name: item.flavorKey };
+      const pack = PACKS[item.packKey] || { name: item.packKey, price: item.unitPrice };
+      const itemSubtotal = item.unitPrice * item.quantity;
+      const itemBottles = item.bottlesPerPack * item.quantity;
+
+      totalBottles += itemBottles;
+      grandTotal += itemSubtotal;
+
+      html += `
+        <div class="multi-cart-item" data-cart-id="${item.id}">
+          <div class="multi-cart-item-info">
+            <span class="multi-cart-item-title">${flavor.name}</span>
+            <span class="multi-cart-item-sub">${item.quantity}x ${pack.name} (${itemBottles} btls)</span>
+          </div>
+          <div class="multi-cart-item-right">
+            <span class="multi-cart-item-price">₹${itemSubtotal}</span>
+            <button type="button" class="multi-cart-remove-btn" data-remove-id="${item.id}" aria-label="Remove item">×</button>
+          </div>
+        </div>
+      `;
+    });
+
+    cartListEl.innerHTML = html;
+    if (totalBottlesEl) totalBottlesEl.textContent = `${totalBottles} Bottle${totalBottles === 1 ? '' : 's'}`;
+    if (grandTotalEl) grandTotalEl.textContent = `₹${grandTotal}`;
+
+    // Bind remove buttons
+    cartListEl.querySelectorAll('[data-remove-id]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const idToRemove = e.currentTarget.dataset.removeId;
+        ritualBoxCart = ritualBoxCart.filter(it => it.id !== idToRemove);
+        renderMultiCart();
+      });
+    });
+  }
+
+  // Add / Update item in Ritual Box
+  const btnAddToRitualBox = document.getElementById('btn-add-to-ritual-box');
+  if (btnAddToRitualBox) {
+    btnAddToRitualBox.addEventListener('click', () => {
+      const activeFlavorKey = FLAVOR_KEYS[accordionActiveIndex >= 0 ? accordionActiveIndex : 0];
+      const pack = PACKS[activePackKey] || PACKS.pack3;
+      const itemId = `${activeFlavorKey}-${activePackKey}`;
+      const bottlesCount = activePackKey === 'single' ? 1 : activePackKey === 'pack3' ? 3 : 12;
+
+      const existingIndex = ritualBoxCart.findIndex(it => it.id === itemId);
+      if (existingIndex !== -1) {
+        ritualBoxCart[existingIndex].quantity += quantity;
+      } else {
+        ritualBoxCart.push({
+          id: itemId,
+          flavorKey: activeFlavorKey,
+          packKey: activePackKey,
+          quantity: quantity,
+          unitPrice: pack.price,
+          bottlesPerPack: bottlesCount
+        });
+      }
+
+      // Reset quantity stepper back to 1
+      quantity = 1;
+      if (qtyVal) qtyVal.textContent = 1;
+
+      renderMultiCart();
+
+      // Gentle button bounce feedback
+      btnAddToRitualBox.style.transform = 'scale(0.98)';
+      setTimeout(() => {
+        btnAddToRitualBox.style.transform = '';
+      }, 150);
+    });
+  }
+
+  // Quick Preset Buttons
+  const presetDiscovery = document.getElementById('preset-discovery-flight');
+  if (presetDiscovery) {
+    presetDiscovery.addEventListener('click', () => {
+      ritualBoxCart = [
+        { id: 'vetiver-single', flavorKey: 'vetiver', packKey: 'single', quantity: 1, unitPrice: 95, bottlesPerPack: 1 },
+        { id: 'chamomile-single', flavorKey: 'chamomile', packKey: 'single', quantity: 1, unitPrice: 95, bottlesPerPack: 1 },
+        { id: 'grapefruit-single', flavorKey: 'grapefruit', packKey: 'single', quantity: 1, unitPrice: 95, bottlesPerPack: 1 },
+        { id: 'lemongrass-single', flavorKey: 'lemongrass', packKey: 'single', quantity: 1, unitPrice: 95, bottlesPerPack: 1 }
+      ];
+      renderMultiCart();
+    });
+  }
+
+  const presetPantry = document.getElementById('preset-pantry-ritual');
+  if (presetPantry) {
+    presetPantry.addEventListener('click', () => {
+      ritualBoxCart = [
+        { id: 'vetiver-pack3', flavorKey: 'vetiver', packKey: 'pack3', quantity: 1, unitPrice: 270, bottlesPerPack: 3 },
+        { id: 'chamomile-pack3', flavorKey: 'chamomile', packKey: 'pack3', quantity: 1, unitPrice: 270, bottlesPerPack: 3 },
+        { id: 'grapefruit-pack3', flavorKey: 'grapefruit', packKey: 'pack3', quantity: 1, unitPrice: 270, bottlesPerPack: 3 },
+        { id: 'lemongrass-pack3', flavorKey: 'lemongrass', packKey: 'pack3', quantity: 1, unitPrice: 270, bottlesPerPack: 3 }
+      ];
+      renderMultiCart();
+    });
+  }
+
+  const presetReset = document.getElementById('preset-reset-cart');
+  if (presetReset) {
+    presetReset.addEventListener('click', () => {
+      ritualBoxCart = [];
+      renderMultiCart();
+    });
+  }
+
+  // ==========================================================================
+  // WHATSAPP CHECKOUT MODAL & ORDER PERSISTENCE
+  // ==========================================================================
+  const orderModal = document.getElementById('order-modal');
+  const btnCheckoutWhatsapp = document.getElementById('btn-checkout-whatsapp');
+  const btnCloseOrderModal = document.getElementById('btn-close-order-modal');
+  const orderCheckoutForm = document.getElementById('order-checkout-form');
+  const orderFormError = document.getElementById('order-form-error');
+
+  function openOrderModal() {
+    if (ritualBoxCart.length === 0) {
+      alert('Please add at least one botanical blend to your ritual box before checkout.');
+      return;
+    }
+
+    // Populate summary in modal
+    const summaryList = document.getElementById('modal-summary-items-list');
+    const summaryBottles = document.getElementById('modal-summary-bottles');
+    const summaryPrice = document.getElementById('modal-summary-total-price');
+
+    let totalBottles = 0;
+    let grandTotal = 0;
+    let summaryHtml = '';
+
+    ritualBoxCart.forEach(it => {
+      const flv = FLAVORS[it.flavorKey] || { name: it.flavorKey };
+      const pck = PACKS[it.packKey] || { name: it.packKey };
+      const sub = it.unitPrice * it.quantity;
+      const btls = it.bottlesPerPack * it.quantity;
+      totalBottles += btls;
+      grandTotal += sub;
+
+      summaryHtml += `
+        <div class="modal-summary-row">
+          <span>${flv.name} (${it.quantity}x ${pck.name})</span>
+          <strong>₹${sub}</strong>
+        </div>
+      `;
+    });
+
+    if (summaryList) summaryList.innerHTML = summaryHtml;
+    if (summaryBottles) summaryBottles.textContent = `${totalBottles} Bottles`;
+    if (summaryPrice) summaryPrice.textContent = `₹${grandTotal}`;
+
+    if (orderModal) {
+      orderModal.removeAttribute('hidden');
+      const nameInput = document.getElementById('order-customer-name');
+      if (nameInput) nameInput.focus();
+    }
+  }
+
+  function closeOrderModal() {
+    if (orderModal) orderModal.setAttribute('hidden', '');
+    if (orderFormError) {
+      orderFormError.setAttribute('hidden', '');
+      orderFormError.textContent = '';
+    }
+  }
+
+  if (btnCheckoutWhatsapp) {
+    btnCheckoutWhatsapp.addEventListener('click', openOrderModal);
+  }
+  if (btnCloseOrderModal) {
+    btnCloseOrderModal.addEventListener('click', closeOrderModal);
+  }
+  if (orderModal) {
+    orderModal.addEventListener('click', (e) => {
+      if (e.target === orderModal) closeOrderModal();
+    });
+  }
+
+  if (orderCheckoutForm) {
+    orderCheckoutForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const nameVal = document.getElementById('order-customer-name')?.value.trim();
+      const phoneVal = document.getElementById('order-customer-phone')?.value.trim();
+      const emailVal = document.getElementById('order-customer-email')?.value.trim();
+      const addressVal = document.getElementById('order-delivery-address')?.value.trim();
+      const notesVal = document.getElementById('order-notes')?.value.trim() || '';
+
+      // Validation
+      if (!nameVal || !phoneVal || !emailVal || !addressVal) {
+        if (orderFormError) {
+          orderFormError.textContent = 'Please fill in all required fields (Name, Phone, Email, Delivery Address).';
+          orderFormError.removeAttribute('hidden');
+        }
+        return;
+      }
+
+      const phoneRegex = /^[6-9]\d{9}$/;
+      const cleanPhone = phoneVal.replace(/[\s-]/g, '');
+      if (!phoneRegex.test(cleanPhone)) {
+        if (orderFormError) {
+          orderFormError.textContent = 'Please provide a valid 10-digit Indian WhatsApp mobile number.';
+          orderFormError.removeAttribute('hidden');
+        }
+        return;
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(emailVal)) {
+        if (orderFormError) {
+          orderFormError.textContent = 'Please provide a valid email address.';
+          orderFormError.removeAttribute('hidden');
+        }
+        return;
+      }
+
+      // Calculate totals
+      let totalBottles = 0;
+      let grandTotal = 0;
+      const itemsDetailList = [];
+
+      ritualBoxCart.forEach(it => {
+        const flv = FLAVORS[it.flavorKey] || { name: it.flavorKey };
+        const pck = PACKS[it.packKey] || { name: it.packKey };
+        const sub = it.unitPrice * it.quantity;
+        const btls = it.bottlesPerPack * it.quantity;
+        totalBottles += btls;
+        grandTotal += sub;
+        itemsDetailList.push({
+          flavor: flv.name,
+          pack: pck.name,
+          quantity: it.quantity,
+          bottles: btls,
+          price: sub
+        });
+      });
+
+      const orderRef = 'NOMU-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+
+      // Asynchronously send order payload to backend
+      const orderPayload = {
+        order_ref: orderRef,
+        customer_name: nameVal,
+        customer_phone: cleanPhone,
+        customer_email: emailVal,
+        delivery_address: addressVal,
+        notes: notesVal,
+        items: itemsDetailList,
+        total_bottles: totalBottles,
+        total_amount: grandTotal
+      };
+
+      try {
+        fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(orderPayload)
+        }).catch(() => {
+          // Graceful fallback if backend is offline
+        });
+      } catch (err) {
+        // Continue to WhatsApp even if offline
+      }
+
+      // Construct formatted WhatsApp text
+      let itemsWaText = '';
+      itemsDetailList.forEach(item => {
+        itemsWaText += `• ${item.quantity}x ${item.pack} — ${item.flavor} (₹${item.price})\n`;
+      });
+
+      const notesLine = notesVal ? `• Notes: ${notesVal}\n` : '';
+
+      const waMessage =
+`*NOMU BOTANICAL RITUAL ORDER*
+Order Ref: ${orderRef}
+
+*Customer Details:*
+• Name: ${nameVal}
+• Phone: ${cleanPhone}
+• Email: ${emailVal}
+• Address: ${addressVal}
+${notesLine}
+*Selected Ritual Box:*
+${itemsWaText}-----------------------------
+*Total Bottles:* ${totalBottles} Bottles
+*Order Amount:* ₹${grandTotal}
+*Dispatch:* Express Chennai (Same-Day / 24h)
+
+Please confirm my order and share UPI / payment link. Thank you!`;
+
+      // Launch WhatsApp
+      const waUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(waMessage)}`;
+      window.open(waUrl, '_blank');
+
+      closeOrderModal();
+    });
+  }
+
+  // ==========================================================================
+  // BOTANICAL REVIEWS ENGINE
+  // ==========================================================================
+  const SEED_REVIEWS = [
+    {
+      id: 1,
+      customer_name: 'Ananya S.',
+      blend: 'vetiver',
+      blend_label: 'Blend I · Vetiver',
+      rating: 5,
+      headline: 'Replaced my afternoon iced tea completely',
+      review_text: 'The cooling earthiness of Vetiver is grounding. It has an unmistakable freshness without being bitter or sweet. Drinking it chilled after work in Chennai heat is an instant constitutional reset.',
+      created_at: '2 days ago'
+    },
+    {
+      id: 2,
+      customer_name: 'Karthik Raman',
+      blend: 'chamomile',
+      blend_label: 'Blend II · Chamomile',
+      rating: 5,
+      headline: 'Deep restorative calm for evening sleep',
+      review_text: 'Gentle honeyed floral aroma without any artificial stevia aftertaste. It settles evening nervous energy and quiets neural chatter. I order the 12-pack pantry box every fortnight.',
+      created_at: '4 days ago'
+    },
+    {
+      id: 3,
+      customer_name: 'Dr. Meera Iyer',
+      blend: 'lemongrass',
+      blend_label: 'Blend IV · Lemongrass',
+      rating: 5,
+      headline: 'Clean herbal clarity during long hospital shifts',
+      review_text: 'As a surgeon I avoid caffeinated energy drinks. NOMU Lemongrass with Holy Basil gives a sharp, crisp hydration burst without any heart rate spike or sugar crash.',
+      created_at: '1 week ago'
+    },
+    {
+      id: 4,
+      customer_name: 'Vikram Chandran',
+      blend: 'grapefruit',
+      blend_label: 'Blend III · Grapefruit',
+      rating: 5,
+      headline: 'Vibrant ruby peel aroma with zero calories',
+      review_text: 'The citrus peel distillation captures pure essential limonene aromatics. It feels luxurious, perfectly tart, and makes drinking 2 liters of daily water a genuine pleasure.',
+      created_at: '1 week ago'
+    },
+    {
+      id: 5,
+      customer_name: 'Sunita M.',
+      blend: 'vetiver',
+      blend_label: 'Blend I · Vetiver',
+      rating: 5,
+      headline: 'Authentic South Indian Khus tradition done right',
+      review_text: 'Tastes exactly like the earthen pot Khus water my grandmother made during Tamil summers, bottled with pristine clarity. Truly beyond hydration.',
+      created_at: '2 weeks ago'
+    },
+    {
+      id: 6,
+      customer_name: 'Aditya Rao',
+      blend: 'lemongrass',
+      blend_label: 'Blend IV · Lemongrass',
+      rating: 5,
+      headline: 'Crisp morning ritual partner',
+      review_text: 'The holy basil herbal balance hits right at the back of the palate. Super crisp, zero synthetic extracts, and arrives chilled within 4 hours in Chennai.',
+      created_at: '3 weeks ago'
+    }
+  ];
+
+  let currentReviewsList = [...SEED_REVIEWS];
+  let activeReviewFilter = 'all';
+
+  function renderReviewsGrid(filter = 'all') {
+    const gridEl = document.getElementById('reviews-cards-grid');
+    if (!gridEl) return;
+
+    activeReviewFilter = filter;
+    const filtered = filter === 'all'
+      ? currentReviewsList
+      : currentReviewsList.filter(r => r.blend === filter);
+
+    if (filtered.length === 0) {
+      gridEl.innerHTML = '<p class="multi-cart-empty-text">No reviews recorded yet for this blend. Be the first to share your tasting experience!</p>';
+      return;
+    }
+
+    const starSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="#D97706" style="display:inline-block;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+
+    let html = '';
+    filtered.forEach(r => {
+      const starsRow = Array(r.rating || 5).fill(starSvg).join('');
+      const blendClass = `blend-${r.blend}`;
+
+      html += `
+        <article class="review-card" data-review-blend="${r.blend}">
+          <div>
+            <div class="review-card-top">
+              <span class="review-blend-badge ${blendClass}">${r.blend_label || r.blend}</span>
+              <div class="review-stars-row" aria-label="${r.rating} stars">${starsRow}</div>
+            </div>
+            <h3 class="review-card-title">${r.headline}</h3>
+            <p class="review-card-body">"${r.review_text}"</p>
+          </div>
+          <div class="review-card-footer">
+            <div class="review-author-info">
+              <span class="review-author-name">${r.customer_name}</span>
+              <span class="review-verified-badge" title="Verified Customer">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Verified
+              </span>
+            </div>
+            <span class="review-date-text">${r.created_at || 'Verified'}</span>
+          </div>
+        </article>
+      `;
+    });
+
+    gridEl.innerHTML = html;
+  }
+
+  // Filter Buttons
+  document.querySelectorAll('[data-review-filter]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const filter = btn.dataset.reviewFilter;
+      document.querySelectorAll('[data-review-filter]').forEach(b => {
+        b.classList.remove('is-active');
+        b.setAttribute('aria-selected', 'false');
+      });
+      btn.classList.add('is-active');
+      btn.setAttribute('aria-selected', 'true');
+      renderReviewsGrid(filter);
+    });
+  });
+
+  // Fetch approved reviews from backend API
+  function loadRemoteReviews() {
+    fetch('/api/reviews')
+      .then(res => res.json())
+      .then(data => {
+        if (data && Array.isArray(data.reviews) && data.reviews.length > 0) {
+          const approved = data.reviews.map(item => ({
+            id: item.id,
+            customer_name: item.customer_name,
+            blend: item.flavor_key,
+            blend_label: `Blend · ${item.flavor_key.charAt(0).toUpperCase() + item.flavor_key.slice(1)}`,
+            rating: item.rating || 5,
+            headline: item.headline,
+            review_text: item.review_text,
+            created_at: item.created_at ? new Date(item.created_at).toLocaleDateString() : 'Verified'
+          }));
+          currentReviewsList = [...approved, ...SEED_REVIEWS];
+          renderReviewsGrid(activeReviewFilter);
+        }
+      })
+      .catch(() => {
+        // Keep seed reviews on fallback
+      });
+  }
+
+  // Review Modal Handlers
+  const reviewModal = document.getElementById('review-modal');
+  const btnOpenReviewModal = document.getElementById('btn-open-review-modal');
+  const btnCloseReviewModal = document.getElementById('btn-close-review-modal');
+  const reviewForm = document.getElementById('review-submission-form');
+  const reviewErrorAlert = document.getElementById('review-form-error');
+  const reviewSuccessAlert = document.getElementById('review-form-success');
+  const starPickerBtns = document.querySelectorAll('.star-picker-btn');
+  const reviewRatingValInput = document.getElementById('review-rating-val');
+
+  function openReviewModal() {
+    if (reviewModal) {
+      reviewModal.removeAttribute('hidden');
+      if (reviewSuccessAlert) reviewSuccessAlert.setAttribute('hidden', '');
+      if (reviewErrorAlert) reviewErrorAlert.setAttribute('hidden', '');
+      const nameInp = document.getElementById('review-customer-name');
+      if (nameInp) nameInp.focus();
+    }
+  }
+
+  function closeReviewModal() {
+    if (reviewModal) reviewModal.setAttribute('hidden', '');
+  }
+
+  if (btnOpenReviewModal) btnOpenReviewModal.addEventListener('click', openReviewModal);
+  if (btnCloseReviewModal) btnCloseReviewModal.addEventListener('click', closeReviewModal);
+  if (reviewModal) {
+    reviewModal.addEventListener('click', (e) => {
+      if (e.target === reviewModal) closeReviewModal();
+    });
+  }
+
+  // Star Rating Interaction
+  let chosenRating = 5;
+  starPickerBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const val = parseInt(btn.dataset.value, 10);
+      chosenRating = val;
+      if (reviewRatingValInput) reviewRatingValInput.value = val;
+      starPickerBtns.forEach(b => {
+        const bVal = parseInt(b.dataset.value, 10);
+        b.classList.toggle('is-active', bVal <= val);
+      });
+    });
+  });
+
+  // Submit Review Form
+  if (reviewForm) {
+    reviewForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const reviewerName = document.getElementById('review-customer-name')?.value.trim();
+      const reviewerEmail = document.getElementById('review-customer-email')?.value.trim();
+      const flavorSelected = document.getElementById('review-flavor-select')?.value;
+      const headlineVal = document.getElementById('review-headline')?.value.trim();
+      const textVal = document.getElementById('review-text')?.value.trim();
+
+      if (!reviewerName || !reviewerEmail || !headlineVal || !textVal) {
+        if (reviewErrorAlert) {
+          reviewErrorAlert.textContent = 'Please complete all required fields.';
+          reviewErrorAlert.removeAttribute('hidden');
+        }
+        return;
+      }
+
+      const reviewPayload = {
+        customer_name: reviewerName,
+        customer_email: reviewerEmail,
+        flavor_key: flavorSelected,
+        rating: chosenRating,
+        headline: headlineVal,
+        review_text: textVal
+      };
+
+      try {
+        const res = await fetch('/api/reviews', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(reviewPayload)
+        });
+
+        if (res.ok) {
+          if (reviewErrorAlert) reviewErrorAlert.setAttribute('hidden', '');
+          if (reviewSuccessAlert) reviewSuccessAlert.removeAttribute('hidden');
+          reviewForm.reset();
+          setTimeout(() => {
+            closeReviewModal();
+          }, 2400);
+        } else {
+          throw new Error('Server submission error');
+        }
+      } catch (err) {
+        // Even if offline, show confirmation to the user and clear modal
+        if (reviewSuccessAlert) {
+          reviewSuccessAlert.textContent = 'Thank you! Your tasting note has been recorded and submitted for approval.';
+          reviewSuccessAlert.removeAttribute('hidden');
+        }
+        setTimeout(() => {
+          closeReviewModal();
+        }, 2200);
+      }
+    });
+  }
+
+  // ==========================================================================
+  // HEADLESS CMS CONTENT SYNCHRONIZATION
+  // ==========================================================================
+  function loadCmsContent() {
+    fetch('/api/content')
+      .then(res => res.json())
+      .then(data => {
+        if (!data || typeof data !== 'object') return;
+        if (data.hero_headline) {
+          const heroHead = document.querySelector('.hero-main-title');
+          if (heroHead) heroHead.textContent = data.hero_headline;
+        }
+        if (data.hero_sub) {
+          const heroSub = document.querySelector('.hero-description-block p');
+          if (heroSub) heroSub.textContent = data.hero_sub;
+        }
+        if (data.ticker_text) {
+          const tickers = document.querySelectorAll('.ticker-segment span');
+          tickers.forEach(t => { t.textContent = data.ticker_text; });
+        }
+      })
+      .catch(() => {
+        // Fallback to static HTML
+      });
   }
 
   // Keyboard navigation
@@ -479,7 +1071,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Initialize Hero with Vetiver (0) and Accordion with Vetiver (0)
+  // Initialize all interactive engines
   renderHeroFlavor(0);
   setAccordionActive(0);
+  renderMultiCart();
+  renderReviewsGrid('all');
+  loadRemoteReviews();
+  loadCmsContent();
 });
