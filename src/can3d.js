@@ -288,7 +288,7 @@ export class NomuCanScene {
     ctx.fillStyle = '#52525B';
     ctx.fillText('機能性天然ハーブ飲料', leftX, 230);
     ctx.fillText('純国産ボタニカル水', leftX, 270);
-    ctx.fillText('飲む · BEYOND HYDRATION', leftX, 310);
+    ctx.fillText('BEYOND HYDRATION', leftX, 310);
 
     ctx.font = '400 18px monospace';
     ctx.fillStyle = '#71717A';
@@ -359,7 +359,7 @@ export class NomuCanScene {
     ctx.font = '600 26px "Noto Serif JP", serif';
     ctx.fillStyle = '#FFFFFF';
     ctx.letterSpacing = '6px';
-    ctx.fillText(flavor.flavorKanji + ' · 飲む', centerX, 780);
+    ctx.fillText(flavor.flavorKanji, centerX, 780);
 
     // Volume declaration
     ctx.font = '600 20px monospace';

@@ -1,5 +1,5 @@
 // NOMU — Beyond Hydration Interactive Client Application
-// Dribbble Hero + Dribbble Expanding Pillar Showcase + Botanical Consultation
+// Dribbble Hero Section Replication + Dribbble Expanding Pillar Showcase + Pack Builder
 
 export const FLAVORS = {
   vetiver: {
@@ -13,13 +13,17 @@ export const FLAVORS = {
     subtitle: 'Natural Khus Root Infusion',
     positioning: 'Earthy, Cooling & Deeply Grounding',
     tagline: 'Ancient South Indian Khus roots traditionally cold-steeped to dissipate internal heat, anchor the mind, and restore constitutional balance.',
-    themeBg: '#2B2014',
+    themeBg: '#D5360C', // Burnt Orange / Terracotta as requested
     accentColor: '#E6D5BD',
     bottleImage: '/img/bottles/vetiver_isolated.png',
     packshotImage: '/img/bottles/vetiver_packshot.jpg',
     splashImage: '/img/ingredients/vetiver_khus_root.png',
+    headline: 'Grounded in the earth.',
     mediaTitle: 'South Indian Khus Harvest',
     mediaDesc: 'Ancient Vetiver roots cold-steeped in micro-batches to extract cooling essential minerals and earthy aromatics.',
+    mediaVideo: '/video/nomu_showcase.mp4',
+    mediaPoster: '/img/nomu/nomu_bottles_hero_real.jpg',
+    ctaText: 'EXPLORE VETIVER →',
     priceSingle: 95,
     pricePack3: 270,
     pricePack12: 999,
@@ -46,13 +50,17 @@ export const FLAVORS = {
     subtitle: 'Blossoms & Soft Lavender',
     positioning: 'Floral, Delicate & Gently Calming',
     tagline: 'Sun-dried German chamomile blossoms delivering apigenin-rich relaxation, settling digestion and quieting evening neural chatter.',
-    themeBg: '#2E1C06',
+    themeBg: '#8A5404', // Warm Golden Amber / Roasted Honey Steep (WCAG 6.2:1)
     accentColor: '#E6D5BD',
     bottleImage: '/img/bottles/chamomile_isolated.png',
     packshotImage: '/img/bottles/chamomile_packshot.jpg',
-    splashImage: '/img/ingredients/chatgpt_hero_visual.webp',
+    splashImage: '/img/ingredients/chamomile_lavender_harvest.jpg',
+    headline: 'Calm in the chaos.',
     mediaTitle: 'German Blossom Steep',
     mediaDesc: 'Whole sun-dried Roman chamomile flower blossoms steeped gently at room temperature for evening restoration.',
+    mediaVideo: '/video/nomu_showcase.mp4',
+    mediaPoster: '/img/ingredients/chamomile_lavender_harvest.jpg',
+    ctaText: 'EXPLORE CHAMOMILE →',
     priceSingle: 95,
     pricePack3: 270,
     pricePack12: 999,
@@ -79,13 +87,17 @@ export const FLAVORS = {
     subtitle: 'Ruby Peel & Hibiscus',
     positioning: 'Zesty, Vibrant & Naturally Uplifting',
     tagline: 'Cold-extracted ruby grapefruit peel and tart botanical infusions to awaken palate senses, invigorate metabolic alertness, and sparkle.',
-    themeBg: '#380B0E',
+    themeBg: '#B51718', // Radiant Signature Crimson (WCAG 6.7:1)
     accentColor: '#E6D5BD',
     bottleImage: '/img/bottles/grapefruit_isolated.png',
     packshotImage: '/img/bottles/grapefruit_packshot.jpg',
-    splashImage: '/img/ingredients/lemongrass_grapefruit_herbs.jpg',
+    splashImage: '/img/ingredients/grapefruit_harvest.jpg',
+    headline: 'Awaken the senses.',
     mediaTitle: 'Ruby Peel Expression',
     mediaDesc: 'Cold-expressed citrus peel and vibrant hibiscus releasing natural essential limonene oils for morning alertness.',
+    mediaVideo: '/video/nomu_showcase.mp4',
+    mediaPoster: '/img/ingredients/grapefruit_harvest.jpg',
+    ctaText: 'EXPLORE GRAPEFRUIT →',
     priceSingle: 95,
     pricePack3: 270,
     pricePack12: 999,
@@ -112,13 +124,17 @@ export const FLAVORS = {
     subtitle: 'Nilgiri Stalks & Holy Basil',
     positioning: 'Crisp, Herbal & Naturally Refreshing',
     tagline: 'High-altitude Nilgiri lemongrass distilled with holy basil to deliver sharp focus, cellular hydration, and clean herbal vitality.',
-    themeBg: '#14290B',
+    themeBg: '#32690E', // Fresh Botanical Nilgiri Green (WCAG 6.6:1)
     accentColor: '#E6D5BD',
     bottleImage: '/img/bottles/lemongrass_isolated.png',
     packshotImage: '/img/bottles/lemongrass_packshot.jpg',
-    splashImage: '/img/ingredients/lemongrass_grapefruit_herbs.jpg',
+    splashImage: '/img/ingredients/lemongrass_harvest.jpg',
+    headline: 'Clarity by design.',
     mediaTitle: 'Nilgiri Mountain Stalks',
     mediaDesc: 'High-altitude Nilgiri lemongrass harvested at morning dew point and distilled with holy basil (Tulsi).',
+    mediaVideo: '/video/nomu_showcase.mp4',
+    mediaPoster: '/img/ingredients/lemongrass_harvest.jpg',
+    ctaText: 'EXPLORE LEMONGRASS →',
     priceSingle: 95,
     pricePack3: 270,
     pricePack12: 999,
@@ -151,8 +167,10 @@ document.addEventListener('DOMContentLoaded', () => {
   let accordionActiveIndex = 0; // For Section 2 (The Expanding Pillar Showcase)
   let activePackKey = 'pack3';
   let quantity = 1;
+  let isHeroAnimating = false;
+  let heroCycleTimer = null;
 
-  // 1. Hero Section Controller (Dribbble Bottle Stage)
+  // 1. Hero Section Controller (Faithful Dribbble Replication)
   function renderHeroFlavor(index) {
     if (index < 0) index = FLAVOR_KEYS.length - 1;
     if (index >= FLAVOR_KEYS.length) index = 0;
@@ -161,49 +179,153 @@ document.addEventListener('DOMContentLoaded', () => {
     const flavorKey = FLAVOR_KEYS[heroActiveIndex];
     const flavor = FLAVORS[flavorKey];
 
-    // Update Hero Bottle Image
+    // A. Update Stage Theme (Triggers smooth CSS background transition)
+    const heroStage = document.getElementById('hero');
+    const siteHeader = document.getElementById('site-header');
+    if (heroStage) {
+      heroStage.setAttribute('data-hero-flavor', flavorKey);
+      heroStage.style.setProperty('--hero-bg', flavor.themeBg);
+    }
+    if (siteHeader) {
+      siteHeader.style.setProperty('--hero-bg', flavor.themeBg);
+    }
+
+    // B. Animate Center Bottle Swap with Spring Scale
     const heroBottle = document.getElementById('hero-bottle-img');
     if (heroBottle) {
-      heroBottle.style.opacity = '0';
-      heroBottle.style.transform = 'translateY(12px) scale(0.96)';
+      heroBottle.classList.add('is-swapping');
       setTimeout(() => {
         heroBottle.src = flavor.bottleImage;
         heroBottle.alt = `NOMU ${flavor.name} Botanical Water Bottle`;
-        heroBottle.style.opacity = '1';
-        heroBottle.style.transform = 'translateY(0) scale(1)';
-      }, 150);
+        heroBottle.classList.remove('is-swapping');
+      }, 200);
     }
 
-    // Update Hero Media Thumbnail & Texts
+    // C. Animate Right Editorial Column with Staggered Slide-Fade
+    const rightCol = document.getElementById('hero-col-right');
+    const heroHeadline = document.getElementById('hero-right-title');
+    const heroPhoto = document.getElementById('hero-right-thumb');
+    const heroNarrative = document.getElementById('hero-right-desc');
+    const heroCtaBtn = document.getElementById('hero-cta-btn');
+
+    if (rightCol) {
+      rightCol.classList.add('anim-stagger-out');
+      setTimeout(() => {
+        if (heroHeadline) heroHeadline.textContent = flavor.headline;
+        if (heroPhoto) {
+          heroPhoto.src = flavor.splashImage;
+          heroPhoto.alt = `${flavor.name} harvest ingredients`;
+        }
+        if (heroNarrative) heroNarrative.textContent = flavor.tagline;
+        if (heroCtaBtn) {
+          heroCtaBtn.textContent = flavor.ctaText;
+          heroCtaBtn.href = `#pillar-${flavorKey}`;
+        }
+        rightCol.classList.remove('anim-stagger-out');
+      }, 200);
+    }
+
+    // D. Update Left Media Window & Captions
     const heroMediaTitle = document.getElementById('hero-media-title');
     const heroMediaDesc = document.getElementById('hero-media-desc');
-    const heroCounter = document.getElementById('hero-index-counter');
-    const heroProgress = document.getElementById('hero-progress-bar');
-    const heroRightTitle = document.getElementById('hero-right-title');
-    const heroRightDesc = document.getElementById('hero-right-desc');
-    const heroRightThumb = document.getElementById('hero-right-thumb');
+    const heroVideoPlayer = document.getElementById('hero-video-player');
 
     if (heroMediaTitle) heroMediaTitle.textContent = flavor.mediaTitle;
     if (heroMediaDesc) heroMediaDesc.textContent = flavor.mediaDesc;
-    if (heroCounter) heroCounter.textContent = `Blend ${heroActiveIndex + 1} of 4`;
-    if (heroProgress) heroProgress.style.width = `${((heroActiveIndex + 1) / 4) * 100}%`;
-    if (heroRightTitle) heroRightTitle.textContent = `${flavor.name}.`;
-    if (heroRightDesc) heroRightDesc.textContent = flavor.positioning;
-    if (heroRightThumb) heroRightThumb.src = flavor.splashImage;
-
-    // Update Hero WhatsApp Order Link
-    const heroWaBtn = document.getElementById('hero-whatsapp-btn');
-    if (heroWaBtn) {
-      const msg = `Hi NOMU, I would like to order NOMU ${flavor.name} (Single ₹95 / 3-Pack ₹270 / 12-Pack ₹999).`;
-      heroWaBtn.href = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(msg)}`;
+    if (heroVideoPlayer && flavor.mediaPoster) {
+      heroVideoPlayer.poster = flavor.mediaPoster;
     }
 
-    // Update Hero Category Nav Pills
+    // E. Synchronize Pagination Dots
+    document.querySelectorAll('.hero-dot-btn').forEach((dot, dotIdx) => {
+      dot.classList.toggle('is-active', dotIdx === heroActiveIndex);
+      dot.setAttribute('aria-selected', dotIdx === heroActiveIndex ? 'true' : 'false');
+    });
+
+    // F. Synchronize Top & Stage Nav Links
     document.querySelectorAll('[data-hero-nav]').forEach(pill => {
       const isCur = pill.dataset.heroNav === flavorKey;
       pill.classList.toggle('is-active', isCur);
     });
+
+    // G. Update Counter & WhatsApp Link
+    const heroCounter = document.getElementById('hero-index-counter');
+    if (heroCounter) {
+      heroCounter.textContent = `Blend ${heroActiveIndex + 1} of 4 · Small-Batch Crafted in Chennai`;
+    }
+
+    const heroWaBtn = document.getElementById('hero-whatsapp-btn');
+    if (heroWaBtn) {
+      const msg = `Hi NOMU, I would like to order NOMU ${flavor.name} Botanical Water (₹95 single / ₹270 3-pack).`;
+      heroWaBtn.href = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(msg)}`;
+    }
   }
+
+  // Bind Pagination Dots
+  document.querySelectorAll('.hero-dot-btn').forEach(dot => {
+    dot.addEventListener('click', (e) => {
+      e.preventDefault();
+      const dotIdx = parseInt(dot.dataset.dotIndex, 10);
+      if (!isNaN(dotIdx)) {
+        renderHeroFlavor(dotIdx);
+        resetHeroTimer();
+      }
+    });
+  });
+
+  // Bind Top Stage Flavour Links
+  document.querySelectorAll('[data-hero-nav]').forEach(pill => {
+    pill.addEventListener('click', (e) => {
+      e.preventDefault();
+      const key = pill.dataset.heroNav;
+      const idx = FLAVOR_KEYS.indexOf(key);
+      if (idx !== -1) {
+        renderHeroFlavor(idx);
+        resetHeroTimer();
+      }
+    });
+  });
+
+  // Hero Play/Pause Toggle Button
+  const heroPlayToggle = document.getElementById('hero-play-toggle');
+  const heroVideoPlayer = document.getElementById('hero-video-player');
+  if (heroPlayToggle && heroVideoPlayer) {
+    heroPlayToggle.addEventListener('click', () => {
+      if (heroVideoPlayer.paused) {
+        heroVideoPlayer.play();
+        heroPlayToggle.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+        heroPlayToggle.setAttribute('aria-label', 'Pause video');
+      } else {
+        heroVideoPlayer.pause();
+        heroPlayToggle.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+        heroPlayToggle.setAttribute('aria-label', 'Play video');
+      }
+    });
+  }
+
+  // Hero Auto-Cycle Timer (6.5s interval, pauses on hover)
+  function startHeroTimer() {
+    if (heroCycleTimer) clearInterval(heroCycleTimer);
+    heroCycleTimer = setInterval(() => {
+      renderHeroFlavor(heroActiveIndex + 1);
+    }, 6500);
+  }
+
+  function resetHeroTimer() {
+    startHeroTimer();
+  }
+
+  const heroSectionEl = document.getElementById('hero');
+  if (heroSectionEl) {
+    heroSectionEl.addEventListener('mouseenter', () => {
+      if (heroCycleTimer) clearInterval(heroCycleTimer);
+    });
+    heroSectionEl.addEventListener('mouseleave', () => {
+      startHeroTimer();
+    });
+  }
+
+  startHeroTimer();
 
   // 2. Dribbble Expanding Accordion Showcase Controller (Video 2 reference)
   function setAccordionActive(index) {
@@ -232,24 +354,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 3. Hero Navigation Bindings
+  // 3. Hero Navigation Bindings (Prev/Next fallback)
   const heroPrev = document.getElementById('hero-nav-prev');
   const heroNext = document.getElementById('hero-nav-next');
 
   if (heroPrev) {
-    heroPrev.addEventListener('click', () => renderHeroFlavor(heroActiveIndex - 1));
+    heroPrev.addEventListener('click', () => {
+      renderHeroFlavor(heroActiveIndex - 1);
+      resetHeroTimer();
+    });
   }
   if (heroNext) {
-    heroNext.addEventListener('click', () => renderHeroFlavor(heroActiveIndex + 1));
-  }
-
-  document.querySelectorAll('[data-hero-nav]').forEach(pill => {
-    pill.addEventListener('click', () => {
-      const key = pill.dataset.heroNav;
-      const idx = FLAVOR_KEYS.indexOf(key);
-      if (idx !== -1) renderHeroFlavor(idx);
+    heroNext.addEventListener('click', () => {
+      renderHeroFlavor(heroActiveIndex + 1);
+      resetHeroTimer();
     });
-  });
+  }
 
   // 4. Configurator / Pack Builder Sync
   function syncConfigurator(flavorKey) {
