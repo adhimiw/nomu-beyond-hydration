@@ -9,6 +9,7 @@ import { RitualBoxBuilder } from './components/RitualBoxBuilder';
 import { OrderModal } from './components/OrderModal';
 import { ReviewModal } from './components/ReviewModal';
 import { AdminConsole } from './components/AdminConsole';
+import { ContactSection } from './components/ContactSection';
 import { Footer } from './components/Footer';
 
 import { FLAVORS } from './data/flavors';
@@ -167,14 +168,16 @@ export const App: React.FC = () => {
     setIsOrderModalOpen(true);
   };
 
-  const scrollToPillars = () => {
-    setActiveAccordionFlavor(activeHeroFlavor);
+  const scrollToPillars = (flavorKey?: FlavorKey) => {
+    const targetFlavor = flavorKey || activeHeroFlavor;
+    setActiveAccordionFlavor(targetFlavor);
     setTimeout(() => {
-      const el = document.getElementById(`pillar-${activeHeroFlavor}`) || document.getElementById('showcase');
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const targetId = `pillar-${targetFlavor}`;
+      const targetEl = document.getElementById(targetId) || document.getElementById('showcase');
+      if (targetEl) {
+        targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
-    }, 60);
+    }, 80);
   };
 
   if (isAdminOpen) {
@@ -205,6 +208,16 @@ export const App: React.FC = () => {
           onExploreClick={scrollToPillars}
         />
 
+        {/* Continuous Marquee Ribbon matching Dribbble */}
+        <div className="ticker-ribbon" aria-hidden="true">
+          <div className="ticker-track">
+            <span className="ticker-item">{cms.ticker_text || '100% RECYCLED GLASS · NO CHEMICALS · SMALL-BATCH DISTILLED · CHENNAI EXPRESS'} <span className="ticker-dot">•</span></span>
+            <span className="ticker-item">{cms.ticker_text || '100% RECYCLED GLASS · NO CHEMICALS · SMALL-BATCH DISTILLED · CHENNAI EXPRESS'} <span className="ticker-dot">•</span></span>
+            <span className="ticker-item">{cms.ticker_text || '100% RECYCLED GLASS · NO CHEMICALS · SMALL-BATCH DISTILLED · CHENNAI EXPRESS'} <span className="ticker-dot">•</span></span>
+            <span className="ticker-item">{cms.ticker_text || '100% RECYCLED GLASS · NO CHEMICALS · SMALL-BATCH DISTILLED · CHENNAI EXPRESS'} <span className="ticker-dot">•</span></span>
+          </div>
+        </div>
+
         <AboutSection />
 
         <ReviewsSection
@@ -227,6 +240,8 @@ export const App: React.FC = () => {
           onApplyPreset={handleApplyPreset}
           onOpenCheckout={() => setIsOrderModalOpen(true)}
         />
+
+        <ContactSection />
       </main>
 
       <Footer />

@@ -2,27 +2,30 @@ import React from 'react';
 
 interface HeaderProps {
   currentThemeBg: string;
-  onOpenCheckout: () => void;
   isAdminOpen: boolean;
   onToggleAdmin: () => void;
-  cartItemCount: number;
+  onOpenCheckout?: () => void;
+  cartItemCount?: number;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   currentThemeBg,
-  onOpenCheckout,
   isAdminOpen,
   onToggleAdmin,
-  cartItemCount
+  onOpenCheckout
 }) => {
   return (
-    <header className="site-header" id="site-header" style={{ backgroundColor: currentThemeBg }}>
+    <header
+      className="site-header"
+      id="site-header"
+      style={{ '--hero-bg': currentThemeBg, backgroundColor: currentThemeBg } as React.CSSProperties}
+    >
       <div className="container header-inner">
         <a href="#hero" className="brand-group" aria-label="NOMU Home">
           <div className="brand-logo-badge">
             <img src="/img/nomu/nomu_logo_clean.png" alt="NOMU Logo" width="22" height="22" />
           </div>
-          <span className="brand-wordmark">NOMU</span>
+          <img src="/img/nomu/nomu_wordmark_transparent.png" alt="NOMU Wordmark" className="brand-wordmark-img" height="20" />
           <span className="brand-tagline">BEYOND HYDRATION</span>
         </a>
 
@@ -42,20 +45,28 @@ export const Header: React.FC<HeaderProps> = ({
             className="btn btn-header-admin"
             onClick={onToggleAdmin}
             aria-label="Toggle Operations Console"
+            style={{ marginRight: '0.5rem' }}
           >
             {isAdminOpen ? 'Storefront View' : 'Operations Console'}
           </button>
-          <button
-            type="button"
+          <a
+            href="#shop"
             className="btn btn-header-cta"
-            onClick={onOpenCheckout}
-            aria-label="Order Ritual Box"
+            onClick={(e) => {
+              if (onOpenCheckout) {
+                e.preventDefault();
+                onOpenCheckout();
+              } else {
+                const el = document.getElementById('shop');
+                if (el) {
+                  e.preventDefault();
+                  el.scrollIntoView({ behavior: 'smooth' });
+                }
+              }
+            }}
           >
-            <span>ORDER NOW</span>
-            {cartItemCount > 0 && (
-              <span className="cart-pill-count">{cartItemCount}</span>
-            )}
-          </button>
+            ORDER NOW
+          </a>
         </div>
       </div>
     </header>

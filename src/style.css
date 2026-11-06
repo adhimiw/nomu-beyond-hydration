@@ -1513,9 +1513,14 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     grid-template-columns: 1fr;
     gap: 1.5rem;
     padding: 1.75rem 1.25rem;
+    display: grid !important;
   }
 
-  .pillar-collapsed-view {
+  .accordion-pillar.is-expanded .pillar-collapsed-view {
+    display: none !important;
+  }
+
+  .accordion-pillar:not(.is-expanded) .pillar-collapsed-view {
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
@@ -1525,6 +1530,10 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     min-height: 80px !important;
     gap: 1rem !important;
     cursor: pointer;
+  }
+
+  .accordion-pillar:not(.is-expanded) .pillar-expanded-view {
+    display: none !important;
   }
 
   .pillar-mini-bottle {
@@ -1595,16 +1604,27 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   }
 
   .pillar-splash-bottle-wrap {
-    min-height: 280px;
+    min-height: auto;
+    height: auto;
+    padding: 1.25rem 0 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
   }
 
   .pillar-large-bottle {
-    max-height: 280px;
+    max-height: clamp(210px, 34vh, 260px) !important;
+    width: auto !important;
+    object-fit: contain;
+    position: relative;
+    z-index: 2;
   }
 
   .pillar-ingredient-splash {
-    width: 140px;
-    height: 140px;
+    width: clamp(130px, 30vw, 160px) !important;
+    height: clamp(130px, 30vw, 160px) !important;
+    bottom: 10px !important;
   }
 
   .pillar-title-lockup {
@@ -1621,6 +1641,41 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 
   .pillar-kanji-sub {
     font-size: 1.1rem;
+  }
+}
+
+/* Landscape Mobile & Short Height Optimization */
+@media (max-height: 560px) and (orientation: landscape) {
+  .site-header {
+    height: 50px;
+  }
+  .header-inner {
+    height: 50px;
+  }
+  .accordion-showcase-section {
+    padding-top: 1.5rem;
+    padding-bottom: 2rem;
+    scroll-margin-top: 3.5rem;
+  }
+  .accordion-stage-wrap {
+    min-height: 420px;
+    gap: 0.65rem;
+  }
+  .pillar-splash-bottle-wrap {
+    min-height: 200px;
+    padding: 0.5rem 0;
+  }
+  .pillar-large-bottle {
+    max-height: 200px !important;
+  }
+  .pillar-ingredient-splash {
+    width: 105px !important;
+    height: 105px !important;
+    bottom: 5px !important;
+  }
+  .accordion-pillar.is-expanded .pillar-expanded-view {
+    padding: 1rem 1.25rem;
+    gap: 1rem;
   }
 }
 

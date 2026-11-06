@@ -2,42 +2,51 @@ import React from 'react';
 
 export const AboutSection: React.FC = () => {
   return (
-    <section className="about-section" id="about">
+    <section className="about-nomu-section" id="about">
       <div className="container">
-        <div className="about-grid">
-          <div className="about-copy-col">
-            <span className="about-badge" data-ui>NOT JUST WATER</span>
-            <h2 className="about-title">BEYOND HYDRATION.</h2>
-            <p className="about-paragraph">
-              Modern life is depleted by synthetic syrups, carbonated chemicals, and filtered plain tap water devoid of cellular life.
+        <div className="about-nomu-grid">
+          {/* Left Column: Sticky Title & Japanese Subtitle */}
+          <div className="about-nomu-left">
+            <span data-ui className="about-nomu-badge">ABOUT US — 私たちについて</span>
+            <p className="about-nomu-headline">
+              NOT JUST WATER.<br />
+              <span className="text-nomu-red">NOT JUST A</span><br />
+              FLAVOURED DRINK.
             </p>
-            <p className="about-paragraph">
-              NOMU cold-steeps and distills four whole botanical plants sourced across the Western Ghats and Tamil Nadu soils. Zero cane sugar, zero artificial flavor essences, zero stevia masking. Just clean, living hydration.
-            </p>
-
-            <div className="about-stats-row" data-ui>
-              <div className="stat-unit">
-                <strong>4</strong>
-                <span>Pure Botanicals</span>
-              </div>
-              <div className="stat-unit">
-                <strong>0g</strong>
-                <span>Added Sugar</span>
-              </div>
-              <div className="stat-unit">
-                <strong>100%</strong>
-                <span>Recycled Glass</span>
-              </div>
-            </div>
           </div>
 
-          <div className="about-visual-col">
-            <div className="about-art-frame" data-ui>
-              <img
-                src="/img/ingredients/chamomile_lavender_harvest.jpg"
-                alt="Botanical Steep Process"
-                className="about-art-img"
-              />
+          {/* Right Column: Narrative & 4 Claim Cards */}
+          <div className="about-nomu-right">
+            <div className="about-nomu-narrative">
+              <p className="about-lead-p">
+                <strong className="text-nomu-red">NOMU</strong> is a modern herb-infused water brand bringing together traditional ingredients and contemporary lifestyles in every bottle.
+              </p>
+              <p className="about-body-p">
+                We craft refreshing blends like Vetiver, Chamomile, Lemongrass and Grapefruit to offer clean, functional hydration without added nonsense. Replaces sugar, chemicals, and caffeine with clean, herb-infused hydration that delivers real flavor and function.
+              </p>
+              <p className="about-body-p">
+                At Nomu, we’re redefining water as a daily wellness ritual — natural, flavorful, and mindfully restorative.
+              </p>
+            </div>
+
+            {/* 4 Metrics Claims Grid */}
+            <div className="about-claims-grid" data-ui>
+              <div className="about-claim-card">
+                <span className="claim-val">100%</span>
+                <span className="claim-lbl">NATURAL INFUSIONS</span>
+              </div>
+              <div className="about-claim-card">
+                <span className="claim-val">0</span>
+                <span className="claim-lbl">CALORIES PER BOTTLE</span>
+              </div>
+              <div className="about-claim-card">
+                <span className="claim-val">0</span>
+                <span className="claim-lbl">PRESERVATIVES</span>
+              </div>
+              <div className="about-claim-card">
+                <span className="claim-val">4</span>
+                <span className="claim-lbl">SIGNATURE FLAVOURS</span>
+              </div>
             </div>
           </div>
         </div>

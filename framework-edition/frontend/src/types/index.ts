@@ -22,6 +22,8 @@ export interface FlavorItem {
   flavorKanji: string;
   mood: string;
   subtitle: string;
+  subtitleShort?: string;
+  miniName?: string;
   positioning: string;
   tagline: string;
   themeBg: string;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { FLAVORS, FLAVOR_KEYS } from '../data/flavors';
 import { FlavorKey } from '../types';
 
@@ -13,20 +13,41 @@ export const ShowcaseSection: React.FC<ShowcaseSectionProps> = ({
   onSelectAccordion,
   onQuickOrderWhatsapp
 }) => {
+  const hoverTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleMouseEnter = (key: FlavorKey) => {
+    if (typeof window !== 'undefined' && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
+      // Calm, intentional 420ms hover debounce prevents jittery rapid animations
+      hoverTimerRef.current = setTimeout(() => {
+        onSelectAccordion(key);
+      }, 420);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (hoverTimerRef.current) {
+      clearTimeout(hoverTimerRef.current);
+      hoverTimerRef.current = null;
+    }
+  };
+
   return (
     <section id="showcase" className="accordion-showcase-section">
       <div className="container">
-        <div className="section-header text-center">
-          <span className="section-badge" data-ui>THE BOTANICAL QUARTET</span>
-          <h2 className="section-title">FOUR HERBS. ZERO NONSENSE.</h2>
-          <p className="section-sub">
-            Each blend is crafted around a single hero botanical, cold-steeped and distilled in small batches to preserve volatile essential phytonutrients.
+        <div className="showcase-section-header">
+          <h2 className="showcase-title-main">
+            <span style={{ display: 'inline-block' }}>FOUR HERBS.</span>{' '}
+            <span className="title-red" style={{ display: 'inline-block' }}>ZERO NONSENSE.</span>
+          </h2>
+          <p className="showcase-sub-main">
+            Click or hover any bottle to explore its botanical architecture, aromatic profile, and palate spectrum.
           </p>
         </div>
 
-        {/* 4-Pillar Expanding Stage */}
-        <div className="accordion-stage-grid">
-          {FLAVOR_KEYS.map((key) => {
+        {/* 4-Pillar Expanding Stage Container */}
+        <div className="accordion-stage-wrap">
+          {FLAVOR_KEYS.map((key, idx) => {
             const item = FLAVORS[key];
             const isExpanded = activeAccordionKey === key;
 
@@ -34,152 +55,148 @@ export const ShowcaseSection: React.FC<ShowcaseSectionProps> = ({
               <div
                 key={key}
                 id={`pillar-${key}`}
-                className={`accordion-pillar pillar-${key} ${isExpanded ? 'is-expanded' : 'is-collapsed'}`}
-                onClick={() => onSelectAccordion(key)}
-                role="region"
+                className={`accordion-pillar theme-${key} ${isExpanded ? 'is-expanded' : ''}`}
+                data-pillar-index={idx}
                 aria-expanded={isExpanded}
+                onClick={() => {
+                  if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
+                  onSelectAccordion(key);
+                }}
+                onMouseEnter={() => handleMouseEnter(key)}
+                onMouseLeave={handleMouseLeave}
               >
-                {/* Collapsed Pill Preview */}
-                {!isExpanded && (
-                  <div className="pillar-collapsed-content">
+                {/* Collapsed Mini Preview */}
+                <div className="pillar-collapsed-view">
+                  <div className="pillar-mini-bottle">
                     <img
                       src={item.bottleImage}
-                      alt={item.name}
-                      className="collapsed-bottle-thumb"
+                      alt={`${item.miniName || item.name} Packshot`}
+                      className="mini-bottle-img"
                     />
-                    <div className="collapsed-meta">
-                      <div className="collapsed-text-cluster">
-                        <span className="collapsed-blend-num">{item.blendRoman}</span>
-                        <strong className="collapsed-blend-name">{item.name}</strong>
-                        <span className="collapsed-mood">({item.mood})</span>
-                      </div>
-                      <button type="button" className="collapsed-explore-btn">
-                        View More
-                      </button>
+                  </div>
+                  <div className="pillar-mini-meta">
+                    <div className="pillar-mini-text-cluster">
+                      <span className="pillar-index-tag">{item.blendRoman}</span>
+                      <h3 className="pillar-mini-name">{item.miniName || item.name}</h3>
+                      <span className="pillar-mini-sub">{item.subtitleShort}</span>
+                    </div>
+                    <span className="pillar-view-btn">View More</span>
+                  </div>
+                </div>
+
+                {/* Expanded Full Stage View */}
+                <div className="pillar-expanded-view">
+                  <div className="pillar-expanded-left">
+                    <div className="pillar-splash-bottle-wrap">
+                      <img
+                        src={item.bottleImage}
+                        alt={`NOMU ${item.name} Large Bottle`}
+                        className="pillar-large-bottle"
+                      />
+                      {item.splashImage && (
+                        <img
+                          src={item.splashImage}
+                          alt={`${item.name} Botanical Harvest`}
+                          className="pillar-ingredient-splash"
+                        />
+                      )}
+                      <div className="pillar-bottle-shadow" aria-hidden="true" />
                     </div>
                   </div>
-                )}
 
-                {/* Expanded Full Presentation */}
-                {isExpanded && (
-                  <div className="pillar-expanded-content">
-                    <div className="pillar-split-layout">
-                      {/* Left: Packshot and Splash Image */}
-                      <div className="pillar-visual-col">
-                        <div className="pillar-bottle-frame">
-                          <img
-                            src={item.bottleImage}
-                            alt={`NOMU ${item.name} Bottle`}
-                            className="expanded-bottle-img"
-                          />
-                          {item.splashImage && (
-                            <img
-                              src={item.splashImage}
-                              alt={`${item.name} Botanical Harvest`}
-                              className="pillar-ingredient-splash"
-                            />
-                          )}
-                          <div className="pillar-bottle-shadow" aria-hidden="true" />
-                        </div>
+                  <div className="pillar-expanded-right">
+                    <div className="pillar-expanded-header">
+                      <div className="pillar-title-lockup">
+                        <span className="pillar-giant-index">{item.indexNum}</span>
+                        <h3 className="pillar-full-name">{item.name}</h3>
                       </div>
-
-                      {/* Right: Technical Details & Tasting Meters */}
-                      <div className="pillar-details-col">
-                        <div className="pillar-header-lockup">
-                          <div className="pillar-roman-hero">{item.indexNum}</div>
-                          <div>
-                            <h3 className="pillar-name-display">{item.name}</h3>
-                            <div className="pillar-kanji-sub">
-                              <span>{item.flavorKanji}</span> · <span>{item.kanjiMark}</span>
-                              <span className="pillar-mood-pill">Mood: {item.mood}</span>
-                            </div>
-                          </div>
-                        </div>
-
-                        <blockquote className="pillar-positioning">
-                          "{item.positioning}"
-                        </blockquote>
-
-                        <p className="pillar-narrative">{item.tagline}</p>
-
-                        {/* Tasting Notes Table */}
-                        <div className="tasting-notes-box" data-ui>
-                          <div className="note-row">
-                            <span className="note-label">Top Note</span>
-                            <span className="note-value">{item.tastingNotes.top}</span>
-                          </div>
-                          <div className="note-row">
-                            <span className="note-label">Heart Note</span>
-                            <span className="note-value">{item.tastingNotes.heart}</span>
-                          </div>
-                          <div className="note-row">
-                            <span className="note-label">Base Note</span>
-                            <span className="note-value">{item.tastingNotes.base}</span>
-                          </div>
-                        </div>
-
-                        {/* Sensory Meters */}
-                        <div className="sensory-meters-row">
-                          <div className="meter-unit">
-                            <div className="meter-label-row">
-                              <span>Citrus</span>
-                              <strong>{item.meters.citrus}%</strong>
-                            </div>
-                            <div className="meter-track">
-                              <div className="meter-fill" style={{ width: `${item.meters.citrus}%` }} />
-                            </div>
-                          </div>
-                          <div className="meter-unit">
-                            <div className="meter-label-row">
-                              <span>Sweetness</span>
-                              <strong>{item.meters.sweetness}%</strong>
-                            </div>
-                            <div className="meter-track">
-                              <div className="meter-fill" style={{ width: `${item.meters.sweetness}%` }} />
-                            </div>
-                          </div>
-                          <div className="meter-unit">
-                            <div className="meter-label-row">
-                              <span>Effervescence</span>
-                              <strong>{item.meters.effervescence}%</strong>
-                            </div>
-                            <div className="meter-track">
-                              <div className="meter-fill" style={{ width: `${item.meters.effervescence}%` }} />
-                            </div>
-                          </div>
-                          <div className="meter-unit">
-                            <div className="meter-label-row">
-                              <span>Depth</span>
-                              <strong>{item.meters.botanical}%</strong>
-                            </div>
-                            <div className="meter-track">
-                              <div className="meter-fill" style={{ width: `${item.meters.botanical}%` }} />
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Pack Pricing & Direct WhatsApp CTA */}
-                        <div className="pillar-pricing-strip">
-                          SINGLE ₹{item.priceSingle} · 3-PACK ₹{item.pricePack3} · 12-PACK ₹{item.pricePack12}
-                        </div>
-
-                        <button
-                          type="button"
-                          className="btn btn-white-pill"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onQuickOrderWhatsapp(key);
-                          }}
-                        >
-                          <span>ORDER {item.name.toUpperCase()} ON WHATSAPP</span>
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                            <path d="M5 12h14M12 5l7 7-7 7" />
-                          </svg>
-                        </button>
+                      <div className="pillar-kanji-sub">
+                        {item.flavorKanji} · {item.kanjiMark}
+                      </div>
+                      <div className="pillar-mood-wrap">
+                        <span className="pillar-mood-pill">Mood: {item.mood}</span>
                       </div>
                     </div>
+
+                    <p className="pillar-positioning-quote">"{item.positioning}"</p>
+                    <p className="pillar-narrative-text">{item.tagline}</p>
+
+                    {/* Aromatic Architecture */}
+                    <div className="pillar-aroma-block">
+                      <div className="pillar-aroma-row">
+                        <span className="pillar-aroma-label">Top Note</span>
+                        <span className="pillar-aroma-val">{item.tastingNotes.top}</span>
+                      </div>
+                      <div className="pillar-aroma-row">
+                        <span className="pillar-aroma-label">Heart Note</span>
+                        <span className="pillar-aroma-val">{item.tastingNotes.heart}</span>
+                      </div>
+                      <div className="pillar-aroma-row">
+                        <span className="pillar-aroma-label">Base Note</span>
+                        <span className="pillar-aroma-val">{item.tastingNotes.base}</span>
+                      </div>
+                    </div>
+
+                    {/* Palate Spectrum Mini-Grid */}
+                    <div className="pillar-spectrum-grid">
+                      <div className="pillar-meter-col">
+                        <div className="meter-info">
+                          <span>Citrus</span>
+                          <strong>{item.meters.citrus}%</strong>
+                        </div>
+                        <div className="meter-track">
+                          <div className="meter-fill" style={{ width: `${item.meters.citrus}%` }} />
+                        </div>
+                      </div>
+                      <div className="pillar-meter-col">
+                        <div className="meter-info">
+                          <span>Sweetness</span>
+                          <strong>{item.meters.sweetness}%</strong>
+                        </div>
+                        <div className="meter-track">
+                          <div className="meter-fill" style={{ width: `${item.meters.sweetness}%` }} />
+                        </div>
+                      </div>
+                      <div className="pillar-meter-col">
+                        <div className="meter-info">
+                          <span>Effervescence</span>
+                          <strong>{item.meters.effervescence}%</strong>
+                        </div>
+                        <div className="meter-track">
+                          <div className="meter-fill" style={{ width: `${item.meters.effervescence}%` }} />
+                        </div>
+                      </div>
+                      <div className="pillar-meter-col">
+                        <div className="meter-info">
+                          <span>Depth</span>
+                          <strong>{item.meters.botanical}%</strong>
+                        </div>
+                        <div className="meter-track">
+                          <div className="meter-fill" style={{ width: `${item.meters.botanical}%` }} />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* CTA & WhatsApp Order */}
+                    <div className="pillar-action-row">
+                      <span className="pillar-price-tag">
+                        SINGLE ₹{item.priceSingle} · 3-PACK ₹{item.pricePack3} · 12-PACK ₹{item.pricePack12}
+                      </span>
+                      <a
+                        href={`https://wa.me/919840000000?text=Hi%20NOMU%2C%20I%20would%20like%20to%20order%20NOMU%20${encodeURIComponent(item.name)}.`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn-ivory-pill"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onQuickOrderWhatsapp(key);
+                        }}
+                      >
+                        ORDER {item.miniName ? item.miniName.toUpperCase() : item.name.toUpperCase()} ON WHATSAPP &rarr;
+                      </a>
+                    </div>
                   </div>
-                )}
+                </div>
               </div>
             );
           })}

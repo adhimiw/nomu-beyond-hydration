@@ -44,159 +44,191 @@ export const RitualBoxBuilder: React.FC<RitualBoxBuilderProps> = ({
     <section id="shop" className="builder-section">
       <div className="container">
         <div className="section-header text-center">
-          <span className="section-badge" data-ui>CUSTOM RITUAL BOX BUILDER</span>
           <h2 className="section-title">BUILD YOUR RITUAL.</h2>
           <p className="section-sub">
-            Select multiple herbal blends, configure your custom pack sizes, and order instantly over WhatsApp with local Chennai express dispatch.
+            Select multiple herbal blends, configure your custom pack sizes, and order directly over WhatsApp.
           </p>
         </div>
 
-        {/* 1-Click Flight Presets Bar */}
+        {/* Quick Bundle Presets */}
         <div className="builder-presets-bar">
-          <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#666', textTransform: 'uppercase' }}>
-            Quick Presets:
-          </span>
-          <button
-            type="button"
-            className="preset-pill-btn"
-            onClick={() => onApplyPreset('discovery')}
-          >
-            Discovery Flight (1 of Each · 4 Bottles) · ₹360
-          </button>
-          <button
-            type="button"
-            className="preset-pill-btn"
-            onClick={() => onApplyPreset('pantry')}
-          >
-            Pantry Ritual (3 of Each · 12 Bottles) · ₹999
-          </button>
-          <button
-            type="button"
-            className="preset-pill-btn btn-reset"
-            onClick={() => onApplyPreset('reset')}
-          >
-            Reset Cart
-          </button>
+          <span className="preset-label">Quick Ritual Bundles:</span>
+          <div className="preset-buttons-group">
+            <button
+              type="button"
+              className="preset-pill-btn"
+              id="preset-discovery"
+              onClick={() => onApplyPreset('discovery')}
+            >
+              <span>Discovery Flight (1 of Each Blend · 4 Bottles) · ₹360</span>
+            </button>
+            <button
+              type="button"
+              className="preset-pill-btn is-popular"
+              id="preset-pantry"
+              onClick={() => onApplyPreset('pantry')}
+            >
+              <span className="badge-mini">FREE SHIPPING</span>
+              <span>Pantry Ritual (3 of Each Blend · 12 Bottles) · ₹999</span>
+            </button>
+            <button
+              type="button"
+              className="preset-pill-btn"
+              id="preset-clear"
+              onClick={() => onApplyPreset('reset')}
+            >
+              <span>Reset Cart</span>
+            </button>
+          </div>
         </div>
 
-        {/* Builder Layout */}
         <div className="builder-layout">
-          {/* Left Column: Visual Bottle Packshot Card */}
-          <div className="builder-viewport-card" data-ui>
-            <div className="viewport-inner">
+          {/* Left: Studio Stage with Packshot */}
+          <div className="builder-viewport-card">
+            <div className="builder-3d-stage" id="builder-3d-box">
               <img
                 src={activeFlavorData.packshotImage}
-                alt={`NOMU ${activeFlavorData.name} Packshot`}
-                className="builder-packshot-img"
+                alt={`Selected NOMU ${activeFlavorData.name} Preview`}
+                id="builder-preview-img"
+                className="builder-bottle-preview"
               />
-              <div className="viewport-flavor-badge">
-                <strong>{activeFlavorData.name}</strong> · <span>{activeFlavorData.subtitle}</span>
-              </div>
+            </div>
+            <div className="builder-finish-selector">
+              <span className="builder-craft-badge">100% Whole Herb Infusion · Small-Batch Chennai</span>
             </div>
           </div>
 
-          {/* Right Column: Interactive Multi-Cart Step Configurator */}
-          <div className="builder-controls-card" data-ui>
-            <h3 className="step-title">1. Choose Botanical Blend</h3>
-            <div className="pills-selector-grid" data-ui>
-              {FLAVOR_KEYS.map((k) => (
-                <button
-                  key={k}
-                  type="button"
-                  className={`cfg-flavor-pill ${selectedFlavor === k ? 'is-active' : ''}`}
-                  onClick={() => setSelectedFlavor(k)}
-                >
-                  <span className="pill-roman">{FLAVORS[k].blendRoman}</span>
-                  <span className="pill-name">{FLAVORS[k].name}</span>
-                </button>
-              ))}
-            </div>
-
-            <h3 className="step-title">2. Select Pack Tier for this Blend</h3>
-            <div className="pills-selector-grid" style={{ gridTemplateColumns: '1fr', marginBottom: '1.25rem' }} data-ui>
-              {Object.keys(PACK_TIERS).map((pk) => {
-                const tier = PACK_TIERS[pk];
-                const isSelected = selectedPack === pk;
+          {/* Right: Configurator Controls */}
+          <div className="builder-config-card">
+            <h3 className="step-title">1. Choose blend to customize</h3>
+            <div className="pills-selector-grid" role="tablist" aria-label="Select Flavour" data-ui>
+              {FLAVOR_KEYS.map((k) => {
+                const item = FLAVORS[k];
+                const isSelected = selectedFlavor === k;
                 return (
                   <button
-                    key={pk}
+                    key={k}
                     type="button"
-                    className={`pack-choice-btn ${isSelected ? 'is-active' : ''}`}
-                    onClick={() => setSelectedPack(pk as PackKey)}
+                    className={`choice-pill-btn ${isSelected ? 'is-active' : ''}`}
+                    onClick={() => setSelectedFlavor(k)}
+                    role="tab"
+                    aria-selected={isSelected}
                   >
-                    <span className="pack-choice-title">{tier.name}</span>
-                    <span className="pack-choice-desc">{tier.description}</span>
-                    {tier.badge && <span className="pack-choice-badge">{tier.badge}</span>}
+                    <span className="tab-dot" style={{ background: item.themeBg }} />
+                    <span>{item.indexNum} · {item.name}</span>
                   </button>
                 );
               })}
             </div>
 
-            {/* Stepper & Add Action */}
+            <h3 className="step-title">2. Select pack tier for this blend</h3>
+            <div className="pills-selector-grid" style={{ gridTemplateColumns: '1fr', marginBottom: '1.25rem' }} data-ui>
+              <button
+                type="button"
+                className={`pack-choice-btn ${selectedPack === 'single' ? 'is-active' : ''}`}
+                onClick={() => setSelectedPack('single')}
+              >
+                <span className="pack-choice-title">SINGLE BOTTLE · ₹95</span>
+                <span className="pack-choice-desc">1x 330ml Glass Bottle · Perfect discovery trial</span>
+              </button>
+              <button
+                type="button"
+                className={`pack-choice-btn ${selectedPack === 'pack3' ? 'is-active' : ''}`}
+                onClick={() => setSelectedPack('pack3')}
+              >
+                <span className="pack-choice-title">3-PACK RITUAL BOX · ₹270</span>
+                <span className="pack-choice-desc">3x 330ml Bottles · 3-day daily wellness routine</span>
+                <span className="pack-choice-badge">SAVE 5%</span>
+              </button>
+              <button
+                type="button"
+                className={`pack-choice-btn ${selectedPack === 'pack12' ? 'is-active' : ''}`}
+                onClick={() => setSelectedPack('pack12')}
+              >
+                <span className="pack-choice-title">12-PACK PANTRY BOX · ₹999</span>
+                <span className="pack-choice-desc">12x 330ml Bottles · Full 2-week sustained ritual</span>
+                <span className="pack-choice-badge">FREE CHENNAI EXPRESS</span>
+              </button>
+            </div>
+
             <div className="add-to-cart-action-row">
               <div className="stepper-group" data-ui>
                 <button
                   type="button"
                   className="stepper-btn"
-                  onClick={() => setQty(Math.max(1, qty - 1))}
+                  onClick={() => setQty((q) => Math.max(1, q - 1))}
                   aria-label="Decrease quantity"
                 >
                   −
                 </button>
-                <span className="stepper-value">{qty}</span>
+                <span className="stepper-value" id="cfg-qty-val">{qty}</span>
                 <button
                   type="button"
                   className="stepper-btn"
-                  onClick={() => setQty(qty + 1)}
+                  onClick={() => setQty((q) => q + 1)}
                   aria-label="Increase quantity"
                 >
                   +
                 </button>
               </div>
-
               <button
                 type="button"
                 className="btn btn-dark-pill"
+                id="btn-add-to-ritual-box"
                 onClick={handleAdd}
               >
                 <span>+ ADD / UPDATE IN RITUAL BOX</span>
               </button>
             </div>
 
-            {/* Live Cart Ledger */}
+            {/* Multi-Product Ritual Box Cart */}
             <div className="multi-cart-container" data-ui>
               <div className="multi-cart-header">
                 <h4 className="multi-cart-title">Your Custom Ritual Box</h4>
-                <span className="multi-cart-badge">{totalBottles} Bottle{totalBottles === 1 ? '' : 's'}</span>
+                <span className="multi-cart-badge" id="cart-total-bottles">
+                  {totalBottles} Bottle{totalBottles === 1 ? '' : 's'}
+                </span>
               </div>
-
-              <div className="multi-cart-items">
+              <div className="multi-cart-items" id="multi-cart-items-list">
                 {cart.length === 0 ? (
-                  <p className="multi-cart-empty-text">Your ritual box is empty. Choose a blend and add it above.</p>
+                  <div style={{ padding: '1rem', textAlign: 'center', color: '#888', fontSize: '0.875rem' }}>
+                    Your ritual box is empty. Choose a blend and click Add above.
+                  </div>
                 ) : (
-                  cart.map((it) => {
-                    const flv = FLAVORS[it.flavorKey];
-                    const pck = PACK_TIERS[it.packKey];
-                    const subtotal = it.unitPrice * it.quantity;
-                    const btls = it.bottlesPerPack * it.quantity;
-
+                  cart.map((item) => {
+                    const flv = FLAVORS[item.flavorKey];
+                    const pack = PACK_TIERS[item.packKey];
                     return (
-                      <div key={it.id} className="multi-cart-item">
-                        <div className="multi-cart-item-info">
-                          <span className="multi-cart-item-title">{flv.name}</span>
-                          <span className="multi-cart-item-sub">
-                            {it.quantity}x {pck.name.split('·')[0].trim()} ({btls} btls)
+                      <div key={item.id} className="cart-item-row">
+                        <div className="cart-item-info">
+                          <strong>{flv?.name}</strong>
+                          <span style={{ color: '#666', fontSize: '0.8125rem' }}>
+                            {' '}· {pack?.name} (×{item.quantity})
                           </span>
                         </div>
-                        <div className="multi-cart-item-right">
-                          <span className="multi-cart-item-price">₹{subtotal}</span>
+                        <div className="cart-item-actions" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                          <span style={{ fontWeight: 700, color: 'var(--soft-black)' }}>
+                            ₹{item.quantity * item.unitPrice}
+                          </span>
                           <button
                             type="button"
-                            className="multi-cart-remove-btn"
-                            onClick={() => onRemoveFromCart(it.id)}
-                            aria-label={`Remove ${flv.name}`}
+                            onClick={() => onRemoveFromCart(item.id)}
+                            style={{
+                              background: 'transparent',
+                              border: 'none',
+                              color: 'var(--nomu-red)',
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              padding: '2px'
+                            }}
+                            aria-label={`Remove ${flv?.name}`}
                           >
-                            ×
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                              <line x1="18" y1="6" x2="6" y2="18" />
+                              <line x1="6" y1="6" x2="18" y2="18" />
+                            </svg>
                           </button>
                         </div>
                       </div>
@@ -204,15 +236,22 @@ export const RitualBoxBuilder: React.FC<RitualBoxBuilderProps> = ({
                   })
                 )}
               </div>
-
               <div className="multi-cart-total-bar">
                 <div className="total-col">
                   <span className="total-lbl">Estimated Total</span>
-                  <strong className="total-val">₹{grandTotal}</strong>
+                  <strong className="total-val" id="cart-grand-total">₹{grandTotal}</strong>
                 </div>
                 <div className="delivery-col">
-                  <span className="delivery-status">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }}>
+                  <span className="delivery-status" id="cart-delivery-status">
+                    <svg
+                      width="13"
+                      height="13"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '4px' }}
+                    >
                       <polyline points="20 6 9 17 4 12" />
                     </svg>
                     Free Express Chennai Delivery
@@ -221,10 +260,11 @@ export const RitualBoxBuilder: React.FC<RitualBoxBuilderProps> = ({
               </div>
             </div>
 
-            {/* Checkout Trigger Button */}
+            {/* Direct Checkout CTA Button */}
             <button
               type="button"
               className="btn btn-burnt-orange btn-large btn-block"
+              id="btn-checkout-whatsapp"
               onClick={onOpenCheckout}
             >
               <span>ENTER DETAILS & ORDER ON WHATSAPP</span>

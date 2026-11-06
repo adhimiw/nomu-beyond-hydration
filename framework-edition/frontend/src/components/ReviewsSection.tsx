@@ -18,7 +18,7 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
 
   const renderStars = (rating: number) => {
     return Array.from({ length: rating }).map((_, i) => (
-      <svg key={i} width="14" height="14" viewBox="0 0 24 24" fill="#D97706" style={{ display: 'inline-block' }}>
+      <svg key={i} width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
       </svg>
     ));
@@ -38,7 +38,6 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
               <span className="rating-count">(340+ Verified Ritual Drinkers)</span>
             </div>
           </div>
-
           <div className="reviews-header-main">
             <h2 className="reviews-title-main">
               <span>REAL RITUALS.</span> <span className="title-red">GENUINE REVIEWS.</span>
@@ -48,13 +47,15 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
             </p>
           </div>
 
-          {/* Filter Toolbar */}
+          {/* Review Filters & Write Review Action */}
           <div className="reviews-toolbar">
             <div className="reviews-filter-pills" role="tablist" aria-label="Filter reviews by blend">
               <button
                 type="button"
                 className={`review-filter-btn ${activeFilter === 'all' ? 'is-active' : ''}`}
                 onClick={() => setActiveFilter('all')}
+                role="tab"
+                aria-selected={activeFilter === 'all'}
               >
                 All Blends
               </button>
@@ -62,6 +63,8 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
                 type="button"
                 className={`review-filter-btn ${activeFilter === 'vetiver' ? 'is-active' : ''}`}
                 onClick={() => setActiveFilter('vetiver')}
+                role="tab"
+                aria-selected={activeFilter === 'vetiver'}
               >
                 I · Vetiver
               </button>
@@ -69,6 +72,8 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
                 type="button"
                 className={`review-filter-btn ${activeFilter === 'chamomile' ? 'is-active' : ''}`}
                 onClick={() => setActiveFilter('chamomile')}
+                role="tab"
+                aria-selected={activeFilter === 'chamomile'}
               >
                 II · Chamomile
               </button>
@@ -76,6 +81,8 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
                 type="button"
                 className={`review-filter-btn ${activeFilter === 'grapefruit' ? 'is-active' : ''}`}
                 onClick={() => setActiveFilter('grapefruit')}
+                role="tab"
+                aria-selected={activeFilter === 'grapefruit'}
               >
                 III · Grapefruit
               </button>
@@ -83,16 +90,18 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
                 type="button"
                 className={`review-filter-btn ${activeFilter === 'lemongrass' ? 'is-active' : ''}`}
                 onClick={() => setActiveFilter('lemongrass')}
+                role="tab"
+                aria-selected={activeFilter === 'lemongrass'}
               >
                 IV · Lemongrass
               </button>
             </div>
-
             <button
               type="button"
               className="btn btn-review-write"
+              id="btn-open-review-modal"
+              aria-haspopup="dialog"
               onClick={onOpenWriteReview}
-              aria-label="Write a Review"
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                 <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
@@ -103,9 +112,9 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
         </div>
 
         {/* Reviews Cards Grid */}
-        <div className="reviews-cards-grid">
+        <div className="reviews-cards-grid" id="reviews-cards-grid">
           {filteredReviews.length === 0 ? (
-            <p className="multi-cart-empty-text">No reviews recorded yet for this blend. Be the first to share your tasting note!</p>
+            <p className="multi-cart-empty-text">No reviews recorded yet for this blend.</p>
           ) : (
             filteredReviews.map((r) => (
               <article key={r.id} className="review-card">
@@ -114,7 +123,7 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
                     <span className={`review-blend-badge blend-${r.flavor_key}`}>
                       Blend · {r.flavor_key.toUpperCase()}
                     </span>
-                    <div className="review-stars-row">
+                    <div className="stars-gold-row" aria-label={`${r.rating || 5} out of 5 stars`}>
                       {renderStars(r.rating || 5)}
                     </div>
                   </div>
@@ -138,7 +147,7 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
           )}
         </div>
 
-        {/* Trust Badges Bar */}
+        {/* Trust Features Row */}
         <div className="reviews-trust-bar" data-ui>
           <div className="trust-item">
             <span className="trust-check-icon" aria-hidden="true">
