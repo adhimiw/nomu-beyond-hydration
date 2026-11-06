@@ -7,3 +7,4 @@ dist/
 *.log
 scratch/
 pictuers and video needed to be converted webpandm/
+*.sqlite

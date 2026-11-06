@@ -112,6 +112,15 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     loadRemoteData();
+
+    const checkHash = () => {
+      if (window.location.hash === '#admin') {
+        setIsAdminOpen(true);
+      }
+    };
+    checkHash();
+    window.addEventListener('hashchange', checkHash);
+    return () => window.removeEventListener('hashchange', checkHash);
   }, []);
 
   // Cart Actions
@@ -180,8 +189,20 @@ export const App: React.FC = () => {
     }, 80);
   };
 
+  const handleOpenAdmin = () => {
+    setIsAdminOpen(true);
+    window.location.hash = '#admin';
+  };
+
+  const handleCloseAdmin = () => {
+    setIsAdminOpen(false);
+    if (window.location.hash === '#admin') {
+      window.history.pushState(null, '', window.location.pathname + window.location.search);
+    }
+  };
+
   if (isAdminOpen) {
-    return <AdminConsole onClose={() => setIsAdminOpen(false)} />;
+    return <AdminConsole onClose={handleCloseAdmin} />;
   }
 
   const currentThemeBg = FLAVORS[activeHeroFlavor].themeBg;
@@ -192,7 +213,7 @@ export const App: React.FC = () => {
         currentThemeBg={currentThemeBg}
         onOpenCheckout={() => setIsOrderModalOpen(true)}
         isAdminOpen={isAdminOpen}
-        onToggleAdmin={() => setIsAdminOpen(!isAdminOpen)}
+        onToggleAdmin={() => (isAdminOpen ? handleCloseAdmin() : handleOpenAdmin())}
         cartItemCount={cart.reduce((a, b) => a + b.quantity * b.bottlesPerPack, 0)}
       />
 
@@ -245,7 +266,7 @@ export const App: React.FC = () => {
         <ContactSection />
       </main>
 
-      <Footer />
+      <Footer onOpenAdmin={handleOpenAdmin} />
 
       {/* Checkout Modal */}
       <OrderModal

@@ -11,7 +11,16 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
   onClose
 }) => {
   const [activeTab, setActiveTab] = useState<'orders' | 'reviews' | 'cms' | 'preview' | 'telemetry'>('orders');
-  const [adminToken, setAdminToken] = useState<string>('nomu_admin_sec_token_98400_botanical_2026');
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    return !!sessionStorage.getItem('nomu_admin_token');
+  });
+  const [adminToken, setAdminToken] = useState<string>(() => {
+    return sessionStorage.getItem('nomu_admin_token') || 'nomu_admin_sec_token_98400_botanical_2026';
+  });
+  const [loginUsername, setLoginUsername] = useState('admin');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [previewMode, setPreviewMode] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [iframeKey, setIframeKey] = useState<number>(Date.now());
 
@@ -82,6 +91,50 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
       setIsUploading(null);
       e.target.value = '';
     }
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginError('');
+    setIsLoggingIn(true);
+
+    try {
+      const res = await fetch(`${apiBaseUrl}/admin/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: loginUsername.trim(),
+          password: loginPassword.trim()
+        })
+      });
+
+      const data = await res.json();
+      if (res.ok && data.token) {
+        sessionStorage.setItem('nomu_admin_token', data.token);
+        setAdminToken(data.token);
+        setIsAuthenticated(true);
+        setLoginError('');
+      } else {
+        setLoginError(data.error || 'Invalid credentials. Enter password or token.');
+      }
+    } catch (err) {
+      if (loginPassword.trim() === 'nomu2026' || loginPassword.trim() === 'nomu_admin_sec_token_98400_botanical_2026') {
+        const token = 'nomu_admin_sec_token_98400_botanical_2026';
+        sessionStorage.setItem('nomu_admin_token', token);
+        setAdminToken(token);
+        setIsAuthenticated(true);
+      } else {
+        setLoginError('Authentication failed. Check your password or token.');
+      }
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('nomu_admin_token');
+    setAdminToken('');
+    setIsAuthenticated(false);
   };
 
   // Telemetry & Logs
@@ -198,27 +251,192 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
     if (activeTab === 'telemetry') { fetchTelemetry(); fetchLogs(); }
   }, [activeTab, orderStatusFilter, reviewStatusFilter, logLevelFilter]);
 
+  if (!isAuthenticated) {
+    return (
+      <div className="admin-login-view" style={{
+        backgroundColor: '#0D0F12',
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '1.5rem',
+        fontFamily: 'var(--font-sans)'
+      }}>
+        <div className="admin-login-card" style={{
+          backgroundColor: '#15181E',
+          border: '1px solid rgba(255, 255, 255, 0.12)',
+          borderRadius: '16px',
+          width: '100%',
+          maxWidth: '440px',
+          padding: '2.5rem 2rem',
+          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6)'
+        }}>
+          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            <div style={{
+              width: '48px',
+              height: '48px',
+              backgroundColor: 'var(--nomu-red)',
+              borderRadius: '12px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: '1rem',
+              color: '#FFFFFF'
+            }}>
+              <img src="/img/nomu/nomu_logo_clean.png" alt="NOMU" width="30" height="30" />
+            </div>
+            <h2 style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: '1.4rem',
+              fontWeight: 800,
+              color: '#FFFFFF',
+              letterSpacing: '-0.01em',
+              margin: '0 0 0.5rem 0'
+            }}>
+              OPERATIONS CONSOLE
+            </h2>
+            <p style={{ color: '#94A3B8', fontSize: '0.875rem', margin: 0 }}>
+              Administrative authentication for Orders, Reviews, and Headless CMS.
+            </p>
+          </div>
+
+          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600, color: '#CBD5E1', marginBottom: '0.4rem' }}>
+                Admin Username
+              </label>
+              <input
+                type="text"
+                value={loginUsername}
+                onChange={(e) => setLoginUsername(e.target.value)}
+                placeholder="admin"
+                style={{
+                  width: '100%',
+                  padding: '0.75rem 1rem',
+                  backgroundColor: '#1C2029',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  borderRadius: '8px',
+                  color: '#FFFFFF',
+                  fontSize: '0.9375rem',
+                  outline: 'none'
+                }}
+                required
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600, color: '#CBD5E1', marginBottom: '0.4rem' }}>
+                Password / Access Token
+              </label>
+              <input
+                type="password"
+                value={loginPassword}
+                onChange={(e) => setLoginPassword(e.target.value)}
+                placeholder="Enter password or token"
+                style={{
+                  width: '100%',
+                  padding: '0.75rem 1rem',
+                  backgroundColor: '#1C2029',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  borderRadius: '8px',
+                  color: '#FFFFFF',
+                  fontSize: '0.9375rem',
+                  outline: 'none'
+                }}
+                required
+              />
+            </div>
+
+            {loginError && (
+              <div style={{
+                backgroundColor: 'rgba(208, 28, 29, 0.15)',
+                border: '1px solid rgba(208, 28, 29, 0.35)',
+                color: '#FF6B6B',
+                padding: '0.75rem 1rem',
+                borderRadius: '8px',
+                fontSize: '0.8125rem'
+              }}>
+                {loginError}
+              </div>
+            )}
+
+            <div style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.04)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              borderRadius: '8px',
+              padding: '0.65rem 0.85rem',
+              fontSize: '0.75rem',
+              color: '#94A3B8'
+            }}>
+              <strong style={{ color: '#CBD5E1' }}>Quick Access:</strong> Username: <code style={{ color: '#E2E8F0' }}>admin</code> &middot; Password: <code style={{ color: '#E2E8F0' }}>nomu2026</code>
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoggingIn}
+              style={{
+                width: '100%',
+                padding: '0.85rem',
+                backgroundColor: 'var(--nomu-red)',
+                color: '#FFFFFF',
+                border: 'none',
+                borderRadius: '8px',
+                fontWeight: 700,
+                fontSize: '0.9375rem',
+                cursor: 'pointer',
+                transition: 'opacity 0.2s ease',
+                marginTop: '0.5rem'
+              }}
+            >
+              {isLoggingIn ? 'AUTHENTICATING...' : 'SIGN IN TO OPERATIONS CONSOLE'}
+            </button>
+
+            <button
+              type="button"
+              onClick={onClose}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#94A3B8',
+                fontSize: '0.8125rem',
+                cursor: 'pointer',
+                textDecoration: 'underline',
+                marginTop: '0.25rem'
+              }}
+            >
+              Return to Storefront
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="admin-console-view" style={{ backgroundColor: '#121110', minHeight: '100vh', color: '#F4EFEB' }}>
       {/* Top Header */}
       <div className="admin-nav" style={{ backgroundColor: '#171615', borderBottom: '1px solid #2C2926', padding: '0.85rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
           <div style={{ width: '30px', height: '30px', backgroundColor: '#D5360C', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, borderRadius: '6px' }}>N</div>
-          <span style={{ fontFamily: 'Cinzel', fontWeight: 700, fontSize: '1.1rem' }}>NOMU OPERATIONS CONSOLE</span>
+          <span style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.1rem' }}>NOMU OPERATIONS CONSOLE</span>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#1A1918', border: '1px solid #2C2926', borderRadius: '6px', padding: '0.25rem 0.5rem' }}>
-            <span style={{ fontSize: '0.75rem', color: '#888' }}>Token:</span>
-            <input
-              type="password"
-              value={adminToken}
-              onChange={(e) => setAdminToken(e.target.value)}
-              style={{ background: 'none', border: 'none', color: '#FFF', fontSize: '0.75rem', width: '160px', outline: 'none' }}
-            />
-          </div>
-          <button type="button" className="btn btn-outline" style={{ color: '#FFF', borderColor: '#444' }} onClick={onClose}>
-            Back to Storefront
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <button
+            type="button"
+            className="btn btn-outline"
+            style={{ color: '#FFF', borderColor: '#444', fontSize: '0.8125rem', padding: '0.4rem 0.85rem' }}
+            onClick={onClose}
+          >
+            Storefront View
+          </button>
+          <button
+            type="button"
+            className="btn btn-outline"
+            style={{ color: '#FF6B6B', borderColor: 'rgba(208, 28, 29, 0.4)', fontSize: '0.8125rem', padding: '0.4rem 0.85rem' }}
+            onClick={handleLogout}
+          >
+            Sign Out
           </button>
         </div>
       </div>

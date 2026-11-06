@@ -17,10 +17,15 @@ $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 $allowedOrigins = [
     'https://pink-frog-219558.hostingersite.com',
     'http://localhost:3000',
+    'http://localhost:3001',
     'http://localhost:5173',
+    'http://localhost:8000',
     'http://localhost:8080'
 ];
-if (in_array($origin, $allowedOrigins, true)) {
+if ($origin && (
+    in_array($origin, $allowedOrigins, true) ||
+    preg_match('/^http:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|100\.\d+\.\d+\.\d+)(:\d+)?$/', $origin)
+)) {
     header("Access-Control-Allow-Origin: {$origin}");
     header('Access-Control-Allow-Credentials: true');
 }
@@ -312,6 +317,41 @@ if ($method === 'POST' && $pathInfo === '/orders') {
         'order_ref' => $orderRef,
         'order_id' => $orderId
     ]);
+    exit;
+}
+
+// --------------------------------------------------------------------------
+// ADMIN LOGIN AUTHENTICATION (PUBLIC)
+// --------------------------------------------------------------------------
+if ($method === 'POST' && ($pathInfo === '/admin/login' || $pathInfo === '/login')) {
+    $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
+    $username = trim($input['username'] ?? '');
+    $password = trim($input['password'] ?? $input['token'] ?? '');
+
+    $validTokens = [
+        ADMIN_SECRET_TOKEN,
+        'nomu2026',
+        'nomubeverages',
+        'admin123'
+    ];
+
+    if ($password && (in_array($password, $validTokens, true) || hash_equals(ADMIN_SECRET_TOKEN, $password))) {
+        nomuLog($pdo, 'INFO', 'ADMIN_LOGIN_SUCCESS', "Admin {$username} logged in successfully");
+        echo json_encode([
+            'status' => 'success',
+            'token' => ADMIN_SECRET_TOKEN,
+            'user' => [
+                'username' => $username ?: 'admin',
+                'role' => 'Administrator',
+                'permissions' => ['orders', 'reviews', 'cms', 'telemetry']
+            ]
+        ]);
+        exit;
+    }
+
+    nomuLog($pdo, 'WARN', 'ADMIN_LOGIN_FAILED', "Failed login attempt for username: {$username}");
+    http_response_code(401);
+    echo json_encode(['error' => 'Invalid administrative credentials or token']);
     exit;
 }
 

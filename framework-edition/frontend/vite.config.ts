@@ -8,9 +8,9 @@ export default defineConfig({
     host: true,
     proxy: {
       '/api': {
-        target: process.env.VITE_API_BASE_URL || 'https://pink-frog-219558.hostingersite.com',
+        target: process.env.VITE_API_BASE_URL || 'http://localhost:8000',
         changeOrigin: true,
-        secure: true
+        secure: false
       }
     }
   },
