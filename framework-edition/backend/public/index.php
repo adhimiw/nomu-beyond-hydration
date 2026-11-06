@@ -43,26 +43,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 const ADMIN_SECRET_TOKEN = 'nomu_admin_sec_token_98400_botanical_2026';
 const DB_PATH = __DIR__ . '/nomu_database.sqlite';
 
-// Initialize SQLite PDO Database Connection
+// Database Connection Manager: MySQL (Hostinger production) with SQLite fallback
+$pdo = null;
+$dbHost = getenv('DB_HOST') ?: '127.0.0.1';
+$dbPort = getenv('DB_PORT') ?: '3306';
+$dbName = getenv('DB_NAME') ?: 'u244089748_nomustanging';
+$dbUser = getenv('DB_USER') ?: 'u244089748_nomustanging';
+$dbPass = getenv('DB_PASS') ?: 'Nomu2026';
+
+// 1. Attempt MySQL connection
 try {
-    $pdo = new PDO('sqlite:' . DB_PATH, null, null, [
+    $dsn = "mysql:host={$dbHost};port={$dbPort};dbname={$dbName};charset=utf8mb4";
+    $pdo = new PDO($dsn, $dbUser, $dbPass, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        PDO::ATTR_TIMEOUT => 5
+        PDO::ATTR_TIMEOUT => 2
     ]);
-    $pdo->exec('PRAGMA journal_mode = WAL;');
-} catch (PDOException $e) {
-    http_response_code(500);
-    echo json_encode(['error' => 'Database connection failed', 'details' => $e->getMessage()]);
-    exit;
+} catch (\Throwable $e) {
+    // 2. Fall back to local SQLite WAL database if MySQL is unavailable
+    try {
+        $pdo = new PDO('sqlite:' . DB_PATH, null, null, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_TIMEOUT => 5
+        ]);
+        $pdo->exec('PRAGMA journal_mode = WAL;');
+    } catch (\Throwable $e2) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Database connection failed', 'details' => $e2->getMessage()]);
+        exit;
+    }
 }
 
 // --------------------------------------------------------------------------
 // Schema Auto-Migration & Seed Initialization
 // --------------------------------------------------------------------------
+$driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+$autoInc = ($driver === 'mysql') ? 'INT AUTO_INCREMENT PRIMARY KEY' : 'INTEGER PRIMARY KEY AUTOINCREMENT';
+$engine = ($driver === 'mysql') ? 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4' : '';
+
 $pdo->exec("
     CREATE TABLE IF NOT EXISTS orders (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id {$autoInc},
         order_ref VARCHAR(32) UNIQUE NOT NULL,
         customer_name VARCHAR(120) NOT NULL,
         customer_phone VARCHAR(20) NOT NULL,
@@ -76,10 +98,10 @@ $pdo->exec("
         ip_address VARCHAR(45),
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
+    ) {$engine};
 
     CREATE TABLE IF NOT EXISTS reviews (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id {$autoInc},
         customer_name VARCHAR(100) NOT NULL,
         customer_email VARCHAR(150) NOT NULL,
         flavor_key VARCHAR(50) NOT NULL,
@@ -92,28 +114,28 @@ $pdo->exec("
         ip_address VARCHAR(45),
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
+    ) {$engine};
 
     CREATE TABLE IF NOT EXISTS cms_contents (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id {$autoInc},
         field_key VARCHAR(80) UNIQUE NOT NULL,
         field_value TEXT,
         field_group VARCHAR(50) DEFAULT 'general',
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
+    ) {$engine};
 
     CREATE TABLE IF NOT EXISTS system_logs (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id {$autoInc},
         level VARCHAR(20) DEFAULT 'INFO',
         action VARCHAR(60) NOT NULL,
         message TEXT NOT NULL,
         context_json TEXT,
         ip_address VARCHAR(45),
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
+    ) {$engine};
 
     CREATE TABLE IF NOT EXISTS media_assets (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id {$autoInc},
         section_key VARCHAR(60) NOT NULL,
         asset_type VARCHAR(20) NOT NULL,
         title VARCHAR(120) NOT NULL,
@@ -122,12 +144,14 @@ $pdo->exec("
         is_active INTEGER DEFAULT 1,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
+    ) {$engine};
 ");
 
 // Database Seeder Function
 function seedDatabase(PDO $pdo, bool $force = false): array {
     $seeded = ['cms' => 0, 'media' => 0, 'reviews' => 0];
+    $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+    $insertIgnore = ($driver === 'mysql') ? 'INSERT IGNORE INTO' : 'INSERT OR IGNORE INTO';
 
     // 1. Seed CMS content & media references
     $cmsDefaults = [
@@ -148,7 +172,7 @@ function seedDatabase(PDO $pdo, bool $force = false): array {
         ['lemongrass_ingredient_img', '/img/ingredients/lemongrass_harvest.jpg', 'media']
     ];
 
-    $insCms = $pdo->prepare("INSERT OR IGNORE INTO cms_contents (field_key, field_value, field_group) VALUES (?, ?, ?)");
+    $insCms = $pdo->prepare("{$insertIgnore} cms_contents (field_key, field_value, field_group) VALUES (?, ?, ?)");
     foreach ($cmsDefaults as $c) {
         $insCms->execute($c);
         if ($insCms->rowCount() > 0) $seeded['cms']++;
@@ -173,7 +197,7 @@ function seedDatabase(PDO $pdo, bool $force = false): array {
         ['brand', 'image', 'NOMU Wordmark Transparent', '/img/nomu/nomu_wordmark_transparent.png', 'NOMU architectural wordmark logo', 1]
     ];
 
-    $insMedia = $pdo->prepare("INSERT OR IGNORE INTO media_assets (section_key, asset_type, title, url, alt_text, is_active) VALUES (?, ?, ?, ?, ?, ?)");
+    $insMedia = $pdo->prepare("{$insertIgnore} media_assets (section_key, asset_type, title, url, alt_text, is_active) VALUES (?, ?, ?, ?, ?, ?)");
     foreach ($mediaDefaults as $m) {
         $insMedia->execute($m);
         if ($insMedia->rowCount() > 0) $seeded['media']++;
@@ -260,6 +284,17 @@ if (empty($pathInfo)) {
     $pathInfo = preg_replace('#^/api#', '', $uri);
 }
 $pathInfo = '/' . trim($pathInfo, '/');
+
+// 0. PUBLIC: GET /health or /status
+if ($method === 'GET' && ($pathInfo === '/health' || $pathInfo === '/status')) {
+    echo json_encode([
+        'status' => 'healthy',
+        'service' => 'NOMU Botanical Distillates Engine',
+        'driver' => $pdo->getAttribute(PDO::ATTR_DRIVER_NAME),
+        'server_time' => date('c')
+    ]);
+    exit;
+}
 
 // 1. PUBLIC: GET /content
 if ($method === 'GET' && ($pathInfo === '/content' || $pathInfo === '/')) {

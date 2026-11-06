@@ -2,16 +2,14 @@ import React from 'react';
 
 interface HeaderProps {
   currentThemeBg: string;
-  isAdminOpen: boolean;
-  onToggleAdmin: () => void;
+  isAdminOpen?: boolean;
+  onToggleAdmin?: () => void;
   onOpenCheckout?: () => void;
   cartItemCount?: number;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   currentThemeBg,
-  isAdminOpen,
-  onToggleAdmin,
   onOpenCheckout
 }) => {
   return (
@@ -40,18 +38,6 @@ export const Header: React.FC<HeaderProps> = ({
         </nav>
 
         <div className="header-actions">
-          <button
-            type="button"
-            className="btn btn-header-admin"
-            onClick={onToggleAdmin}
-            aria-label="Toggle Operations Console"
-          >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-            </svg>
-            <span>{isAdminOpen ? 'Storefront View' : 'Admin Login'}</span>
-          </button>
           <a
             href="#shop"
             className="btn btn-header-cta"

@@ -1,10 +1,6 @@
 import React from 'react';
 
-interface FooterProps {
-  onOpenAdmin?: () => void;
-}
-
-export const Footer: React.FC<FooterProps> = ({ onOpenAdmin }) => {
+export const Footer: React.FC = () => {
   return (
     <footer className="site-footer">
       <div className="container footer-grid">
@@ -41,32 +37,6 @@ export const Footer: React.FC<FooterProps> = ({ onOpenAdmin }) => {
             <li><a href="#shop">Shop on WhatsApp</a></li>
             <li><a href="#reviews">Reviews</a></li>
             <li><a href="#contact">Contact</a></li>
-            {onOpenAdmin && (
-              <li>
-                <button
-                  type="button"
-                  onClick={onOpenAdmin}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    padding: 0,
-                    color: 'rgba(255, 255, 255, 0.7)',
-                    font: 'inherit',
-                    fontSize: '0.875rem',
-                    cursor: 'pointer',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.35rem'
-                  }}
-                >
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                  </svg>
-                  <span>Admin Login</span>
-                </button>
-              </li>
-            )}
           </ul>
         </div>
 

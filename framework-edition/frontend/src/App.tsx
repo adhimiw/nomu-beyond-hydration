@@ -189,11 +189,6 @@ export const App: React.FC = () => {
     }, 80);
   };
 
-  const handleOpenAdmin = () => {
-    setIsAdminOpen(true);
-    window.location.hash = '#admin';
-  };
-
   const handleCloseAdmin = () => {
     setIsAdminOpen(false);
     if (window.location.hash === '#admin') {
@@ -212,8 +207,6 @@ export const App: React.FC = () => {
       <Header
         currentThemeBg={currentThemeBg}
         onOpenCheckout={() => setIsOrderModalOpen(true)}
-        isAdminOpen={isAdminOpen}
-        onToggleAdmin={() => (isAdminOpen ? handleCloseAdmin() : handleOpenAdmin())}
         cartItemCount={cart.reduce((a, b) => a + b.quantity * b.bottlesPerPack, 0)}
       />
 
@@ -266,7 +259,7 @@ export const App: React.FC = () => {
         <ContactSection />
       </main>
 
-      <Footer onOpenAdmin={handleOpenAdmin} />
+      <Footer />
 
       {/* Checkout Modal */}
       <OrderModal
