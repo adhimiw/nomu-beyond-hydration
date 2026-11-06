@@ -30,8 +30,9 @@ Route::prefix('admin')->group(function () {
     Route::get('/reviews', [ReviewController::class, 'adminIndex']);
     Route::post('/reviews/{id}/moderate', [ReviewController::class, 'moderate']);
 
-    // Headless CMS Content Editor
+    // Headless CMS Content Editor & Media Uploader
     Route::post('/content', [ContentController::class, 'update']);
+    Route::post('/media/upload', [ContentController::class, 'uploadMedia']);
 
     // System Telemetry & Logs
     Route::get('/system/status', [SystemController::class, 'status']);

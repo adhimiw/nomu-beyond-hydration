@@ -127,6 +127,23 @@ export interface CmsData {
   ticker_text?: string;
   font_family?: string;
   whatsapp_phone?: string;
+  banner_text?: string;
+  hero_video_url?: string;
+  hero_poster_url?: string;
+  vetiver_bottle_img?: string;
+  vetiver_splash_img?: string;
+  vetiver_packshot_img?: string;
+  chamomile_bottle_img?: string;
+  chamomile_splash_img?: string;
+  chamomile_packshot_img?: string;
+  grapefruit_bottle_img?: string;
+  grapefruit_splash_img?: string;
+  grapefruit_packshot_img?: string;
+  lemongrass_bottle_img?: string;
+  lemongrass_splash_img?: string;
+  lemongrass_packshot_img?: string;
+  about_image_url?: string;
+  manifesto_image_url?: string;
 }
 
 export interface SystemTelemetry {

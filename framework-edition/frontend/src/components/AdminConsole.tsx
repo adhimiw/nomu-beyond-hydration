@@ -10,8 +10,10 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
   apiBaseUrl = '/api',
   onClose
 }) => {
-  const [activeTab, setActiveTab] = useState<'orders' | 'reviews' | 'cms' | 'telemetry'>('orders');
+  const [activeTab, setActiveTab] = useState<'orders' | 'reviews' | 'cms' | 'preview' | 'telemetry'>('orders');
   const [adminToken, setAdminToken] = useState<string>('nomu_admin_sec_token_98400_botanical_2026');
+  const [previewMode, setPreviewMode] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
+  const [iframeKey, setIframeKey] = useState<number>(Date.now());
 
   // Orders State
   const [orders, setOrders] = useState<OrderRecord[]>([]);
@@ -28,9 +30,59 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
     hero_sub: 'Ancient South Indian botanical distillates crafted in small batches across Chennai.',
     ticker_text: '100% RECYCLED GLASS · NO CHEMICALS · SMALL-BATCH DISTILLED · CHENNAI EXPRESS',
     font_family: 'editorial-serif',
-    whatsapp_phone: '919840000000'
+    whatsapp_phone: '919840000000',
+    hero_video_url: '/video/nomu_showcase.mp4',
+    hero_poster_url: '/img/nomu/nomu_film_poster.jpg',
+    vetiver_bottle_img: '/img/bottles/vetiver_isolated.png',
+    vetiver_splash_img: '/img/ingredients/vetiver_khus_root.png',
+    vetiver_packshot_img: '/img/bottles/vetiver_packshot.jpg',
+    chamomile_bottle_img: '/img/bottles/chamomile_isolated.png',
+    chamomile_splash_img: '/img/ingredients/chamomile_lavender_harvest.jpg',
+    chamomile_packshot_img: '/img/bottles/chamomile_packshot.jpg',
+    grapefruit_bottle_img: '/img/bottles/grapefruit_isolated.png',
+    grapefruit_splash_img: '/img/ingredients/grapefruit_harvest.jpg',
+    grapefruit_packshot_img: '/img/bottles/grapefruit_packshot.jpg',
+    lemongrass_bottle_img: '/img/bottles/lemongrass_isolated.png',
+    lemongrass_splash_img: '/img/ingredients/lemongrass_harvest.jpg',
+    lemongrass_packshot_img: '/img/bottles/lemongrass_packshot.jpg',
+    manifesto_image_url: '/img/nomu/nomu_bottles_hero_real.jpg'
   });
   const [cmsSaveMsg, setCmsSaveMsg] = useState<string>('');
+  const [isUploading, setIsUploading] = useState<string | null>(null);
+
+  // File Upload Handler
+  const handleFileUpload = async (fieldKey: keyof CmsData, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    setIsUploading(fieldKey);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await fetch(`${apiBaseUrl}/admin/media/upload`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${adminToken}`
+        },
+        body: formData
+      });
+
+      const data = await res.json();
+      if (res.ok && data.url) {
+        setCmsData((prev) => ({ ...prev, [fieldKey]: data.url }));
+        setCmsSaveMsg(`Uploaded ${file.name}`);
+        setTimeout(() => setCmsSaveMsg(''), 3000);
+      } else {
+        alert(data.message || 'Media upload failed');
+      }
+    } catch (err) {
+      alert('Upload error');
+    } finally {
+      setIsUploading(null);
+      e.target.value = '';
+    }
+  };
 
   // Telemetry & Logs
   const [telemetry, setTelemetry] = useState<SystemTelemetry | null>(null);
@@ -196,6 +248,16 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
         </button>
         <button
           type="button"
+          className={`tab-btn ${activeTab === 'preview' ? 'is-active' : ''}`}
+          onClick={() => {
+            setActiveTab('preview');
+            setIframeKey(Date.now());
+          }}
+        >
+          Live Website Preview
+        </button>
+        <button
+          type="button"
           className={`tab-btn ${activeTab === 'telemetry' ? 'is-active' : ''}`}
           onClick={() => setActiveTab('telemetry')}
         >
@@ -322,7 +384,13 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                       <span style={{ fontSize: '0.7rem', textTransform: 'uppercase', padding: '0.2rem 0.5rem', borderRadius: '4px', background: '#333' }}>{r.status}</span>
-                      <span style={{ color: '#D97706' }}>{'★'.repeat(r.rating || 5)}</span>
+                      <span style={{ color: '#D97706', display: 'flex', gap: '2px' }}>
+                        {Array.from({ length: r.rating || 5 }).map((_, idx) => (
+                          <svg key={idx} width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                          </svg>
+                        ))}
+                      </span>
                     </div>
                     <strong>{r.customer_name}</strong> <span style={{ color: '#D5360C', fontSize: '0.8rem' }}>({r.flavor_key})</span>
                     <div style={{ fontSize: '0.75rem', color: '#888', marginBottom: '0.5rem' }}>{r.customer_email} · {r.created_at}</div>
@@ -333,12 +401,12 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
                   <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid #2C2926' }}>
                     {r.status !== 'approved' && (
                       <button type="button" className="btn btn-secondary" style={{ background: '#1E3A24', color: '#4ADE80', fontSize: '0.75rem', padding: '0.35rem 0.65rem' }} onClick={() => handleModerateReview(r.id, 'approve')}>
-                        ✓ Approve
+                        Approve
                       </button>
                     )}
                     {r.status !== 'rejected' && (
                       <button type="button" className="btn btn-secondary" style={{ background: '#3B1D1D', color: '#F87171', fontSize: '0.75rem', padding: '0.35rem 0.65rem' }} onClick={() => handleModerateReview(r.id, 'reject')}>
-                        ✕ Reject
+                        Reject
                       </button>
                     )}
                     <button type="button" className="btn btn-secondary" style={{ fontSize: '0.75rem', padding: '0.35rem 0.65rem' }} onClick={() => handleModerateReview(r.id, 'delete')}>
@@ -351,65 +419,262 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
           </div>
         )}
 
-        {/* Tab 3: CMS */}
+        {/* Tab 3: CMS Content & Media Management */}
         {activeTab === 'cms' && (
-          <div style={{ maxWidth: '640px', background: '#1A1918', border: '1px solid #2C2926', borderRadius: '10px', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Storefront Content Settings</h3>
-
-            <div className="form-group">
-              <label className="form-label" style={{ color: '#AAA' }}>Hero Headline</label>
-              <input
-                type="text"
-                className="form-input"
-                style={{ background: '#121110', border: '1px solid #333', color: '#FFF' }}
-                value={cmsData.hero_headline || ''}
-                onChange={(e) => setCmsData({ ...cmsData, hero_headline: e.target.value })}
-              />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '1000px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#1A1918', border: '1px solid #2C2926', padding: '1rem 1.5rem', borderRadius: '10px' }}>
+              <div>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 700 }}>Content Management System & Media Asset Vault</h3>
+                <p style={{ fontSize: '0.8rem', color: '#888' }}>Upload videos, high-resolution photography, and adjust live copy across the storefront.</p>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                {cmsSaveMsg && <span style={{ color: '#4ADE80', fontSize: '0.85rem' }}>{cmsSaveMsg}</span>}
+                <button type="button" className="btn btn-burnt-orange" onClick={handleSaveCms}>
+                  Save & Publish Changes
+                </button>
+              </div>
             </div>
 
-            <div className="form-group">
-              <label className="form-label" style={{ color: '#AAA' }}>Hero Subtitle</label>
-              <textarea
-                className="form-textarea"
-                rows={2}
-                style={{ background: '#121110', border: '1px solid #333', color: '#FFF' }}
-                value={cmsData.hero_sub || ''}
-                onChange={(e) => setCmsData({ ...cmsData, hero_sub: e.target.value })}
-              />
+            {/* Block 1: Copywriting & Headlines */}
+            <div style={{ background: '#1A1918', border: '1px solid #2C2926', borderRadius: '10px', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <h4 style={{ fontSize: '1rem', fontWeight: 700, color: '#D5360C' }}>1. Headline & Brand Messaging</h4>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1rem' }}>
+                <div className="form-group">
+                  <label className="form-label" style={{ color: '#AAA' }}>Hero Headline</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    style={{ background: '#121110', border: '1px solid #333', color: '#FFF' }}
+                    value={cmsData.hero_headline || ''}
+                    onChange={(e) => setCmsData({ ...cmsData, hero_headline: e.target.value })}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label" style={{ color: '#AAA' }}>Announcement Ticker Bar</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    style={{ background: '#121110', border: '1px solid #333', color: '#FFF' }}
+                    value={cmsData.ticker_text || ''}
+                    onChange={(e) => setCmsData({ ...cmsData, ticker_text: e.target.value })}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label" style={{ color: '#AAA' }}>WhatsApp Concierge Number</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    style={{ background: '#121110', border: '1px solid #333', color: '#FFF' }}
+                    value={cmsData.whatsapp_phone || ''}
+                    onChange={(e) => setCmsData({ ...cmsData, whatsapp_phone: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label" style={{ color: '#AAA' }}>Hero Subtitle</label>
+                <textarea
+                  className="form-textarea"
+                  rows={2}
+                  style={{ background: '#121110', border: '1px solid #333', color: '#FFF' }}
+                  value={cmsData.hero_sub || ''}
+                  onChange={(e) => setCmsData({ ...cmsData, hero_sub: e.target.value })}
+                />
+              </div>
             </div>
 
-            <div className="form-group">
-              <label className="form-label" style={{ color: '#AAA' }}>Announcement Ticker Bar</label>
-              <input
-                type="text"
-                className="form-input"
-                style={{ background: '#121110', border: '1px solid #333', color: '#FFF' }}
-                value={cmsData.ticker_text || ''}
-                onChange={(e) => setCmsData({ ...cmsData, ticker_text: e.target.value })}
-              />
+            {/* Block 2: Hero Section Media */}
+            <div style={{ background: '#1A1918', border: '1px solid #2C2926', borderRadius: '10px', padding: '1.5rem' }}>
+              <h4 style={{ fontSize: '1rem', fontWeight: 700, color: '#D5360C', marginBottom: '1rem' }}>2. Hero Video & Poster Photography</h4>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
+                <div style={{ background: '#121110', border: '1px solid #282522', borderRadius: '8px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>Hero Video (MP4/WebM)</span>
+                  <div style={{ height: '140px', background: '#000', borderRadius: '6px', overflow: 'hidden' }}>
+                    <video key={cmsData.hero_video_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} muted loop autoPlay playsInline>
+                      <source src={cmsData.hero_video_url || '/video/nomu_showcase.mp4'} type="video/mp4" />
+                    </video>
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                    <input
+                      type="text"
+                      style={{ flex: 1, background: '#1A1918', border: '1px solid #333', color: '#FFF', fontSize: '0.75rem', padding: '0.35rem 0.6rem', borderRadius: '4px' }}
+                      value={cmsData.hero_video_url || ''}
+                      onChange={(e) => setCmsData({ ...cmsData, hero_video_url: e.target.value })}
+                    />
+                    <label style={{ background: '#2C2926', border: '1px solid #444', color: '#FFF', fontSize: '0.75rem', padding: '0.35rem 0.75rem', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                      {isUploading === 'hero_video_url' ? 'Uploading...' : 'Upload'}
+                      <input type="file" accept="video/mp4,video/webm" style={{ display: 'none' }} onChange={(e) => handleFileUpload('hero_video_url', e)} />
+                    </label>
+                  </div>
+                </div>
+
+                <div style={{ background: '#121110', border: '1px solid #282522', borderRadius: '8px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>Hero Video Poster Image</span>
+                  <div style={{ height: '140px', background: '#000', borderRadius: '6px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <img src={cmsData.hero_poster_url || '/img/nomu/nomu_film_poster.jpg'} alt="Hero Poster" style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} />
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                    <input
+                      type="text"
+                      style={{ flex: 1, background: '#1A1918', border: '1px solid #333', color: '#FFF', fontSize: '0.75rem', padding: '0.35rem 0.6rem', borderRadius: '4px' }}
+                      value={cmsData.hero_poster_url || ''}
+                      onChange={(e) => setCmsData({ ...cmsData, hero_poster_url: e.target.value })}
+                    />
+                    <label style={{ background: '#2C2926', border: '1px solid #444', color: '#FFF', fontSize: '0.75rem', padding: '0.35rem 0.75rem', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                      {isUploading === 'hero_poster_url' ? 'Uploading...' : 'Upload'}
+                      <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => handleFileUpload('hero_poster_url', e)} />
+                    </label>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div className="form-group">
-              <label className="form-label" style={{ color: '#AAA' }}>WhatsApp Concierge Number</label>
-              <input
-                type="text"
-                className="form-input"
-                style={{ background: '#121110', border: '1px solid #333', color: '#FFF' }}
-                value={cmsData.whatsapp_phone || ''}
-                onChange={(e) => setCmsData({ ...cmsData, whatsapp_phone: e.target.value })}
-              />
-            </div>
+            {/* Block 3: Botanical Quartet Media (Vetiver, Chamomile, Grapefruit, Lemongrass) */}
+            <div style={{ background: '#1A1918', border: '1px solid #2C2926', borderRadius: '10px', padding: '1.5rem' }}>
+              <h4 style={{ fontSize: '1rem', fontWeight: 700, color: '#D5360C', marginBottom: '1rem' }}>3. Botanical Quartet Media (Bottles & Splashes)</h4>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.5rem' }}>
-              <button type="button" className="btn btn-burnt-orange" onClick={handleSaveCms}>
-                Save & Publish Changes
-              </button>
-              {cmsSaveMsg && <span style={{ color: '#4ADE80', fontSize: '0.85rem' }}>{cmsSaveMsg}</span>}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
+                {/* Vetiver */}
+                <div style={{ background: '#121110', border: '1px solid #282522', borderRadius: '8px', padding: '0.85rem' }}>
+                  <strong style={{ fontSize: '0.85rem', color: '#E6D5BD' }}>Blend I: Vetiver</strong>
+                  <div style={{ height: '90px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0.5rem 0' }}>
+                    <img src={cmsData.vetiver_bottle_img || '/img/bottles/vetiver_isolated.png'} alt="Vetiver" style={{ maxHeight: '80px', objectFit: 'contain' }} />
+                  </div>
+                  <label style={{ display: 'block', background: '#2C2926', textAlign: 'center', fontSize: '0.75rem', padding: '0.35rem', borderRadius: '4px', cursor: 'pointer' }}>
+                    {isUploading === 'vetiver_bottle_img' ? 'Uploading...' : 'Change Bottle'}
+                    <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => handleFileUpload('vetiver_bottle_img', e)} />
+                  </label>
+                </div>
+
+                {/* Chamomile */}
+                <div style={{ background: '#121110', border: '1px solid #282522', borderRadius: '8px', padding: '0.85rem' }}>
+                  <strong style={{ fontSize: '0.85rem', color: '#FDF3D6' }}>Blend II: Chamomile</strong>
+                  <div style={{ height: '90px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0.5rem 0' }}>
+                    <img src={cmsData.chamomile_bottle_img || '/img/bottles/chamomile_isolated.png'} alt="Chamomile" style={{ maxHeight: '80px', objectFit: 'contain' }} />
+                  </div>
+                  <label style={{ display: 'block', background: '#2C2926', textAlign: 'center', fontSize: '0.75rem', padding: '0.35rem', borderRadius: '4px', cursor: 'pointer' }}>
+                    {isUploading === 'chamomile_bottle_img' ? 'Uploading...' : 'Change Bottle'}
+                    <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => handleFileUpload('chamomile_bottle_img', e)} />
+                  </label>
+                </div>
+
+                {/* Grapefruit */}
+                <div style={{ background: '#121110', border: '1px solid #282522', borderRadius: '8px', padding: '0.85rem' }}>
+                  <strong style={{ fontSize: '0.85rem', color: '#FDE7E3' }}>Blend III: Grapefruit</strong>
+                  <div style={{ height: '90px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0.5rem 0' }}>
+                    <img src={cmsData.grapefruit_bottle_img || '/img/bottles/grapefruit_isolated.png'} alt="Grapefruit" style={{ maxHeight: '80px', objectFit: 'contain' }} />
+                  </div>
+                  <label style={{ display: 'block', background: '#2C2926', textAlign: 'center', fontSize: '0.75rem', padding: '0.35rem', borderRadius: '4px', cursor: 'pointer' }}>
+                    {isUploading === 'grapefruit_bottle_img' ? 'Uploading...' : 'Change Bottle'}
+                    <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => handleFileUpload('grapefruit_bottle_img', e)} />
+                  </label>
+                </div>
+
+                {/* Lemongrass */}
+                <div style={{ background: '#121110', border: '1px solid #282522', borderRadius: '8px', padding: '0.85rem' }}>
+                  <strong style={{ fontSize: '0.85rem', color: '#E3F2D4' }}>Blend IV: Lemongrass</strong>
+                  <div style={{ height: '90px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0.5rem 0' }}>
+                    <img src={cmsData.lemongrass_bottle_img || '/img/bottles/lemongrass_isolated.png'} alt="Lemongrass" style={{ maxHeight: '80px', objectFit: 'contain' }} />
+                  </div>
+                  <label style={{ display: 'block', background: '#2C2926', textAlign: 'center', fontSize: '0.75rem', padding: '0.35rem', borderRadius: '4px', cursor: 'pointer' }}>
+                    {isUploading === 'lemongrass_bottle_img' ? 'Uploading...' : 'Change Bottle'}
+                    <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => handleFileUpload('lemongrass_bottle_img', e)} />
+                  </label>
+                </div>
+              </div>
             </div>
           </div>
         )}
 
-        {/* Tab 4: Telemetry */}
+        {/* Tab 4: Live Website Preview */}
+        {activeTab === 'preview' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', height: 'calc(100vh - 160px)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#1A1918', border: '1px solid #2C2926', padding: '0.75rem 1.25rem', borderRadius: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ fontSize: '0.8rem', color: '#888', fontWeight: 700, marginRight: '0.5rem' }}>VIEWPORT:</span>
+                <button
+                  type="button"
+                  className={`btn ${previewMode === 'desktop' ? 'btn-burnt-orange' : 'btn-outline'}`}
+                  style={{ fontSize: '0.8rem', padding: '0.4rem 0.85rem' }}
+                  onClick={() => setPreviewMode('desktop')}
+                >
+                  Desktop (1366px)
+                </button>
+                <button
+                  type="button"
+                  className={`btn ${previewMode === 'tablet' ? 'btn-burnt-orange' : 'btn-outline'}`}
+                  style={{ fontSize: '0.8rem', padding: '0.4rem 0.85rem' }}
+                  onClick={() => setPreviewMode('tablet')}
+                >
+                  Tablet (768px)
+                </button>
+                <button
+                  type="button"
+                  className={`btn ${previewMode === 'mobile' ? 'btn-burnt-orange' : 'btn-outline'}`}
+                  style={{ fontSize: '0.8rem', padding: '0.4rem 0.85rem' }}
+                  onClick={() => setPreviewMode('mobile')}
+                >
+                  Mobile Portrait (390px · Android/iOS)
+                </button>
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  style={{ fontSize: '0.75rem', padding: '0.4rem 0.85rem' }}
+                  onClick={() => setIframeKey(Date.now())}
+                >
+                  Reload Preview
+                </button>
+                <a
+                  href="/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn btn-secondary"
+                  style={{ fontSize: '0.75rem', padding: '0.4rem 0.85rem', textDecoration: 'none' }}
+                >
+                  Open in New Tab ↗
+                </a>
+              </div>
+            </div>
+
+            <div style={{ flex: 1, background: '#0A0908', border: '1px solid #2C2926', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'auto', padding: '1.5rem' }}>
+              <div
+                style={{
+                  width: previewMode === 'desktop' ? '100%' : previewMode === 'tablet' ? '768px' : '390px',
+                  height: previewMode === 'desktop' ? '100%' : previewMode === 'tablet' ? '880px' : '844px',
+                  maxWidth: previewMode === 'desktop' ? '1366px' : undefined,
+                  border: previewMode === 'mobile' ? '10px solid #1E1D1B' : previewMode === 'tablet' ? '8px solid #222' : '2px solid #333',
+                  borderRadius: previewMode === 'mobile' ? '36px' : previewMode === 'tablet' ? '20px' : '8px',
+                  overflow: 'hidden',
+                  background: '#000',
+                  boxShadow: '0 20px 50px rgba(0,0,0,0.8)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+                }}
+              >
+                {previewMode === 'mobile' && (
+                  <div style={{ height: '26px', background: '#1E1D1B', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ width: '60px', height: '4px', background: '#333', borderRadius: '9999px' }} />
+                  </div>
+                )}
+                <iframe
+                  key={iframeKey}
+                  src="/"
+                  title="NOMU Live Storefront"
+                  style={{ flex: 1, width: '100%', height: '100%', border: 'none', background: '#121110' }}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab 5: Telemetry */}
         {activeTab === 'telemetry' && (
           <div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>

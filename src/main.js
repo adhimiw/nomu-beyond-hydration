@@ -216,7 +216,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (leftCol) {
         if (heroMediaTitle) heroMediaTitle.textContent = flavor.mediaTitle;
         if (heroMediaDesc) heroMediaDesc.textContent = flavor.mediaDesc;
-        if (heroVideoPlayer && flavor.mediaPoster) {
+        // Only update poster if video is paused to avoid video flash
+        if (heroVideoPlayer && flavor.mediaPoster && (heroVideoPlayer.paused || heroVideoPlayer.ended)) {
           heroVideoPlayer.poster = flavor.mediaPoster;
         }
         leftCol.classList.remove('is-swapping');
@@ -235,7 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         rightCol.classList.remove('anim-stagger-out');
       }
-    }, 220);
+    }, 420);
 
     // E. Synchronize Pagination Dots
     document.querySelectorAll('.hero-dot-btn').forEach((dot, dotIdx) => {
@@ -1055,6 +1056,38 @@ Please confirm my order and share UPI / payment link. Thank you!`;
           const tickers = document.querySelectorAll('.ticker-segment span');
           tickers.forEach(t => { t.textContent = data.ticker_text; });
         }
+        if (data.whatsapp_phone) {
+          NOMU_WHATSAPP_NUMBER = data.whatsapp_phone;
+        }
+
+        // Hero Video & Poster
+        if (data.hero_video_url) {
+          const v = document.getElementById('hero-video-player');
+          if (v && v.getAttribute('src') !== data.hero_video_url) {
+            v.src = data.hero_video_url;
+          }
+        }
+        if (data.hero_poster_url) {
+          const v = document.getElementById('hero-video-player');
+          if (v) v.poster = data.hero_poster_url;
+        }
+
+        // Botanical Quartet Images
+        const blendKeys = ['vetiver', 'chamomile', 'grapefruit', 'lemongrass'];
+        blendKeys.forEach(k => {
+          if (data[`${k}_bottle_img`]) FLAVORS[k].bottleImage = data[`${k}_bottle_img`];
+          if (data[`${k}_splash_img`]) FLAVORS[k].splashImage = data[`${k}_splash_img`];
+          if (data[`${k}_packshot_img`]) FLAVORS[k].packshotImage = data[`${k}_packshot_img`];
+        });
+
+        // Story & Manifesto Media
+        if (data.manifesto_image_url) {
+          const manImg = document.querySelector('.manifesto-art-img');
+          if (manImg) manImg.src = data.manifesto_image_url;
+        }
+
+        // Refresh views with newly updated assets
+        renderHeroFlavor(heroActiveIndex);
       })
       .catch(() => {
         // Fallback to static HTML

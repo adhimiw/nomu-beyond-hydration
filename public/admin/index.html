@@ -512,6 +512,254 @@
     .log-act { color: #E5E7EB; font-weight: 600; flex-shrink: 0; }
     .log-msg { color: #9CA3AF; }
 
+    /* Media Management Grid in CMS */
+    .cms-section-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .cms-section-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #FFF;
+      margin-bottom: 0.35rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .cms-section-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+    }
+
+    .media-slots-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .media-slot-item {
+      background-color: var(--bg-dark);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .media-slot-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #E2E8F0;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .media-preview-box {
+      width: 100%;
+      height: 120px;
+      border-radius: 6px;
+      background-color: #1A1918;
+      border: 1px dashed #3A3632;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .media-preview-img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .media-preview-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .media-upload-action-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .media-url-input {
+      flex: 1;
+      padding: 0.4rem 0.6rem;
+      font-size: 0.75rem;
+      background-color: #121110;
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      color: #FFF;
+      outline: none;
+    }
+
+    .media-url-input:focus {
+      border-color: var(--brand-orange);
+    }
+
+    .btn-media-upload {
+      padding: 0.4rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border-radius: 4px;
+      background-color: #2C2926;
+      color: #FFF;
+      border: 1px solid #444;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      white-space: nowrap;
+      transition: background-color 0.2s;
+    }
+
+    .btn-media-upload:hover {
+      background-color: var(--brand-orange);
+      border-color: var(--brand-orange);
+    }
+
+    /* Live Website Preview Tab */
+    .preview-tab-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      height: calc(100vh - 140px);
+    }
+
+    .preview-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius);
+      padding: 0.75rem 1.25rem;
+    }
+
+    .device-switcher-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .device-switch-btn {
+      background-color: var(--bg-elevated);
+      color: var(--text-muted);
+      border: 1px solid var(--border-subtle);
+      padding: 0.4rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+    }
+
+    .device-switch-btn:hover {
+      color: #FFF;
+      border-color: #666;
+    }
+
+    .device-switch-btn.is-active {
+      background-color: var(--brand-orange);
+      color: #FFF;
+      border-color: var(--brand-orange);
+    }
+
+    .preview-actions-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .preview-stage-container {
+      flex: 1;
+      min-height: 500px;
+      background-color: #0A0908;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: auto;
+      padding: 1.5rem;
+      position: relative;
+    }
+
+    .device-viewport-frame {
+      background-color: #000;
+      border-radius: 12px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1), height 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+
+    .device-viewport-frame.mode-desktop {
+      width: 100%;
+      max-width: 1366px;
+      height: 768px;
+      border: 2px solid #333;
+    }
+
+    .device-viewport-frame.mode-tablet {
+      width: 768px;
+      height: 880px;
+      border: 8px solid #222;
+      border-radius: 24px;
+    }
+
+    .device-viewport-frame.mode-mobile {
+      width: 390px;
+      height: 844px;
+      border: 10px solid #1E1D1B;
+      border-radius: 40px;
+    }
+
+    .mobile-notch-bar {
+      height: 28px;
+      background-color: #1E1D1B;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .device-viewport-frame.mode-mobile .mobile-notch-bar {
+      display: flex;
+    }
+
+    .mobile-speaker-pill {
+      width: 60px;
+      height: 5px;
+      background-color: #333;
+      border-radius: 9999px;
+    }
+
+    .preview-iframe-element {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      border: none;
+      background-color: #121110;
+    }
+
     @media (max-width: 900px) {
       .cms-grid { grid-template-columns: 1fr; }
     }
@@ -548,6 +796,9 @@
     </button>
     <button class="tab-btn" data-tab="cms" role="tab">
       Content Management (CMS)
+    </button>
+    <button class="tab-btn" data-tab="preview" role="tab">
+      Live Website Preview
     </button>
     <button class="tab-btn" data-tab="system" role="tab">
       System Telemetry & Logs
@@ -656,33 +907,43 @@
 
     <!-- TAB 3: CONTENT MANAGEMENT SYSTEM (CMS) -->
     <section class="tab-pane" id="pane-cms" role="tabpanel">
-      <div class="cms-grid">
-        <!-- Editor Form -->
-        <div class="form-panel">
-          <h2 class="panel-title">Hero Section & Global Configuration</h2>
+      <!-- Hidden file input for uploads -->
+      <input type="file" id="media-file-uploader" style="display:none;" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" />
 
+      <!-- Top Toolbar with Save & Publish -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;background:#1A1918;border:1px solid var(--border-subtle);border-radius:var(--radius);padding:1rem 1.5rem;">
+        <div>
+          <h2 style="font-size:1.15rem;font-weight:700;color:#FFF;margin-bottom:0.25rem;">Content Management System & Media Asset Vault</h2>
+          <p style="font-size:0.8rem;color:var(--text-muted);">Update headlines, typography, harvest photography, and video assets across all website sections.</p>
+        </div>
+        <div style="display:flex;align-items:center;gap:1rem;">
+          <span id="cms-save-status" style="font-size:0.85rem;color:#4ADE80;" hidden>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline-block;vertical-align:-2px;margin-right:4px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Changes published successfully
+          </span>
+          <button type="button" class="btn btn-orange" id="btn-save-cms" style="padding:0.6rem 1.4rem;font-size:0.85rem;font-weight:700;">
+            Save & Publish Changes
+          </button>
+        </div>
+      </div>
+
+      <!-- Section 1: Hero Section Content & Media -->
+      <div class="cms-section-card">
+        <h3 class="cms-section-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+          1. Hero Section & Global Identity
+        </h3>
+        <p class="cms-section-desc">Manage the primary headline, brand manifesto subtext, running ticker text, and cinematic showcase video.</p>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:1rem;margin-bottom:1.25rem;">
           <div class="cms-field-group">
             <label class="cms-label">Hero Main Title Headline</label>
             <input type="text" id="cms-hero-headline" class="cms-input" value="FOUR HERBS. ZERO NONSENSE." />
           </div>
 
           <div class="cms-field-group">
-            <label class="cms-label">Hero Subtitle & Brand Statement</label>
-            <textarea id="cms-hero-sub" class="cms-textarea" rows="2">Ancient South Indian botanical distillates crafted in small batches across Chennai.</textarea>
-          </div>
-
-          <div class="cms-field-group">
-            <label class="cms-label">Brand Ticker Ticker Bar Text</label>
+            <label class="cms-label">Brand Ticker Bar Text</label>
             <input type="text" id="cms-ticker-text" class="cms-input" value="100% RECYCLED GLASS · NO CHEMICALS · SMALL-BATCH DISTILLED · CHENNAI EXPRESS" />
-          </div>
-
-          <div class="cms-field-group">
-            <label class="cms-label">Typography Style Direction</label>
-            <select id="cms-font-family" class="cms-select">
-              <option value="editorial-serif">Editorial High-Taste Serif (Cinzel + Plus Jakarta Sans)</option>
-              <option value="modern-grotesk">Clean Modern Grotesk</option>
-              <option value="minimal-sans">Minimal Contemporary Sans</option>
-            </select>
           </div>
 
           <div class="cms-field-group">
@@ -690,23 +951,277 @@
             <input type="text" id="cms-whatsapp-phone" class="cms-input" value="919840000000" />
           </div>
 
-          <div style="display:flex;align-items:center;gap:1rem;margin-top:0.5rem;">
-            <button type="button" class="btn btn-orange" id="btn-save-cms">Save & Publish Changes</button>
-            <span id="cms-save-status" style="font-size:0.8rem;color:#4ADE80;" hidden>✓ Changes published successfully</span>
+          <div class="cms-field-group">
+            <label class="cms-label">Typography Style Direction</label>
+            <select id="cms-font-family" class="cms-select">
+              <option value="editorial-serif">Editorial High-Taste (Syne Display + Instrument Sans)</option>
+              <option value="modern-grotesk">Clean Modern Grotesk</option>
+              <option value="minimal-sans">Minimal Contemporary Sans</option>
+            </select>
           </div>
         </div>
 
-        <!-- Live Preview Panel -->
-        <div class="preview-panel">
-          <span class="preview-badge">Live Storefront Preview</span>
-          <div style="background:#121110;color:#FFF;padding:1.5rem;border-radius:8px;">
-            <span style="font-size:0.7rem;color:#D5360C;font-weight:700;display:block;margin-bottom:0.4rem;">BOTANICAL ARCHITECTURE</span>
-            <h3 class="preview-hero-title" id="prev-title">FOUR HERBS. ZERO NONSENSE.</h3>
-            <p class="preview-hero-sub" id="prev-sub" style="color:#CCC;margin-top:0.6rem;">Ancient South Indian botanical distillates crafted in small batches across Chennai.</p>
+        <div class="cms-field-group" style="margin-bottom:1.25rem;">
+          <label class="cms-label">Hero Subtitle & Brand Statement</label>
+          <textarea id="cms-hero-sub" class="cms-textarea" rows="2">Ancient South Indian botanical distillates crafted in small batches across Chennai.</textarea>
+        </div>
+
+        <!-- Hero Media Upload Slots -->
+        <div class="media-slots-grid">
+          <div class="media-slot-item">
+            <span class="media-slot-label">Hero Cinematic Video (MP4 / WebM)</span>
+            <div class="media-preview-box">
+              <video id="prev-media-hero-video" class="media-preview-video" muted loop playsinline autoplay>
+                <source src="/video/nomu_showcase.mp4" type="video/mp4" />
+              </video>
+            </div>
+            <div class="media-upload-action-row">
+              <input type="text" id="cms-hero-video-url" class="media-url-input" value="/video/nomu_showcase.mp4" placeholder="/uploads/... or URL" />
+              <button type="button" class="btn-media-upload" onclick="triggerUpload('cms-hero-video-url', 'prev-media-hero-video', 'video')">Upload Video</button>
+            </div>
           </div>
 
-          <div style="background:#EFE8DD;padding:0.75rem 1rem;border-radius:6px;font-size:0.75rem;font-weight:700;letter-spacing:0.04em;">
-            TICKER: <span id="prev-ticker">100% RECYCLED GLASS · NO CHEMICALS · SMALL-BATCH DISTILLED · CHENNAI EXPRESS</span>
+          <div class="media-slot-item">
+            <span class="media-slot-label">Hero Video Poster Image</span>
+            <div class="media-preview-box">
+              <img id="prev-media-hero-poster" src="/img/nomu/nomu_film_poster.jpg" alt="Hero Poster" class="media-preview-img" />
+            </div>
+            <div class="media-upload-action-row">
+              <input type="text" id="cms-hero-poster-url" class="media-url-input" value="/img/nomu/nomu_film_poster.jpg" placeholder="/uploads/... or URL" />
+              <button type="button" class="btn-media-upload" onclick="triggerUpload('cms-hero-poster-url', 'prev-media-hero-poster', 'image')">Upload Image</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Botanical Quartet Media Assets (4 Blends) -->
+      <div class="cms-section-card">
+        <h3 class="cms-section-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+          2. Botanical Quartet — Flavour Imagery Vault
+        </h3>
+        <p class="cms-section-desc">Upload isolated transparent bottles, ingredient macro splashes, and studio packshots for each of the four functional blends.</p>
+
+        <!-- Blend I: Vetiver -->
+        <div style="background:#141312;border:1px solid #282522;border-radius:8px;padding:1rem;margin-bottom:1.25rem;">
+          <h4 style="font-size:0.95rem;font-weight:700;color:#E6D5BD;margin-bottom:0.75rem;">Blend I: Vetiver (Khus Root) — Ground</h4>
+          <div class="media-slots-grid">
+            <div class="media-slot-item">
+              <span class="media-slot-label">Bottle Isolated (PNG)</span>
+              <div class="media-preview-box">
+                <img id="prev-vetiver-bottle" src="/img/bottles/vetiver_isolated.png" alt="Vetiver Bottle" class="media-preview-img" />
+              </div>
+              <div class="media-upload-action-row">
+                <input type="text" id="cms-vetiver-bottle" class="media-url-input" value="/img/bottles/vetiver_isolated.png" />
+                <button type="button" class="btn-media-upload" onclick="triggerUpload('cms-vetiver-bottle', 'prev-vetiver-bottle', 'image')">Upload</button>
+              </div>
+            </div>
+
+            <div class="media-slot-item">
+              <span class="media-slot-label">Harvest Splash Ingredients</span>
+              <div class="media-preview-box">
+                <img id="prev-vetiver-splash" src="/img/ingredients/vetiver_khus_root.png" alt="Khus Root Splash" class="media-preview-img" />
+              </div>
+              <div class="media-upload-action-row">
+                <input type="text" id="cms-vetiver-splash" class="media-url-input" value="/img/ingredients/vetiver_khus_root.png" />
+                <button type="button" class="btn-media-upload" onclick="triggerUpload('cms-vetiver-splash', 'prev-vetiver-splash', 'image')">Upload</button>
+              </div>
+            </div>
+
+            <div class="media-slot-item">
+              <span class="media-slot-label">Studio Packshot Photo</span>
+              <div class="media-preview-box">
+                <img id="prev-vetiver-packshot" src="/img/bottles/vetiver_packshot.jpg" alt="Vetiver Packshot" class="media-preview-img" />
+              </div>
+              <div class="media-upload-action-row">
+                <input type="text" id="cms-vetiver-packshot" class="media-url-input" value="/img/bottles/vetiver_packshot.jpg" />
+                <button type="button" class="btn-media-upload" onclick="triggerUpload('cms-vetiver-packshot', 'prev-vetiver-packshot', 'image')">Upload</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Blend II: German Chamomile -->
+        <div style="background:#141312;border:1px solid #282522;border-radius:8px;padding:1rem;margin-bottom:1.25rem;">
+          <h4 style="font-size:0.95rem;font-weight:700;color:#FDF3D6;margin-bottom:0.75rem;">Blend II: German Chamomile (Blossoms) — Unwind</h4>
+          <div class="media-slots-grid">
+            <div class="media-slot-item">
+              <span class="media-slot-label">Bottle Isolated (PNG)</span>
+              <div class="media-preview-box">
+                <img id="prev-chamomile-bottle" src="/img/bottles/chamomile_isolated.png" alt="Chamomile Bottle" class="media-preview-img" />
+              </div>
+              <div class="media-upload-action-row">
+                <input type="text" id="cms-chamomile-bottle" class="media-url-input" value="/img/bottles/chamomile_isolated.png" />
+                <button type="button" class="btn-media-upload" onclick="triggerUpload('cms-chamomile-bottle', 'prev-chamomile-bottle', 'image')">Upload</button>
+              </div>
+            </div>
+
+            <div class="media-slot-item">
+              <span class="media-slot-label">Harvest Splash Ingredients</span>
+              <div class="media-preview-box">
+                <img id="prev-chamomile-splash" src="/img/ingredients/chamomile_lavender_harvest.jpg" alt="Chamomile Splash" class="media-preview-img" />
+              </div>
+              <div class="media-upload-action-row">
+                <input type="text" id="cms-chamomile-splash" class="media-url-input" value="/img/ingredients/chamomile_lavender_harvest.jpg" />
+                <button type="button" class="btn-media-upload" onclick="triggerUpload('cms-chamomile-splash', 'prev-chamomile-splash', 'image')">Upload</button>
+              </div>
+            </div>
+
+            <div class="media-slot-item">
+              <span class="media-slot-label">Studio Packshot Photo</span>
+              <div class="media-preview-box">
+                <img id="prev-chamomile-packshot" src="/img/bottles/chamomile_packshot.jpg" alt="Chamomile Packshot" class="media-preview-img" />
+              </div>
+              <div class="media-upload-action-row">
+                <input type="text" id="cms-chamomile-packshot" class="media-url-input" value="/img/bottles/chamomile_packshot.jpg" />
+                <button type="button" class="btn-media-upload" onclick="triggerUpload('cms-chamomile-packshot', 'prev-chamomile-packshot', 'image')">Upload</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Blend III: Grapefruit -->
+        <div style="background:#141312;border:1px solid #282522;border-radius:8px;padding:1rem;margin-bottom:1.25rem;">
+          <h4 style="font-size:0.95rem;font-weight:700;color:#FDE7E3;margin-bottom:0.75rem;">Blend III: Grapefruit (Ruby Peel) — Uplift</h4>
+          <div class="media-slots-grid">
+            <div class="media-slot-item">
+              <span class="media-slot-label">Bottle Isolated (PNG)</span>
+              <div class="media-preview-box">
+                <img id="prev-grapefruit-bottle" src="/img/bottles/grapefruit_isolated.png" alt="Grapefruit Bottle" class="media-preview-img" />
+              </div>
+              <div class="media-upload-action-row">
+                <input type="text" id="cms-grapefruit-bottle" class="media-url-input" value="/img/bottles/grapefruit_isolated.png" />
+                <button type="button" class="btn-media-upload" onclick="triggerUpload('cms-grapefruit-bottle', 'prev-grapefruit-bottle', 'image')">Upload</button>
+              </div>
+            </div>
+
+            <div class="media-slot-item">
+              <span class="media-slot-label">Harvest Splash Ingredients</span>
+              <div class="media-preview-box">
+                <img id="prev-grapefruit-splash" src="/img/ingredients/grapefruit_harvest.jpg" alt="Grapefruit Splash" class="media-preview-img" />
+              </div>
+              <div class="media-upload-action-row">
+                <input type="text" id="cms-grapefruit-splash" class="media-url-input" value="/img/ingredients/grapefruit_harvest.jpg" />
+                <button type="button" class="btn-media-upload" onclick="triggerUpload('cms-grapefruit-splash', 'prev-grapefruit-splash', 'image')">Upload</button>
+              </div>
+            </div>
+
+            <div class="media-slot-item">
+              <span class="media-slot-label">Studio Packshot Photo</span>
+              <div class="media-preview-box">
+                <img id="prev-grapefruit-packshot" src="/img/bottles/grapefruit_packshot.jpg" alt="Grapefruit Packshot" class="media-preview-img" />
+              </div>
+              <div class="media-upload-action-row">
+                <input type="text" id="cms-grapefruit-packshot" class="media-url-input" value="/img/bottles/grapefruit_packshot.jpg" />
+                <button type="button" class="btn-media-upload" onclick="triggerUpload('cms-grapefruit-packshot', 'prev-grapefruit-packshot', 'image')">Upload</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Blend IV: Lemongrass -->
+        <div style="background:#141312;border:1px solid #282522;border-radius:8px;padding:1rem;">
+          <h4 style="font-size:0.95rem;font-weight:700;color:#E3F2D4;margin-bottom:0.75rem;">Blend IV: Lemongrass (Nilgiri Stalks) — Refresh</h4>
+          <div class="media-slots-grid">
+            <div class="media-slot-item">
+              <span class="media-slot-label">Bottle Isolated (PNG)</span>
+              <div class="media-preview-box">
+                <img id="prev-lemongrass-bottle" src="/img/bottles/lemongrass_isolated.png" alt="Lemongrass Bottle" class="media-preview-img" />
+              </div>
+              <div class="media-upload-action-row">
+                <input type="text" id="cms-lemongrass-bottle" class="media-url-input" value="/img/bottles/lemongrass_isolated.png" />
+                <button type="button" class="btn-media-upload" onclick="triggerUpload('cms-lemongrass-bottle', 'prev-lemongrass-bottle', 'image')">Upload</button>
+              </div>
+            </div>
+
+            <div class="media-slot-item">
+              <span class="media-slot-label">Harvest Splash Ingredients</span>
+              <div class="media-preview-box">
+                <img id="prev-lemongrass-splash" src="/img/ingredients/lemongrass_harvest.jpg" alt="Lemongrass Splash" class="media-preview-img" />
+              </div>
+              <div class="media-upload-action-row">
+                <input type="text" id="cms-lemongrass-splash" class="media-url-input" value="/img/ingredients/lemongrass_harvest.jpg" />
+                <button type="button" class="btn-media-upload" onclick="triggerUpload('cms-lemongrass-splash', 'prev-lemongrass-splash', 'image')">Upload</button>
+              </div>
+            </div>
+
+            <div class="media-slot-item">
+              <span class="media-slot-label">Studio Packshot Photo</span>
+              <div class="media-preview-box">
+                <img id="prev-lemongrass-packshot" src="/img/bottles/lemongrass_packshot.jpg" alt="Lemongrass Packshot" class="media-preview-img" />
+              </div>
+              <div class="media-upload-action-row">
+                <input type="text" id="cms-lemongrass-packshot" class="media-url-input" value="/img/bottles/lemongrass_packshot.jpg" />
+                <button type="button" class="btn-media-upload" onclick="triggerUpload('cms-lemongrass-packshot', 'prev-lemongrass-packshot', 'image')">Upload</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Story & Manifesto Editorial Photography -->
+      <div class="cms-section-card">
+        <h3 class="cms-section-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+          3. Brand Narrative & Botanical Manifesto Photography
+        </h3>
+        <p class="cms-section-desc">Manage editorial photographs in the Brand Story section and the Botanical Equilibrium Manifesto section.</p>
+
+        <div class="media-slots-grid">
+          <div class="media-slot-item">
+            <span class="media-slot-label">Manifesto Hero Showcase Photo</span>
+            <div class="media-preview-box">
+              <img id="prev-manifesto-img" src="/img/nomu/nomu_bottles_hero_real.jpg" alt="Manifesto Art Frame" class="media-preview-img" />
+            </div>
+            <div class="media-upload-action-row">
+              <input type="text" id="cms-manifesto-img" class="media-url-input" value="/img/nomu/nomu_bottles_hero_real.jpg" />
+              <button type="button" class="btn-media-upload" onclick="triggerUpload('cms-manifesto-img', 'prev-manifesto-img', 'image')">Upload Image</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: LIVE WEBSITE PREVIEW (RESPONSIVE VIEWPORTS) -->
+    <section class="tab-pane" id="pane-preview" role="tabpanel">
+      <div class="preview-tab-wrapper">
+        <!-- Viewport Controls Toolbar -->
+        <div class="preview-toolbar">
+          <div class="device-switcher-group">
+            <span style="font-size:0.8rem;color:var(--text-muted);font-weight:700;margin-right:0.5rem;">VIEWPORT:</span>
+            <button type="button" class="device-switch-btn is-active" id="btn-view-desktop" onclick="switchPreviewMode('desktop')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+              Desktop (1366px)
+            </button>
+            <button type="button" class="device-switch-btn" id="btn-view-tablet" onclick="switchPreviewMode('tablet')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+              Tablet (768px)
+            </button>
+            <button type="button" class="device-switch-btn" id="btn-view-mobile" onclick="switchPreviewMode('mobile')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+              Mobile Portrait (390px · Android/iOS)
+            </button>
+          </div>
+
+          <div class="preview-actions-group">
+            <span id="preview-dimensions-tag" style="font-size:0.75rem;background:#1A1918;border:1px solid #333;padding:0.25rem 0.6rem;border-radius:4px;color:#AAA;">1366 × 768 px</span>
+            <button type="button" class="btn btn-secondary" onclick="reloadPreviewIframe()" style="padding:0.4rem 0.85rem;font-size:0.8rem;display:inline-flex;align-items:center;gap:0.35rem;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+              Reload Frame
+            </button>
+            <a href="/" target="_blank" rel="noopener" class="btn btn-secondary" style="padding:0.4rem 0.85rem;font-size:0.8rem;text-decoration:none;display:inline-flex;align-items:center;gap:0.35rem;">
+              Open in New Window ↗
+            </a>
+          </div>
+        </div>
+
+        <!-- Stage Container with Framed Viewport -->
+        <div class="preview-stage-container">
+          <div class="device-viewport-frame mode-desktop" id="preview-frame-bezel">
+            <div class="mobile-notch-bar">
+              <div class="mobile-speaker-pill"></div>
+            </div>
+            <iframe id="live-storefront-iframe" class="preview-iframe-element" src="/" title="NOMU Storefront Live Viewport"></iframe>
           </div>
         </div>
       </div>
@@ -783,6 +1298,7 @@
         if (tab === 'orders') loadOrders();
         if (tab === 'reviews') loadReviews();
         if (tab === 'cms') loadCms();
+        if (tab === 'preview') reloadPreviewIframe();
         if (tab === 'system') { loadSystemStatus(); loadSystemLogs(); }
       });
     });
@@ -945,13 +1461,14 @@
 
       let html = '';
       reviews.forEach(r => {
-        const starStr = '★'.repeat(r.rating || 5);
+        const starCount = Math.max(1, Math.min(5, r.rating || 5));
+        const starsSvg = `<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="display:inline-block;vertical-align:-1px;margin-right:2px;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`.repeat(starCount);
         html += `
           <div class="admin-review-card">
             <div>
               <div class="review-top-meta">
                 <span class="badge-status badge-${r.status}">${r.status}</span>
-                <span style="color:#F59E0B;font-size:0.9rem;">${starStr}</span>
+                <span style="color:#F59E0B;font-size:0.9rem;">${starsSvg}</span>
               </div>
               <div class="review-author-line">${r.customer_name} <span style="color:var(--brand-orange);font-size:0.75rem;">(${r.flavor_key})</span></div>
               <div class="review-email-line">${r.customer_email} · ${new Date(r.created_at).toLocaleDateString()}</div>
@@ -959,8 +1476,8 @@
               <p class="review-text-content">${r.review_text}</p>
             </div>
             <div class="review-action-row">
-              ${r.status !== 'approved' ? `<button type="button" class="btn-sm btn-approve" onclick="moderateReview(${r.id}, 'approve')">✓ Approve</button>` : ''}
-              ${r.status !== 'rejected' ? `<button type="button" class="btn-sm btn-reject" onclick="moderateReview(${r.id}, 'reject')">✕ Reject</button>` : ''}
+              ${r.status !== 'approved' ? `<button type="button" class="btn-sm btn-approve" onclick="moderateReview(${r.id}, 'approve')">Approve</button>` : ''}
+              ${r.status !== 'rejected' ? `<button type="button" class="btn-sm btn-reject" onclick="moderateReview(${r.id}, 'reject')">Reject</button>` : ''}
               <button type="button" class="btn-sm btn-del" onclick="moderateReview(${r.id}, 'delete')">Delete</button>
             </div>
           </div>
@@ -991,40 +1508,160 @@
     document.getElementById('review-status-filter').addEventListener('change', loadReviews);
     document.getElementById('btn-refresh-reviews').addEventListener('click', loadReviews);
 
-    // 3. CMS CONTENT ENGINE
+    // 3. CMS CONTENT & MEDIA ASSET ENGINE
+    let currentUploadTargetInput = null;
+    let currentUploadTargetPreview = null;
+    let currentUploadTargetType = 'image';
+
+    const mediaUploaderInput = document.getElementById('media-file-uploader');
+
+    window.triggerUpload = function(inputId, previewId, type) {
+      currentUploadTargetInput = inputId;
+      currentUploadTargetPreview = previewId;
+      currentUploadTargetType = type;
+      mediaUploaderInput.click();
+    };
+
+    mediaUploaderInput.addEventListener('change', async (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+
+      const token = getAdminToken();
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const res = await fetch(`${API_BASE}/admin/media/upload`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          body: formData
+        });
+
+        const data = await res.json();
+        if (res.ok && data.url) {
+          if (currentUploadTargetInput) {
+            const inputElem = document.getElementById(currentUploadTargetInput);
+            if (inputElem) inputElem.value = data.url;
+          }
+
+          if (currentUploadTargetPreview) {
+            const prevElem = document.getElementById(currentUploadTargetPreview);
+            if (prevElem) {
+              if (currentUploadTargetType === 'video') {
+                prevElem.src = data.url;
+                prevElem.load();
+              } else {
+                prevElem.src = data.url;
+              }
+            }
+          }
+
+          alert('Asset uploaded and updated in form. Click "Save & Publish Changes" to apply globally.');
+        } else {
+          alert(data.message || 'File upload failed');
+        }
+      } catch (err) {
+        alert('Media upload failed. Please check network connection and file size.');
+      } finally {
+        mediaUploaderInput.value = '';
+      }
+    });
+
     async function loadCms() {
       try {
         const res = await fetch(`${API_BASE}/content`);
         const data = await res.json();
         if (data) {
+          // Text Fields
           if (data.hero_headline) document.getElementById('cms-hero-headline').value = data.hero_headline;
           if (data.hero_sub) document.getElementById('cms-hero-sub').value = data.hero_sub;
           if (data.ticker_text) document.getElementById('cms-ticker-text').value = data.ticker_text;
           if (data.font_family) document.getElementById('cms-font-family').value = data.font_family;
           if (data.whatsapp_phone) document.getElementById('cms-whatsapp-phone').value = data.whatsapp_phone;
-          updatePreview();
+
+          // Hero Media
+          if (data.hero_video_url) {
+            document.getElementById('cms-hero-video-url').value = data.hero_video_url;
+            document.getElementById('prev-media-hero-video').src = data.hero_video_url;
+          }
+          if (data.hero_poster_url) {
+            document.getElementById('cms-hero-poster-url').value = data.hero_poster_url;
+            document.getElementById('prev-media-hero-poster').src = data.hero_poster_url;
+          }
+
+          // Quartet Blends Media
+          const blendKeys = ['vetiver', 'chamomile', 'grapefruit', 'lemongrass'];
+          blendKeys.forEach(k => {
+            const bKey = `${k}_bottle_img`;
+            const sKey = `${k}_splash_img`;
+            const pKey = `${k}_packshot_img`;
+
+            if (data[bKey]) {
+              const el = document.getElementById(`cms-${k}-bottle`);
+              if (el) el.value = data[bKey];
+              const p = document.getElementById(`prev-${k}-bottle`);
+              if (p) p.src = data[bKey];
+            }
+            if (data[sKey]) {
+              const el = document.getElementById(`cms-${k}-splash`);
+              if (el) el.value = data[sKey];
+              const p = document.getElementById(`prev-${k}-splash`);
+              if (p) p.src = data[sKey];
+            }
+            if (data[pKey]) {
+              const el = document.getElementById(`cms-${k}-packshot`);
+              if (el) el.value = data[pKey];
+              const p = document.getElementById(`prev-${k}-packshot`);
+              if (p) p.src = data[pKey];
+            }
+          });
+
+          // Manifesto & Story Media
+          if (data.manifesto_image_url) {
+            const el = document.getElementById('cms-manifesto-img');
+            if (el) el.value = data.manifesto_image_url;
+            const p = document.getElementById('prev-manifesto-img');
+            if (p) p.src = data.manifesto_image_url;
+          }
         }
       } catch (e) {}
     }
 
-    function updatePreview() {
-      document.getElementById('prev-title').textContent = document.getElementById('cms-hero-headline').value;
-      document.getElementById('prev-sub').textContent = document.getElementById('cms-hero-sub').value;
-      document.getElementById('prev-ticker').textContent = document.getElementById('cms-ticker-text').value;
-    }
-
-    document.getElementById('cms-hero-headline').addEventListener('input', updatePreview);
-    document.getElementById('cms-hero-sub').addEventListener('input', updatePreview);
-    document.getElementById('cms-ticker-text').addEventListener('input', updatePreview);
-
     document.getElementById('btn-save-cms').addEventListener('click', async () => {
       const token = getAdminToken();
       const payload = {
+        // Text
         hero_headline: document.getElementById('cms-hero-headline').value,
         hero_sub: document.getElementById('cms-hero-sub').value,
         ticker_text: document.getElementById('cms-ticker-text').value,
         font_family: document.getElementById('cms-font-family').value,
-        whatsapp_phone: document.getElementById('cms-whatsapp-phone').value
+        whatsapp_phone: document.getElementById('cms-whatsapp-phone').value,
+
+        // Hero Media
+        hero_video_url: document.getElementById('cms-hero-video-url').value,
+        hero_poster_url: document.getElementById('cms-hero-poster-url').value,
+
+        // Quartet Media
+        vetiver_bottle_img: document.getElementById('cms-vetiver-bottle').value,
+        vetiver_splash_img: document.getElementById('cms-vetiver-splash').value,
+        vetiver_packshot_img: document.getElementById('cms-vetiver-packshot').value,
+
+        chamomile_bottle_img: document.getElementById('cms-chamomile-bottle').value,
+        chamomile_splash_img: document.getElementById('cms-chamomile-splash').value,
+        chamomile_packshot_img: document.getElementById('cms-chamomile-packshot').value,
+
+        grapefruit_bottle_img: document.getElementById('cms-grapefruit-bottle').value,
+        grapefruit_splash_img: document.getElementById('cms-grapefruit-splash').value,
+        grapefruit_packshot_img: document.getElementById('cms-grapefruit-packshot').value,
+
+        lemongrass_bottle_img: document.getElementById('cms-lemongrass-bottle').value,
+        lemongrass_splash_img: document.getElementById('cms-lemongrass-splash').value,
+        lemongrass_packshot_img: document.getElementById('cms-lemongrass-packshot').value,
+
+        // Story & Manifesto Media
+        manifesto_image_url: document.getElementById('cms-manifesto-img').value
       };
 
       try {
@@ -1039,12 +1676,48 @@
         if (res.ok) {
           const status = document.getElementById('cms-save-status');
           status.removeAttribute('hidden');
-          setTimeout(() => status.setAttribute('hidden', ''), 3000);
+          setTimeout(() => status.setAttribute('hidden', ''), 3500);
+
+          // Refresh live preview iframe if present
+          reloadPreviewIframe();
         }
       } catch (err) {
         alert('Failed to save CMS configuration');
       }
     });
+
+    // 4. LIVE WEBSITE PREVIEW CONTROLS
+    window.switchPreviewMode = function(mode) {
+      const bezel = document.getElementById('preview-frame-bezel');
+      const tag = document.getElementById('preview-dimensions-tag');
+      const btnDesk = document.getElementById('btn-view-desktop');
+      const btnTab = document.getElementById('btn-view-tablet');
+      const btnMob = document.getElementById('btn-view-mobile');
+
+      btnDesk.classList.remove('is-active');
+      btnTab.classList.remove('is-active');
+      btnMob.classList.remove('is-active');
+
+      bezel.className = 'device-viewport-frame mode-' + mode;
+
+      if (mode === 'desktop') {
+        btnDesk.classList.add('is-active');
+        tag.textContent = '1366 × 768 px (Desktop)';
+      } else if (mode === 'tablet') {
+        btnTab.classList.add('is-active');
+        tag.textContent = '768 × 880 px (Tablet)';
+      } else if (mode === 'mobile') {
+        btnMob.classList.add('is-active');
+        tag.textContent = '390 × 844 px (Mobile · Android/iOS)';
+      }
+    };
+
+    window.reloadPreviewIframe = function() {
+      const iframe = document.getElementById('live-storefront-iframe');
+      if (iframe) {
+        iframe.src = '/?ts=' + Date.now();
+      }
+    };
 
     // 4. SYSTEM TELEMETRY & LOGS
     async function loadSystemStatus() {

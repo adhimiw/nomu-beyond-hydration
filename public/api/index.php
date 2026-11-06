@@ -140,6 +140,33 @@ function verifyAdmin(): bool {
     return hash_equals(ADMIN_SECRET_TOKEN, $token);
 }
 
+// Helper: Sanitize Media URLs (defense against Stored XSS & path traversal)
+function sanitizeMediaUrl(string $url): string {
+    $url = trim($url);
+    if (empty($url)) {
+        return '';
+    }
+    // Block dangerous pseudo-protocols
+    if (preg_match('#^(javascript|data|vbscript|file):#i', $url)) {
+        return '';
+    }
+    // Allow relative paths starting with / (e.g. /uploads/..., /img/..., /video/...)
+    if (str_starts_with($url, '/')) {
+        if (str_contains($url, '..')) {
+            return '';
+        }
+        return htmlspecialchars($url, ENT_QUOTES, 'UTF-8');
+    }
+    // Allow valid http / https URLs
+    if (filter_var($url, FILTER_VALIDATE_URL)) {
+        $scheme = parse_url($url, PHP_URL_SCHEME);
+        if (in_array(strtolower((string)$scheme), ['http', 'https'], true)) {
+            return htmlspecialchars($url, ENT_QUOTES, 'UTF-8');
+        }
+    }
+    return '';
+}
+
 // --------------------------------------------------------------------------
 // Request Routing
 // --------------------------------------------------------------------------
@@ -438,13 +465,26 @@ if (str_starts_with($pathInfo, '/admin')) {
             exit;
         }
 
-        $allowedKeys = ['hero_headline', 'hero_sub', 'ticker_text', 'font_family', 'whatsapp_phone', 'banner_text'];
+        $textKeys = ['hero_headline', 'hero_sub', 'ticker_text', 'font_family', 'whatsapp_phone', 'banner_text'];
+        $mediaKeys = [
+            'hero_video_url', 'hero_poster_url',
+            'vetiver_bottle_img', 'vetiver_splash_img', 'vetiver_packshot_img',
+            'chamomile_bottle_img', 'chamomile_splash_img', 'chamomile_packshot_img',
+            'grapefruit_bottle_img', 'grapefruit_splash_img', 'grapefruit_packshot_img',
+            'lemongrass_bottle_img', 'lemongrass_splash_img', 'lemongrass_packshot_img',
+            'about_image_url', 'manifesto_image_url'
+        ];
+
         $upd = $pdo->prepare("INSERT INTO cms_contents (field_key, field_value) VALUES (?, ?) ON CONFLICT(field_key) DO UPDATE SET field_value = excluded.field_value, updated_at = CURRENT_TIMESTAMP");
 
         $count = 0;
         foreach ($input as $k => $v) {
-            if (in_array($k, $allowedKeys, true)) {
+            if (in_array($k, $textKeys, true)) {
                 $sanitized = htmlspecialchars(trim((string)$v), ENT_QUOTES, 'UTF-8');
+                $upd->execute([$k, $sanitized]);
+                $count++;
+            } elseif (in_array($k, $mediaKeys, true)) {
+                $sanitized = sanitizeMediaUrl((string)$v);
                 $upd->execute([$k, $sanitized]);
                 $count++;
             }
@@ -453,6 +493,93 @@ if (str_starts_with($pathInfo, '/admin')) {
         nomuLog($pdo, 'NOTICE', 'CMS_CONTENT_UPDATED', "Updated {$count} CMS content items");
 
         echo json_encode(['status' => 'success', 'message' => "Updated {$count} fields"]);
+        exit;
+    }
+
+    // F. POST /admin/media/upload
+    if ($method === 'POST' && $pathInfo === '/admin/media/upload') {
+        if (!isset($_FILES['file']) || !is_array($_FILES['file'])) {
+            http_response_code(400);
+            echo json_encode(['error' => 'No file uploaded', 'message' => 'Please select an image or video file to upload.']);
+            exit;
+        }
+
+        $file = $_FILES['file'];
+        if ($file['error'] !== UPLOAD_ERR_OK) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Upload failed', 'code' => $file['error']]);
+            exit;
+        }
+
+        // Maximum size: 25 MB
+        $maxBytes = 25 * 1024 * 1024;
+        if ($file['size'] > $maxBytes) {
+            http_response_code(422);
+            echo json_encode(['error' => 'File too large', 'message' => 'Uploaded file must be smaller than 25MB.']);
+            exit;
+        }
+
+        // Magic byte verification via finfo
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime = finfo_file($finfo, $file['tmp_name']);
+        finfo_close($finfo);
+
+        $allowedMimes = [
+            'image/jpeg' => 'jpg',
+            'image/png'  => 'png',
+            'image/webp' => 'webp',
+            'video/mp4'  => 'mp4',
+            'video/webm' => 'webm'
+        ];
+
+        if (!isset($allowedMimes[$mime])) {
+            http_response_code(422);
+            echo json_encode([
+                'error' => 'Invalid file format',
+                'detected_mime' => $mime,
+                'message' => 'Only JPG, PNG, WEBP images and MP4, WEBM videos are allowed.'
+            ]);
+            exit;
+        }
+
+        $ext = $allowedMimes[$mime];
+        $filename = 'nomu_media_' . bin2hex(random_bytes(8)) . '.' . $ext;
+        $uploadDir = realpath(__DIR__ . '/../uploads');
+        if (!$uploadDir) {
+            $uploadDir = __DIR__ . '/../uploads';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+        }
+
+        $destination = $uploadDir . '/' . $filename;
+        if (!move_uploaded_file($file['tmp_name'], $destination)) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Storage error', 'message' => 'Could not save uploaded file.']);
+            exit;
+        }
+
+        // Safe permissions
+        chmod($destination, 0644);
+
+        $publicUrl = '/uploads/' . $filename;
+
+        nomuLog($pdo, 'INFO', 'MEDIA_UPLOADED', "Uploaded media file {$filename} ({$mime}, {$file['size']} bytes)", [
+            'filename' => $filename,
+            'mime' => $mime,
+            'size' => $file['size'],
+            'url' => $publicUrl
+        ]);
+
+        http_response_code(201);
+        echo json_encode([
+            'status' => 'success',
+            'message' => 'Media uploaded successfully',
+            'url' => $publicUrl,
+            'filename' => $filename,
+            'mime' => $mime,
+            'size' => $file['size']
+        ]);
         exit;
     }
 

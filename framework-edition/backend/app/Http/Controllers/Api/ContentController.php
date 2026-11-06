@@ -28,4 +28,29 @@ class ContentController extends Controller
             'content' => $this->cmsService->getStorefrontContent()
         ]);
     }
+
+    public function uploadMedia(\Illuminate\Http\Request $request): JsonResponse
+    {
+        if (!$request->hasFile('file') || !$request->file('file')->isValid()) {
+            return response()->json([
+                'error' => 'No file uploaded',
+                'message' => 'Please select a valid image or video file to upload.'
+            ], 400);
+        }
+
+        try {
+            $result = $this->cmsService->storeMediaUpload($request->file('file'));
+            return response()->json($result, 201);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json([
+                'error' => 'Validation error',
+                'message' => $e->getMessage()
+            ], 422);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'error' => 'Storage error',
+                'message' => 'Failed to store media file.'
+            ], 500);
+        }
+    }
 }
