@@ -111,18 +111,96 @@ $pdo->exec("
         ip_address VARCHAR(45),
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
+
+    CREATE TABLE IF NOT EXISTS media_assets (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        section_key VARCHAR(60) NOT NULL,
+        asset_type VARCHAR(20) NOT NULL,
+        title VARCHAR(120) NOT NULL,
+        url VARCHAR(255) UNIQUE NOT NULL,
+        alt_text VARCHAR(200),
+        is_active INTEGER DEFAULT 1,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
 ");
 
-// Seed default CMS content if empty
-$chkCms = $pdo->query("SELECT COUNT(*) FROM cms_contents")->fetchColumn();
-if ($chkCms == 0) {
-    $insCms = $pdo->prepare("INSERT INTO cms_contents (field_key, field_value, field_group) VALUES (?, ?, ?)");
-    $insCms->execute(['hero_headline', 'FOUR HERBS. ZERO NONSENSE.', 'hero']);
-    $insCms->execute(['hero_sub', 'Ancient South Indian botanical distillates crafted in small batches across Chennai.', 'hero']);
-    $insCms->execute(['ticker_text', '100% RECYCLED GLASS · NO CHEMICALS · SMALL-BATCH DISTILLED · CHENNAI EXPRESS', 'general']);
-    $insCms->execute(['font_family', 'editorial-serif', 'design']);
-    $insCms->execute(['whatsapp_phone', '919840000000', 'contact']);
+// Database Seeder Function
+function seedDatabase(PDO $pdo, bool $force = false): array {
+    $seeded = ['cms' => 0, 'media' => 0, 'reviews' => 0];
+
+    // 1. Seed CMS content & media references
+    $cmsDefaults = [
+        ['hero_headline', 'FOUR HERBS. ZERO NONSENSE.', 'hero'],
+        ['hero_sub', 'Ancient South Indian botanical distillates crafted in small batches across Chennai.', 'hero'],
+        ['ticker_text', '100% RECYCLED GLASS · NO CHEMICALS · SMALL-BATCH DISTILLED · CHENNAI EXPRESS', 'general'],
+        ['font_family', 'editorial-serif', 'design'],
+        ['whatsapp_phone', '919840000000', 'contact'],
+        ['hero_video_url', '/video/nomu_showcase.mp4', 'media'],
+        ['hero_poster_url', '/img/nomu/nomu_film_poster.jpg', 'media'],
+        ['vetiver_bottle_img', '/img/bottles/vetiver_isolated.png', 'media'],
+        ['vetiver_ingredient_img', '/img/ingredients/vetiver_khus_root.png', 'media'],
+        ['chamomile_bottle_img', '/img/bottles/chamomile_isolated.png', 'media'],
+        ['chamomile_ingredient_img', '/img/ingredients/chamomile_lavender_harvest.jpg', 'media'],
+        ['grapefruit_bottle_img', '/img/bottles/grapefruit_isolated.png', 'media'],
+        ['grapefruit_ingredient_img', '/img/ingredients/grapefruit_harvest.jpg', 'media'],
+        ['lemongrass_bottle_img', '/img/bottles/lemongrass_isolated.png', 'media'],
+        ['lemongrass_ingredient_img', '/img/ingredients/lemongrass_harvest.jpg', 'media']
+    ];
+
+    $insCms = $pdo->prepare("INSERT OR IGNORE INTO cms_contents (field_key, field_value, field_group) VALUES (?, ?, ?)");
+    foreach ($cmsDefaults as $c) {
+        $insCms->execute($c);
+        if ($insCms->rowCount() > 0) $seeded['cms']++;
+    }
+
+    // 2. Seed Media Assets Vault (Images & Videos)
+    $mediaDefaults = [
+        ['hero', 'video', 'NOMU Brand Film Showcase (MP4)', '/video/nomu_showcase.mp4', 'NOMU botanical distillation film in 4K', 1],
+        ['hero', 'video', 'NOMU Brand Film Showcase (WebM)', '/video/nomu_showcase.webm', 'NOMU botanical distillation film in WebM format', 1],
+        ['hero', 'image', 'Hero Showcase Film Poster', '/img/nomu/nomu_film_poster.jpg', 'Cold-distilled botanical harvest poster frame', 1],
+        ['hero', 'image', 'Hero Studio Photography', '/img/nomu/nomu_hero_studio.jpg', 'Minimalist glass bottle on studio slate pedestal', 1],
+        ['hero', 'image', 'Four Bottles Botanical Packshot', '/img/nomu/nomu_bottles_hero_real.jpg', 'Complete lineup of four NOMU herb-infused waters', 1],
+        ['showcase', 'image', 'Blend I — Vetiver Bottle Packshot', '/img/bottles/vetiver_isolated.png', 'NOMU Vetiver isolated bottle packshot', 1],
+        ['showcase', 'image', 'South Indian Khus Root Harvest', '/img/ingredients/vetiver_khus_root.png', 'Earthy organic South Indian Khus roots cold-steeping', 1],
+        ['showcase', 'image', 'Blend II — Chamomile Bottle Packshot', '/img/bottles/chamomile_isolated.png', 'NOMU German Chamomile isolated bottle packshot', 1],
+        ['showcase', 'image', 'Chamomile Blossoms & Lavender Harvest', '/img/ingredients/chamomile_lavender_harvest.jpg', 'Fresh Egyptian and German chamomile blossoms', 1],
+        ['showcase', 'image', 'Blend III — Grapefruit Bottle Packshot', '/img/bottles/grapefruit_isolated.png', 'NOMU Grapefruit isolated bottle packshot', 1],
+        ['showcase', 'image', 'Ruby Red Grapefruit Peel Harvest', '/img/ingredients/grapefruit_harvest.jpg', 'Sun-drenched citrus peel and essential oil distillation', 1],
+        ['showcase', 'image', 'Blend IV — Lemongrass Bottle Packshot', '/img/bottles/lemongrass_isolated.png', 'NOMU Nilgiri Lemongrass isolated bottle packshot', 1],
+        ['showcase', 'image', 'Nilgiri Lemongrass Harvest', '/img/ingredients/lemongrass_harvest.jpg', 'Fresh high-altitude Nilgiri lemongrass stalks', 1],
+        ['brand', 'image', 'NOMU Clean Monogram Logo', '/img/nomu/nomu_logo_clean.png', 'NOMU Japanese Kanji & botanical seal mark', 1],
+        ['brand', 'image', 'NOMU Wordmark Transparent', '/img/nomu/nomu_wordmark_transparent.png', 'NOMU architectural wordmark logo', 1]
+    ];
+
+    $insMedia = $pdo->prepare("INSERT OR IGNORE INTO media_assets (section_key, asset_type, title, url, alt_text, is_active) VALUES (?, ?, ?, ?, ?, ?)");
+    foreach ($mediaDefaults as $m) {
+        $insMedia->execute($m);
+        if ($insMedia->rowCount() > 0) $seeded['media']++;
+    }
+
+    // 3. Seed Authentic Community Reviews
+    $reviewsDefaults = [
+        ['Dr. Radhika Menon', 'radhika.m@apollohospitals.com', 'vetiver', 5, 'Gentle, non-acidic hydration for long clinical shifts', 'I keep a bottle of Vetiver chilled during long OT rotations. Unlike sparkling flavored water that triggers acid reflux, NOMU is silky smooth, subtly earthy, and leaves no sugar crash.', 'approved', date('Y-m-d H:i:s'), 'System Seeder', '127.0.0.1'],
+        ['Vikramaditya S.', 'vikram.s@thehindu.co.in', 'chamomile', 5, 'Replaced my evening chamomile tea with cold distilled NOMU', 'The floral notes are authentic, not synthetic essence. It has become my wind-down ritual at 9 PM after newsroom deadlines. Clean, relaxing, and exceptional glass packaging.', 'approved', date('Y-m-d H:i:s'), 'System Seeder', '127.0.0.1'],
+        ['Ananya Deshmukh', 'ananya.deshmukh@studioarch.in', 'grapefruit', 5, 'Vibrant ruby peel aroma with zero calories', 'The citrus peel distillation captures pure essential limonene aromatics. It feels luxurious, perfectly tart, and makes drinking 2 liters of daily water a genuine pleasure.', 'approved', date('Y-m-d H:i:s'), 'System Seeder', '127.0.0.1'],
+        ['Karthik R.', 'karthik.r@zoho.com', 'lemongrass', 5, 'Crisp Nilgiri lemongrass with a refreshing mineral finish', 'Ordered the 12-pack discovery box on WhatsApp. Delivered same day in Besant Nagar. Lemongrass is crisp, uplifting, and pairs remarkably well with light South Indian meals.', 'approved', date('Y-m-d H:i:s'), 'System Seeder', '127.0.0.1']
+    ];
+
+    $chkRev = $pdo->query("SELECT COUNT(*) FROM reviews")->fetchColumn();
+    if ($chkRev == 0 || $force) {
+        $insRev = $pdo->prepare("INSERT INTO reviews (customer_name, customer_email, flavor_key, rating, headline, review_text, status, moderated_at, moderated_by, ip_address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        foreach ($reviewsDefaults as $r) {
+            $insRev->execute($r);
+            $seeded['reviews']++;
+        }
+    }
+
+    return $seeded;
 }
+
+// Auto-seed if empty
+seedDatabase($pdo, false);
 
 // Helper: System Logger
 function nomuLog(PDO $pdo, string $level, string $action, string $msg, array $ctx = []): void {
@@ -352,6 +430,22 @@ if ($method === 'POST' && ($pathInfo === '/admin/login' || $pathInfo === '/login
     nomuLog($pdo, 'WARN', 'ADMIN_LOGIN_FAILED', "Failed login attempt for username: {$username}");
     http_response_code(401);
     echo json_encode(['error' => 'Invalid administrative credentials or token']);
+    exit;
+}
+
+// --------------------------------------------------------------------------
+// MEDIA ASSETS CATALOG (PUBLIC)
+// --------------------------------------------------------------------------
+if ($method === 'GET' && $pathInfo === '/media') {
+    $section = $_GET['section'] ?? '';
+    if ($section) {
+        $stmt = $pdo->prepare("SELECT * FROM media_assets WHERE section_key = ? AND is_active = 1 ORDER BY id ASC");
+        $stmt->execute([$section]);
+    } else {
+        $stmt = $pdo->query("SELECT * FROM media_assets WHERE is_active = 1 ORDER BY id ASC");
+    }
+    $assets = $stmt->fetchAll();
+    echo json_encode(['status' => 'success', 'count' => count($assets), 'assets' => $assets]);
     exit;
 }
 
@@ -675,6 +769,19 @@ if (str_starts_with($pathInfo, '/admin')) {
         $logs = $stmt->fetchAll();
 
         echo json_encode(['status' => 'success', 'logs' => $logs]);
+        exit;
+    }
+
+    // H. POST /admin/seed - Seed images, videos, and default records
+    if ($method === 'POST' && $pathInfo === '/admin/seed') {
+        $force = !empty($_GET['force']);
+        $stats = seedDatabase($pdo, $force);
+        nomuLog($pdo, 'INFO', 'DB_SEEDED', "Database seeded with images, videos, and default records", $stats);
+        echo json_encode([
+            'status' => 'success',
+            'message' => 'Database successfully seeded with images and videos',
+            'seeded' => $stats
+        ]);
         exit;
     }
 }

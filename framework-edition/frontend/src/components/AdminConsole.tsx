@@ -224,6 +224,16 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
     } catch (e) {}
   };
 
+  const fetchCmsData = async () => {
+    try {
+      const res = await fetch(`${apiBaseUrl}/content`);
+      if (res.ok) {
+        const data = await res.json();
+        setCmsData(data);
+      }
+    } catch (e) {}
+  };
+
   const handleSaveCms = async () => {
     try {
       const res = await fetch(`${apiBaseUrl}/admin/content`, {
@@ -241,6 +251,35 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
     } catch (e) {}
   };
 
+  const [seedMsg, setSeedMsg] = useState('');
+  const [isSeeding, setIsSeeding] = useState(false);
+
+  const handleSeedDb = async () => {
+    setIsSeeding(true);
+    setSeedMsg('');
+    try {
+      const res = await fetch(`${apiBaseUrl}/admin/seed?force=1`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${adminToken}`
+        }
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setSeedMsg('Media, videos & reviews seeded into DB!');
+        fetchCmsData();
+        fetchAdminReviews();
+        setTimeout(() => setSeedMsg(''), 5000);
+      } else {
+        setSeedMsg(data.error || 'Seeding failed');
+      }
+    } catch (e) {
+      setSeedMsg('Seeding network error');
+    } finally {
+      setIsSeeding(false);
+    }
+  };
+
   const handleExportCsv = () => {
     window.open(`${apiBaseUrl}/admin/orders?export=csv&token=${encodeURIComponent(adminToken)}`, '_blank');
   };
@@ -248,6 +287,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
   useEffect(() => {
     if (activeTab === 'orders') fetchOrders();
     if (activeTab === 'reviews') fetchAdminReviews();
+    if (activeTab === 'cms') fetchCmsData();
     if (activeTab === 'telemetry') { fetchTelemetry(); fetchLogs(); }
   }, [activeTab, orderStatusFilter, reviewStatusFilter, logLevelFilter]);
 
@@ -645,8 +685,23 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
                 <h3 style={{ fontSize: '1.15rem', fontWeight: 700 }}>Content Management System & Media Asset Vault</h3>
                 <p style={{ fontSize: '0.8rem', color: '#888' }}>Upload videos, high-resolution photography, and adjust live copy across the storefront.</p>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                {seedMsg && <span style={{ color: '#60A5FA', fontSize: '0.8125rem' }}>{seedMsg}</span>}
                 {cmsSaveMsg && <span style={{ color: '#4ADE80', fontSize: '0.85rem' }}>{cmsSaveMsg}</span>}
+                <button
+                  type="button"
+                  className="btn btn-outline"
+                  style={{ color: '#E2E8F0', borderColor: 'rgba(255, 255, 255, 0.25)', fontSize: '0.8125rem', padding: '0.5rem 0.95rem' }}
+                  onClick={handleSeedDb}
+                  disabled={isSeeding}
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px' }} aria-hidden="true">
+                    <ellipse cx="12" cy="5" rx="9" ry="3" />
+                    <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
+                    <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+                  </svg>
+                  <span>{isSeeding ? 'Seeding Media...' : 'Seed Images & Videos in DB'}</span>
+                </button>
                 <button type="button" className="btn btn-burnt-orange" onClick={handleSaveCms}>
                   Save & Publish Changes
                 </button>
