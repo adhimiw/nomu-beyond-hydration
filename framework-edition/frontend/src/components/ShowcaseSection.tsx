@@ -35,7 +35,6 @@ export const ShowcaseSection: React.FC<ShowcaseSectionProps> = ({
                 key={key}
                 id={`pillar-${key}`}
                 className={`accordion-pillar pillar-${key} ${isExpanded ? 'is-expanded' : 'is-collapsed'}`}
-                style={{ backgroundColor: item.themeBg }}
                 onClick={() => onSelectAccordion(key)}
                 role="region"
                 aria-expanded={isExpanded}
@@ -49,13 +48,15 @@ export const ShowcaseSection: React.FC<ShowcaseSectionProps> = ({
                       className="collapsed-bottle-thumb"
                     />
                     <div className="collapsed-meta">
-                      <span className="collapsed-blend-num">{item.blendRoman}</span>
-                      <strong className="collapsed-blend-name">{item.name}</strong>
-                      <span className="collapsed-mood">({item.mood})</span>
+                      <div className="collapsed-text-cluster">
+                        <span className="collapsed-blend-num">{item.blendRoman}</span>
+                        <strong className="collapsed-blend-name">{item.name}</strong>
+                        <span className="collapsed-mood">({item.mood})</span>
+                      </div>
+                      <button type="button" className="collapsed-explore-btn">
+                        View More
+                      </button>
                     </div>
-                    <button type="button" className="collapsed-explore-btn">
-                      View More
-                    </button>
                   </div>
                 )}
 
@@ -71,6 +72,14 @@ export const ShowcaseSection: React.FC<ShowcaseSectionProps> = ({
                             alt={`NOMU ${item.name} Bottle`}
                             className="expanded-bottle-img"
                           />
+                          {item.splashImage && (
+                            <img
+                              src={item.splashImage}
+                              alt={`${item.name} Botanical Harvest`}
+                              className="pillar-ingredient-splash"
+                            />
+                          )}
+                          <div className="pillar-bottle-shadow" aria-hidden="true" />
                         </div>
                       </div>
 

@@ -17,7 +17,7 @@ import './styles/theme.css';
 
 const INITIAL_REVIEWS: ReviewRecord[] = [
   {
-    id: 1,
+    id: 101,
     customer_name: 'Ananya S.',
     flavor_key: 'vetiver',
     rating: 5,
@@ -26,7 +26,7 @@ const INITIAL_REVIEWS: ReviewRecord[] = [
     created_at: '2 days ago'
   },
   {
-    id: 2,
+    id: 102,
     customer_name: 'Karthik Raman',
     flavor_key: 'chamomile',
     rating: 5,
@@ -35,7 +35,7 @@ const INITIAL_REVIEWS: ReviewRecord[] = [
     created_at: '4 days ago'
   },
   {
-    id: 3,
+    id: 103,
     customer_name: 'Dr. Meera Iyer',
     flavor_key: 'lemongrass',
     rating: 5,
@@ -44,7 +44,7 @@ const INITIAL_REVIEWS: ReviewRecord[] = [
     created_at: '1 week ago'
   },
   {
-    id: 4,
+    id: 104,
     customer_name: 'Vikram Chandran',
     flavor_key: 'grapefruit',
     rating: 5,
@@ -100,8 +100,10 @@ export const App: React.FC = () => {
       const revRes = await fetch('/api/reviews');
       if (revRes.ok) {
         const revData = await revRes.json();
-        if (revData && Array.isArray(revData.reviews) && revData.reviews.length > 0) {
-          setReviews([...revData.reviews, ...INITIAL_REVIEWS]);
+        if (revData && Array.isArray(revData.reviews)) {
+          const existingIds = new Set(revData.reviews.map((r: ReviewRecord) => String(r.id)));
+          const uniqueSeeds = INITIAL_REVIEWS.filter((r) => !existingIds.has(String(r.id)));
+          setReviews([...revData.reviews, ...uniqueSeeds]);
         }
       }
     } catch (e) {}
@@ -167,8 +169,12 @@ export const App: React.FC = () => {
 
   const scrollToPillars = () => {
     setActiveAccordionFlavor(activeHeroFlavor);
-    const el = document.getElementById(`pillar-${activeHeroFlavor}`);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setTimeout(() => {
+      const el = document.getElementById(`pillar-${activeHeroFlavor}`) || document.getElementById('showcase');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 60);
   };
 
   if (isAdminOpen) {

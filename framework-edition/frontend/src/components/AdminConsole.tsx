@@ -697,7 +697,25 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
               </div>
             </div>
 
-            <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.75rem' }}>Audit Event Log Stream</h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+              <h3 style={{ fontSize: '1rem', fontWeight: 700 }}>Audit Event Log Stream</h3>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <select
+                  value={logLevelFilter}
+                  onChange={(e) => setLogLevelFilter(e.target.value)}
+                  style={{ background: '#1A1918', border: '1px solid #333', color: '#FFF', fontSize: '0.75rem', padding: '0.25rem 0.5rem', borderRadius: '4px' }}
+                >
+                  <option value="all">All Levels</option>
+                  <option value="INFO">INFO</option>
+                  <option value="NOTICE">NOTICE</option>
+                  <option value="WARNING">WARNING</option>
+                  <option value="ERROR">ERROR</option>
+                </select>
+                <button type="button" className="btn btn-secondary" style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }} onClick={fetchLogs}>
+                  Refresh Logs
+                </button>
+              </div>
+            </div>
             <div style={{ background: '#0E0D0C', border: '1px solid #2C2926', padding: '1rem', borderRadius: '10px', maxHeight: '400px', overflowY: 'auto', fontFamily: 'monospace', fontSize: '0.8rem' }}>
               {logs.map((l) => (
                 <div key={l.id} style={{ padding: '0.25rem 0', borderBottom: '1px solid #1E1D1C', display: 'flex', gap: '0.75rem' }}>

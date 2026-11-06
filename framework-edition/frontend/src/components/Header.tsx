@@ -17,8 +17,8 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   return (
     <header className="site-header" id="site-header" style={{ backgroundColor: currentThemeBg }}>
-      <div className="container header-container">
-        <a href="#hero" className="brand-lockup" aria-label="NOMU Home">
+      <div className="container header-inner">
+        <a href="#hero" className="brand-group" aria-label="NOMU Home">
           <div className="brand-logo-badge">
             <img src="/img/nomu/nomu_logo_clean.png" alt="NOMU Logo" width="22" height="22" />
           </div>
@@ -39,8 +39,7 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="header-actions">
           <button
             type="button"
-            className="btn btn-outline"
-            style={{ color: '#FFFFFF', borderColor: 'rgba(255,255,255,0.3)', padding: '0.45rem 0.95rem' }}
+            className="btn btn-header-admin"
             onClick={onToggleAdmin}
             aria-label="Toggle Operations Console"
           >
@@ -48,7 +47,7 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
           <button
             type="button"
-            className="btn btn-dark"
+            className="btn btn-header-cta"
             onClick={onOpenCheckout}
             aria-label="Order Ritual Box"
           >
