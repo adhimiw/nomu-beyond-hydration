@@ -32,9 +32,9 @@ export const Header: React.FC<HeaderProps> = ({
         <nav className="site-nav" aria-label="Primary Navigation">
           <ul className="nav-list">
             <li><a href="#about" className="nav-link">ABOUT</a></li>
-            <li><a href="#reviews" className="nav-link">REVIEWS</a></li>
             <li><a href="#showcase" className="nav-link">FLAVOURS</a></li>
             <li><a href="#shop" className="nav-link">BUILD RITUAL</a></li>
+            <li><a href="#reviews" className="nav-link">REVIEWS</a></li>
             <li><a href="#contact" className="nav-link">CONTACT</a></li>
           </ul>
         </nav>

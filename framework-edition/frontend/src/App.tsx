@@ -220,11 +220,6 @@ export const App: React.FC = () => {
 
         <AboutSection />
 
-        <ReviewsSection
-          reviews={reviews}
-          onOpenWriteReview={() => setIsReviewModalOpen(true)}
-        />
-
         <ShowcaseSection
           activeAccordionKey={activeAccordionFlavor}
           onSelectAccordion={(k) => setActiveAccordionFlavor(k)}
@@ -239,6 +234,12 @@ export const App: React.FC = () => {
           onRemoveFromCart={handleRemoveFromCart}
           onApplyPreset={handleApplyPreset}
           onOpenCheckout={() => setIsOrderModalOpen(true)}
+        />
+
+        {/* Reviews Section — Placed directly under Build Your Ritual */}
+        <ReviewsSection
+          reviews={reviews}
+          onOpenWriteReview={() => setIsReviewModalOpen(true)}
         />
 
         <ContactSection />

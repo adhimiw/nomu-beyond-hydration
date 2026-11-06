@@ -33,9 +33,9 @@ export const Footer: React.FC = () => {
           <h4 className="footer-heading">Navigation</h4>
           <ul className="footer-links">
             <li><a href="#about">About</a></li>
-            <li><a href="#reviews">Reviews</a></li>
             <li><a href="#showcase">Flavours</a></li>
             <li><a href="#shop">Shop on WhatsApp</a></li>
+            <li><a href="#reviews">Reviews</a></li>
             <li><a href="#contact">Contact</a></li>
           </ul>
         </div>
