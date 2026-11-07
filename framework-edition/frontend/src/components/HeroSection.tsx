@@ -14,21 +14,47 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   activeFlavorKey,
   onSelectFlavor,
   heroHeadline,
-  heroSub,
   onExploreClick
 }) => {
-  const [isSwapping, setIsSwapping] = useState(false);
+  // Two-phase transition: 'idle' (visible) | 'exit' (fading out to 0 before swap)
+  const [swapPhase, setSwapPhase] = useState<'idle' | 'exit'>('idle');
+  // Immediate visual feedback for top tabs & pagination dots (0ms lag on click)
+  const [immediateFlavorKey, setImmediateFlavorKey] = useState<FlavorKey>(activeFlavorKey);
+  const [isInView, setIsInView] = useState(true);
+
+  const heroRef = useRef<HTMLElement | null>(null);
+  const autoTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const swapTimerRef = useRef<NodeJS.Timeout | null>(null);
+
   const activeFlavor = FLAVORS[activeFlavorKey];
   const activeIndex = FLAVOR_KEYS.indexOf(activeFlavorKey);
-  const autoTimerRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Sync immediate feedback whenever parent state updates
+  useEffect(() => {
+    setImmediateFlavorKey(activeFlavorKey);
+  }, [activeFlavorKey]);
+
+  // Two-phase coordinated transition
   const handleSelect = (key: FlavorKey) => {
     if (key === activeFlavorKey) return;
-    setIsSwapping(true);
-    setTimeout(() => {
+
+    // 1. Instantly move tab / dot highlight for crisp, tactile feel
+    setImmediateFlavorKey(key);
+
+    // 2. Clear any pending swap timers
+    if (swapTimerRef.current) clearTimeout(swapTimerRef.current);
+
+    // 3. Phase 1: Smoothly ease down bottle & wordings to opacity 0 (180ms)
+    setSwapPhase('exit');
+
+    // 4. Phase 2: When completely invisible at opacity 0, swap content and float in
+    swapTimerRef.current = setTimeout(() => {
       onSelectFlavor(key);
-      setIsSwapping(false);
-    }, 420);
+      // Wait for next repaint so new product is mounted at opacity 0 before fading in
+      requestAnimationFrame(() => {
+        setSwapPhase('idle');
+      });
+    }, 180);
   };
 
   const handleNext = () => {
@@ -36,7 +62,32 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     handleSelect(FLAVOR_KEYS[nextIdx]);
   };
 
+  // IntersectionObserver guarantees auto-rotation strictly halts when user scrolls past hero
   useEffect(() => {
+    const el = heroRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.isIntersecting);
+      },
+      { threshold: 0.15 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // Auto-rotation timer (only runs when hero is actively visible in viewport)
+  useEffect(() => {
+    if (!isInView) {
+      if (autoTimerRef.current) {
+        clearInterval(autoTimerRef.current);
+        autoTimerRef.current = null;
+      }
+      return;
+    }
+
     autoTimerRef.current = setInterval(() => {
       handleNext();
     }, 7000);
@@ -44,13 +95,23 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     return () => {
       if (autoTimerRef.current) clearInterval(autoTimerRef.current);
     };
-  }, [activeIndex]);
+  }, [activeIndex, isInView]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (swapTimerRef.current) clearTimeout(swapTimerRef.current);
+      if (autoTimerRef.current) clearInterval(autoTimerRef.current);
+    };
+  }, []);
 
   const pauseTimer = () => {
     if (autoTimerRef.current) clearInterval(autoTimerRef.current);
   };
 
   const resumeTimer = () => {
+    if (!isInView) return;
+    if (autoTimerRef.current) clearInterval(autoTimerRef.current);
     autoTimerRef.current = setInterval(() => {
       handleNext();
     }, 7000);
@@ -58,6 +119,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
   return (
     <section
+      ref={heroRef}
       className="hero-dribbble-stage"
       id="hero"
       data-hero-flavor={activeFlavorKey}
@@ -66,16 +128,16 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       onMouseLeave={resumeTimer}
     >
       <div className="container hero-stage-container">
-        {/* Top Stage Quick Switcher matching Dribbble */}
+        {/* Top Stage Quick Switcher with immediate tactile response */}
         <div className="hero-top-flavor-nav" role="tablist" aria-label="Hero Flavour Switcher">
           {FLAVOR_KEYS.map((k) => (
             <button
               key={k}
               type="button"
-              className={`hero-flavour-link ${k === activeFlavorKey ? 'is-active' : ''}`}
+              className={`hero-flavour-link ${k === immediateFlavorKey ? 'is-active' : ''}`}
               data-hero-nav={k}
               role="tab"
-              aria-selected={k === activeFlavorKey}
+              aria-selected={k === immediateFlavorKey}
               onClick={() => handleSelect(k)}
             >
               {k.toUpperCase()}
@@ -90,95 +152,89 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           </h1>
         </div>
 
-        {/* 3-Column Interactive Stage Grid */}
-        <div className="hero-interactive-grid">
-          {/* Left Column: Video & Process Window */}
-          <div className={`hero-col-left ${isSwapping ? 'is-swapping' : ''}`}>
-            <div className="hero-video-window">
+        {/* 2-Column Interactive Stage: Left Video & Copy Cluster, Right Bottle Packshot */}
+        <div className="hero-interactive-grid hero-2col-layout">
+          {/* Left Column: Video Window + Synchronized Editorial Copy Cluster */}
+          <div className="hero-col-left hero-col-video">
+            <div className="hero-video-window hero-video-large">
               <video
                 src={activeFlavor.mediaVideo}
                 poster={activeFlavor.mediaPoster}
                 className="hero-video-player"
                 id="hero-video-player"
+                width={640}
+                height={360}
+                preload="none"
                 autoPlay
                 loop
                 muted
                 playsInline
               />
             </div>
-            <div className="hero-media-meta">
-              <h3 className="hero-media-title" id="hero-media-title">{activeFlavor.mediaTitle}</h3>
-              <p className="hero-media-desc" id="hero-media-desc">
-                {activeFlavor.mediaDesc}
-              </p>
-            </div>
-            <div className="hero-manifesto-side">
-              <span>Ideas, visions, and botanical restoration for daily equilibrium.</span>
+
+            {/* Unified Copy Cluster: Fades out completely before swapping strings, eliminating all pop glitches */}
+            <div className={`hero-copy-cluster ${swapPhase === 'exit' ? 'is-exiting' : ''}`}>
+              <div className="hero-media-meta">
+                <h3 className="hero-media-title" id="hero-media-title">{activeFlavor.mediaTitle}</h3>
+                <p className="hero-media-desc" id="hero-media-desc">
+                  {activeFlavor.mediaDesc}
+                </p>
+              </div>
+              <div className="hero-editorial-sub-block">
+                <p className="hero-tagline-text" id="hero-tagline-desc">
+                  {activeFlavor.tagline}
+                </p>
+                <div className="hero-cta-action">
+                  <a
+                    href="#showcase"
+                    className="btn-hero-outline"
+                    id="hero-cta-btn"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onExploreClick(activeFlavorKey);
+                    }}
+                  >
+                    {activeFlavor.ctaText}
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Center Column: Standing Isolated Bottle Packshot & Pagination Dots */}
-          <div className="hero-col-center">
+          {/* Right Column: Standing Isolated Bottle Packshot & Pagination Dots */}
+          <div className="hero-col-right hero-col-bottle">
             <div className="hero-bottle-pedestal">
               <img
                 src={activeFlavor.bottleImage}
                 alt={`NOMU ${activeFlavor.name} Botanical Water Bottle`}
-                className={`hero-bottle-packshot ${isSwapping ? 'is-swapping' : ''}`}
+                className={`hero-bottle-packshot ${swapPhase === 'exit' ? 'is-exiting' : ''}`}
                 id="hero-bottle-img"
+                width={440}
+                height={720}
+                fetchPriority="high"
+                decoding="async"
               />
               <div className="hero-contact-shadow" aria-hidden="true" />
             </div>
-            {/* Pagination Dots directly under bottle matching Dribbble */}
+            {/* Pagination Dots with immediate tactile active response */}
             <div className="hero-pagination-dots" role="tablist" aria-label="Flavour Pagination">
               {FLAVOR_KEYS.map((k, i) => (
                 <button
                   key={k}
                   type="button"
-                  className={`hero-dot-btn ${i === activeIndex ? 'is-active' : ''}`}
+                  className={`hero-dot-btn ${k === immediateFlavorKey ? 'is-active' : ''}`}
                   data-dot-index={i}
                   role="tab"
-                  aria-selected={i === activeIndex}
+                  aria-selected={k === immediateFlavorKey}
                   aria-label={`${FLAVORS[k].name} blend`}
                   onClick={() => handleSelect(k)}
                 />
               ))}
             </div>
           </div>
-
-          {/* Right Column: Editorial Note & CTA directly on colored canvas (No white card!) */}
-          <div className={`hero-col-right ${isSwapping ? 'anim-stagger-out' : ''}`} id="hero-col-right">
-            <h2 className="hero-editorial-heading" id="hero-right-title">{activeFlavor.headline}</h2>
-            <div className="hero-ingredient-frame">
-              <img
-                src={activeFlavor.splashImage}
-                alt={`${activeFlavor.name} harvest ingredients`}
-                className="hero-ingredient-img"
-                id="hero-right-thumb"
-              />
-            </div>
-            <p className="hero-editorial-narrative" id="hero-right-desc">
-              {heroSub || activeFlavor.tagline}
-            </p>
-            <div className="hero-cta-action">
-              <a
-                href="#showcase"
-                className="btn-hero-outline"
-                id="hero-cta-btn"
-                onClick={(e) => {
-                  e.preventDefault();
-                  onExploreClick(activeFlavorKey);
-                }}
-              >
-                {activeFlavor.ctaText}
-              </a>
-            </div>
-            <div className="hero-curious-side">
-              <span>A space for curious minds, active bodies, and daily mindfulness.</span>
-            </div>
-          </div>
         </div>
 
-        {/* Bottom Controls & Accents */}
+        {/* Bottom Controls & Origin Accent */}
         <div className="hero-bottom-bar">
           <div className="hero-bottom-left">
             <a
@@ -198,7 +254,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
           <div className="hero-bottom-right">
             <span className="hero-counter-val" id="hero-index-counter">
-              Blend {activeIndex + 1} of 4 · Small-Batch Crafted in Chennai
+              Blend {activeIndex + 1} of 4 · Small-Batch Crafted in India
             </span>
           </div>
         </div>

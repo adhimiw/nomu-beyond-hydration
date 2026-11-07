@@ -72,11 +72,14 @@ export const ShowcaseSection: React.FC<ShowcaseSectionProps> = ({
                       src={item.bottleImage}
                       alt={`${item.miniName || item.name} Packshot`}
                       className="mini-bottle-img"
+                      width={80}
+                      height={180}
+                      loading="lazy"
+                      decoding="async"
                     />
                   </div>
                   <div className="pillar-mini-meta">
                     <div className="pillar-mini-text-cluster">
-                      <span className="pillar-index-tag">{item.blendRoman}</span>
                       <h3 className="pillar-mini-name">{item.miniName || item.name}</h3>
                       <span className="pillar-mini-sub">{item.subtitleShort}</span>
                     </div>
@@ -92,12 +95,20 @@ export const ShowcaseSection: React.FC<ShowcaseSectionProps> = ({
                         src={item.bottleImage}
                         alt={`NOMU ${item.name} Large Bottle`}
                         className="pillar-large-bottle"
+                        width={340}
+                        height={560}
+                        loading="lazy"
+                        decoding="async"
                       />
                       {item.splashImage && (
                         <img
                           src={item.splashImage}
                           alt={`${item.name} Botanical Harvest`}
                           className="pillar-ingredient-splash"
+                          width={400}
+                          height={260}
+                          loading="lazy"
+                          decoding="async"
                         />
                       )}
                       <div className="pillar-bottle-shadow" aria-hidden="true" />
@@ -107,7 +118,6 @@ export const ShowcaseSection: React.FC<ShowcaseSectionProps> = ({
                   <div className="pillar-expanded-right">
                     <div className="pillar-expanded-header">
                       <div className="pillar-title-lockup">
-                        <span className="pillar-giant-index">{item.indexNum}</span>
                         <h3 className="pillar-full-name">{item.name}</h3>
                       </div>
                       <div className="pillar-kanji-sub">
@@ -180,7 +190,7 @@ export const ShowcaseSection: React.FC<ShowcaseSectionProps> = ({
                     {/* CTA & WhatsApp Order */}
                     <div className="pillar-action-row">
                       <span className="pillar-price-tag">
-                        SINGLE ₹{item.priceSingle} · 3-PACK ₹{item.pricePack3} · 12-PACK ₹{item.pricePack12}
+                        SINGLE ₹{item.priceSingle} · 4-PACK ₹{item.pricePack4} · 12-PACK ₹{item.pricePack12}
                       </span>
                       <a
                         href={`https://wa.me/919840000000?text=Hi%20NOMU%2C%20I%20would%20like%20to%20order%20NOMU%20${encodeURIComponent(item.name)}.`}

@@ -155,8 +155,8 @@ function seedDatabase(PDO $pdo, bool $force = false): array {
 
     // 1. Seed CMS content & media references
     $cmsDefaults = [
-        ['hero_headline', 'FOUR HERBS. ZERO NONSENSE.', 'hero'],
-        ['hero_sub', 'Ancient South Indian botanical distillates crafted in small batches across Chennai.', 'hero'],
+        ['hero_headline', 'BEYOND HYDRATION', 'hero'],
+        ['hero_sub', 'Ancient South Indian botanical distillates crafted in small batches across India.', 'hero'],
         ['ticker_text', '100% RECYCLED GLASS · NO CHEMICALS · SMALL-BATCH DISTILLED · CHENNAI EXPRESS', 'general'],
         ['font_family', 'editorial-serif', 'design'],
         ['whatsapp_phone', '919840000000', 'contact'],

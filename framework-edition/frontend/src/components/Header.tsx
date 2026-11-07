@@ -10,7 +10,8 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({
   currentThemeBg,
-  onOpenCheckout
+  onOpenCheckout,
+  cartItemCount = 0
 }) => {
   return (
     <header
@@ -20,11 +21,14 @@ export const Header: React.FC<HeaderProps> = ({
     >
       <div className="container header-inner">
         <a href="#hero" className="brand-group" aria-label="NOMU Home">
-          <div className="brand-logo-badge">
-            <img src="/img/nomu/nomu_logo_clean.png" alt="NOMU Logo" width="22" height="22" />
-          </div>
-          <img src="/img/nomu/nomu_wordmark_transparent.png" alt="NOMU Wordmark" className="brand-wordmark-img" height="20" />
-          <span className="brand-tagline">BEYOND HYDRATION</span>
+          <img
+            src="/img/nomu/nomu_symbol_master.png"
+            alt="NOMU"
+            className="brand-master-logo"
+            width="42"
+            height="67"
+            decoding="async"
+          />
         </a>
 
         <nav className="site-nav" aria-label="Primary Navigation">
@@ -54,7 +58,7 @@ export const Header: React.FC<HeaderProps> = ({
               }
             }}
           >
-            ORDER NOW
+            {cartItemCount > 0 ? `YOUR CART (${cartItemCount})` : 'YOUR CART'}
           </a>
         </div>
       </div>

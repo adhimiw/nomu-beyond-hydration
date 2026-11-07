@@ -13,8 +13,8 @@ class CmsService
         $all = CmsContent::all()->pluck('field_value', 'field_key')->toArray();
 
         $defaults = [
-            'hero_headline' => 'FOUR HERBS. ZERO NONSENSE.',
-            'hero_sub' => 'Ancient South Indian botanical distillates crafted in small batches across Chennai.',
+            'hero_headline' => 'BEYOND HYDRATION',
+            'hero_sub' => 'Ancient South Indian botanical distillates crafted in small batches across India.',
             'ticker_text' => '100% RECYCLED GLASS · NO CHEMICALS · SMALL-BATCH DISTILLED · CHENNAI EXPRESS',
             'font_family' => 'editorial-serif',
             'whatsapp_phone' => '919840000000',

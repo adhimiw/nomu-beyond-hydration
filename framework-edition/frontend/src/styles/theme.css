@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Instrument+Sans:wght@400;500;600;700&family=Noto+Sans+JP:wght@500;700&display=swap');
-
 :root {
   /* Mandated Brand Core Palette (Updated: Crimson Red #D01C1D from Flavour Shop Reference) */
   --nomu-red: #D01C1D;
@@ -15,13 +13,13 @@
   --brand-crimson-light: #EA3435;
 
   /* The 4 Signature Herbal Flavors */
-  --flavor-vetiver: #443826;
+  --flavor-vetiver: #4E301B;
   --flavor-vetiver-badge: #E8DFD0;
-  --flavor-vetiver-text: #241D12;
+  --flavor-vetiver-text: #2D1A0C;
 
-  --flavor-chamomile: #C88A1E;
+  --flavor-chamomile: #B27C08;
   --flavor-chamomile-badge: #FDF3D6;
-  --flavor-chamomile-text: #6C4405;
+  --flavor-chamomile-text: #5A3C03;
 
   --flavor-grapefruit: #D8262C;
   --flavor-grapefruit-badge: #FDE7E3;
@@ -50,7 +48,7 @@
   /* Typography Families (from Flavour Shop Reference: Syne + Instrument Sans + Noto Sans JP) */
   --font-sans: 'Instrument Sans', sans-serif;
   --font-display: 'Syne', sans-serif;
-  --font-serif-jp: 'Noto Sans JP', sans-serif;
+  --font-serif-jp: 'Noto Sans JP', -apple-system, 'Hiragino Sans', 'Yu Gothic', 'Noto Sans CJK JP', sans-serif;
 
   /* Layout Spacing */
   --container-max: 1240px;
@@ -66,15 +64,15 @@
 
 /* Flavor Theme Variants */
 body[data-flavor="vetiver"] {
-  --flavor-primary: #443826;
+  --flavor-primary: #4E301B;
   --flavor-badge: #E8DFD0;
-  --flavor-text: #241D12;
+  --flavor-text: #2D1A0C;
 }
 
 body[data-flavor="chamomile"] {
-  --flavor-primary: #C88A1E;
+  --flavor-primary: #B27C08;
   --flavor-badge: #FDF3D6;
-  --flavor-text: #6C4405;
+  --flavor-text: #5A3C03;
 }
 
 body[data-flavor="grapefruit"] {
@@ -303,6 +301,20 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   text-decoration: none;
 }
 
+.brand-master-logo {
+  height: 50px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.25)) drop-shadow(0 3px 8px rgba(0, 0, 0, 0.45));
+  transition: transform var(--trans-fast), filter var(--trans-fast);
+}
+
+.brand-master-logo:hover {
+  transform: scale(1.06);
+  filter: drop-shadow(0 0 14px rgba(255, 255, 255, 0.4)) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5));
+}
+
 .brand-logo-badge {
   width: 36px;
   height: 36px;
@@ -370,7 +382,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
    SECTION 1: HERO STAGE (FAITHFUL DRIBBLE BOTTLE STAGE REPLICATION)
    ========================================================================== */
 .hero-dribbble-stage {
-  --hero-bg: #D5360C;
+  --hero-bg: #4E301B;
   background-color: var(--hero-bg);
   color: #FFFFFF;
   position: relative;
@@ -381,11 +393,11 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 }
 
 .hero-dribbble-stage[data-hero-flavor="vetiver"] {
-  --hero-bg: #D5360C; /* Burnt Orange / Terracotta (WCAG 4.8:1) */
+  --hero-bg: #4E301B; /* Warm Botanical Khus Earth Brown (WCAG 11.8:1) */
 }
 
 .hero-dribbble-stage[data-hero-flavor="chamomile"] {
-  --hero-bg: #8A5404; /* Warm Roasted Golden Amber (WCAG 6.3:1) */
+  --hero-bg: #B27C08; /* Radiant Warm Golden Chamomile Yellow (WCAG 3.8:1) */
 }
 
 .hero-dribbble-stage[data-hero-flavor="grapefruit"] {
@@ -406,7 +418,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   position: sticky;
   top: 0;
   z-index: 100;
-  background-color: var(--hero-bg, #D5360C);
+  background-color: var(--hero-bg, #4E301B);
   transition: background-color 0.8s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
 }
 
@@ -526,16 +538,16 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 
 .hero-curved-title {
   font-family: var(--font-display);
-  font-size: clamp(1.9rem, 5.2vw, 4.2rem);
+  font-size: clamp(2.2rem, 5.8vw, 4.8rem);
   font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1.05;
+  letter-spacing: -0.015em;
+  line-height: 1.04;
   color: var(--warm-ivory);
   text-transform: uppercase;
   margin: 0;
 }
 
-/* 3-Column Interactive Grid */
+/* Hero Interactive Grid (Redesigned 2-Column Showcase) */
 .hero-interactive-grid {
   display: grid;
   grid-template-columns: 1fr 1.15fr 1fr;
@@ -543,6 +555,35 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   align-items: start;
   position: relative;
   z-index: 3;
+}
+
+.hero-interactive-grid.hero-2col-layout {
+  grid-template-columns: 1.05fr 1.25fr;
+  gap: clamp(1.75rem, 4vw, 3.5rem);
+  align-items: center;
+}
+
+.hero-col-video {
+  padding-top: 0;
+}
+
+.hero-video-window.hero-video-large {
+  aspect-ratio: 16/9;
+  border-radius: 20px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.28);
+  margin-bottom: 1rem;
+}
+
+.hero-editorial-sub-block {
+  margin-top: 0.75rem;
+}
+
+.hero-tagline-text {
+  font-size: clamp(0.9rem, 1.3vw, 1.05rem);
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.92);
+  margin-bottom: 1.25rem;
+  max-width: 560px;
 }
 
 /* Left Column: Floating Media Window */
@@ -610,7 +651,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: clamp(380px, 48vh, 520px);
+  height: clamp(480px, 58vh, 680px);
   width: 100%;
 }
 
@@ -620,24 +661,27 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   object-fit: contain;
   position: relative;
   z-index: 2;
-  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease;
+  filter: drop-shadow(0 24px 38px rgba(0, 0, 0, 0.28));
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
   transform: scale(1) translateY(0);
   opacity: 1;
+  will-change: transform, opacity;
 }
 
-.hero-bottle-packshot.is-swapping {
-  transform: scale(0.96) translateY(6px);
-  opacity: 0.25;
+.hero-bottle-packshot.is-exiting {
+  opacity: 0;
+  transform: scale(0.96) translateY(8px);
+  transition: opacity 0.16s ease-in, transform 0.18s ease-in;
 }
 
 .hero-contact-shadow {
   position: absolute;
-  bottom: 8px;
-  width: 190px;
-  height: 20px;
+  bottom: 6px;
+  width: 260px;
+  height: 26px;
   border-radius: 50%;
-  background: radial-gradient(ellipse at center, rgba(16, 16, 16, 0.45) 0%, rgba(16, 16, 16, 0) 70%); /* taste-skill-ignore */
-  filter: blur(6px);
+  background: radial-gradient(ellipse at center, rgba(12, 12, 12, 0.55) 0%, rgba(12, 12, 12, 0) 72%); /* taste-skill-ignore */
+  filter: blur(7px);
   z-index: 1;
 }
 
@@ -754,30 +798,20 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   line-height: 1.45;
 }
 
-/* Coordinated Smooth Hero Crossfade */
-.hero-media-meta,
-.hero-manifesto-side,
-.hero-editorial-heading,
-.hero-ingredient-frame,
-.hero-editorial-narrative,
-.hero-cta-action {
-  transition: opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1), transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+/* Unified Hero Transition Engine (Two-Phase Exit -> Invisible Swap -> Enter) */
+.hero-copy-cluster {
+  display: flex;
+  flex-direction: column;
+  transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   transform: translateY(0);
   opacity: 1;
+  will-change: transform, opacity;
 }
 
-.hero-col-right.anim-stagger-out .hero-editorial-heading,
-.hero-col-right.anim-stagger-out .hero-ingredient-frame,
-.hero-col-right.anim-stagger-out .hero-editorial-narrative,
-.hero-col-right.anim-stagger-out .hero-cta-action {
-  opacity: 0.15;
-  transform: translateY(4px);
-}
-
-.hero-col-left.is-swapping .hero-media-meta,
-.hero-col-left.is-swapping .hero-manifesto-side {
-  opacity: 0.15;
-  transform: translateY(4px);
+.hero-copy-cluster.is-exiting {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.15s ease-in, transform 0.16s ease-in;
 }
 
 /* Bottom Controls & Accents */
@@ -832,14 +866,20 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 }
 
 @media (max-width: 992px) {
-  .hero-interactive-grid {
+  .hero-interactive-grid,
+  .hero-interactive-grid.hero-2col-layout {
     grid-template-columns: 1fr;
     gap: 2rem;
     text-align: center;
   }
 
-  .hero-col-center {
+  .hero-col-center,
+  .hero-col-bottle {
     order: -1;
+  }
+
+  .hero-bottle-pedestal {
+    height: clamp(420px, 54vh, 560px);
   }
 
   .hero-col-left, .hero-col-right {
@@ -858,6 +898,10 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 }
 
 @media (max-width: 640px) {
+  .brand-master-logo {
+    height: 38px;
+  }
+
   .hero-top-flavor-nav {
     gap: 0.4rem;
     padding: 0 0.75rem;
@@ -875,7 +919,11 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   }
 
   .hero-curved-title {
-    font-size: clamp(1.6rem, 6.5vw, 2.2rem);
+    font-size: clamp(1.8rem, 7.5vw, 2.6rem);
+  }
+
+  .hero-bottle-pedestal {
+    height: clamp(360px, 48vh, 440px);
   }
 
   .hero-bottom-bar {
@@ -1714,6 +1762,50 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   padding-bottom: var(--section-gap);
 }
 
+.manifesto-statement-centered {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.manifesto-kicker {
+  display: inline-block;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--nomu-red);
+  margin-bottom: 0.85rem;
+}
+
+.manifesto-statement-centered .manifesto-headline {
+  font-family: var(--font-display);
+  font-size: clamp(1.85rem, 3.5vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--soft-black);
+  margin-bottom: 1.25rem;
+}
+
+.manifesto-statement-centered .manifesto-statement-p {
+  font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+  font-weight: 500;
+  color: #383838;
+  line-height: 1.65;
+  margin-bottom: 2.5rem;
+  max-width: 760px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.manifesto-statement-centered .manifesto-art-frame {
+  width: 100%;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.12);
+}
+
 .manifesto-split-layout {
   display: grid;
   grid-template-columns: 1.35fr 1fr;
@@ -2120,9 +2212,10 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 
 .contact-channels-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 1.75rem;
-  margin-top: 3.5rem;
+  max-width: 860px;
+  margin: 3.5rem auto 0 auto;
 }
 
 .contact-channel-card {
@@ -2329,7 +2422,6 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 
 .hero-media-card { animation: sectionFadeIn 0.65s var(--ease-spring) both; }
 .hero-editorial-card { animation: sectionFadeIn 0.65s var(--ease-spring) 0.1s both; }
-.hero-bottle-packshot { animation: sectionFadeIn 0.65s var(--ease-spring) 0.05s both; }
 .accordion-pillar { animation: sectionFadeIn 0.65s var(--ease-spring) both; }
 .contact-channel-card { animation: sectionFadeIn 0.65s var(--ease-spring) both; }
 .builder-viewport-card { animation: sectionFadeIn 0.65s var(--ease-spring) both; }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { Header } from './components/Header';
 import { HeroSection } from './components/HeroSection';
 import { AboutSection } from './components/AboutSection';
@@ -6,11 +6,13 @@ import { ReviewsSection } from './components/ReviewsSection';
 import { ShowcaseSection } from './components/ShowcaseSection';
 import { ManifestoSection } from './components/ManifestoSection';
 import { RitualBoxBuilder } from './components/RitualBoxBuilder';
-import { OrderModal } from './components/OrderModal';
-import { ReviewModal } from './components/ReviewModal';
-import { AdminConsole } from './components/AdminConsole';
 import { ContactSection } from './components/ContactSection';
 import { Footer } from './components/Footer';
+
+// Code-split heavy modals and administration console for fast mobile payload
+const AdminConsole = lazy(() => import('./components/AdminConsole').then(m => ({ default: m.AdminConsole })));
+const OrderModal = lazy(() => import('./components/OrderModal').then(m => ({ default: m.OrderModal })));
+const ReviewModal = lazy(() => import('./components/ReviewModal').then(m => ({ default: m.ReviewModal })));
 
 import { FLAVORS } from './data/flavors';
 import { CartItem, FlavorKey, ReviewRecord, CmsData } from './types';
@@ -63,12 +65,12 @@ export const App: React.FC = () => {
   // Cart State
   const [cart, setCart] = useState<CartItem[]>([
     {
-      id: 'vetiver-pack3',
+      id: 'vetiver-pack4',
       flavorKey: 'vetiver',
-      packKey: 'pack3',
+      packKey: 'pack4',
       quantity: 1,
-      unitPrice: 270,
-      bottlesPerPack: 3
+      unitPrice: 160,
+      bottlesPerPack: 4
     }
   ]);
 
@@ -77,8 +79,8 @@ export const App: React.FC = () => {
 
   // CMS Content State
   const [cms, setCms] = useState<CmsData>({
-    hero_headline: 'FOUR HERBS. ZERO NONSENSE.',
-    hero_sub: 'Ancient South Indian botanical distillates crafted in small batches across Chennai.',
+    hero_headline: 'BEYOND HYDRATION',
+    hero_sub: 'Ancient South Indian botanical distillates crafted in small batches across India.',
     ticker_text: '100% RECYCLED GLASS · NO CHEMICALS · SMALL-BATCH DISTILLED · CHENNAI EXPRESS',
     whatsapp_phone: '919840000000'
   });
@@ -147,19 +149,18 @@ export const App: React.FC = () => {
     }
     if (preset === 'discovery') {
       setCart([
-        { id: 'vetiver-single', flavorKey: 'vetiver', packKey: 'single', quantity: 1, unitPrice: 95, bottlesPerPack: 1 },
-        { id: 'chamomile-single', flavorKey: 'chamomile', packKey: 'single', quantity: 1, unitPrice: 95, bottlesPerPack: 1 },
-        { id: 'grapefruit-single', flavorKey: 'grapefruit', packKey: 'single', quantity: 1, unitPrice: 95, bottlesPerPack: 1 },
-        { id: 'lemongrass-single', flavorKey: 'lemongrass', packKey: 'single', quantity: 1, unitPrice: 95, bottlesPerPack: 1 }
+        { id: 'vetiver-single', flavorKey: 'vetiver', packKey: 'single', quantity: 1, unitPrice: 40, bottlesPerPack: 1 },
+        { id: 'chamomile-single', flavorKey: 'chamomile', packKey: 'single', quantity: 1, unitPrice: 40, bottlesPerPack: 1 },
+        { id: 'grapefruit-single', flavorKey: 'grapefruit', packKey: 'single', quantity: 1, unitPrice: 40, bottlesPerPack: 1 },
+        { id: 'lemongrass-single', flavorKey: 'lemongrass', packKey: 'single', quantity: 1, unitPrice: 40, bottlesPerPack: 1 }
       ]);
       return;
     }
     if (preset === 'pantry') {
       setCart([
-        { id: 'vetiver-pack3', flavorKey: 'vetiver', packKey: 'pack3', quantity: 1, unitPrice: 270, bottlesPerPack: 3 },
-        { id: 'chamomile-pack3', flavorKey: 'chamomile', packKey: 'pack3', quantity: 1, unitPrice: 270, bottlesPerPack: 3 },
-        { id: 'grapefruit-pack3', flavorKey: 'grapefruit', packKey: 'pack3', quantity: 1, unitPrice: 270, bottlesPerPack: 3 },
-        { id: 'lemongrass-pack3', flavorKey: 'lemongrass', packKey: 'pack3', quantity: 1, unitPrice: 270, bottlesPerPack: 3 }
+        { id: 'vetiver-pack4', flavorKey: 'vetiver', packKey: 'pack4', quantity: 1, unitPrice: 160, bottlesPerPack: 4 },
+        { id: 'chamomile-pack4', flavorKey: 'chamomile', packKey: 'pack4', quantity: 1, unitPrice: 160, bottlesPerPack: 4 },
+        { id: 'grapefruit-pack4', flavorKey: 'grapefruit', packKey: 'pack4', quantity: 1, unitPrice: 160, bottlesPerPack: 4 }
       ]);
       return;
     }
@@ -167,12 +168,12 @@ export const App: React.FC = () => {
 
   const handleQuickOrder = (flavor: FlavorKey) => {
     handleAddToCart({
-      id: `${flavor}-pack3`,
+      id: `${flavor}-pack4`,
       flavorKey: flavor,
-      packKey: 'pack3',
+      packKey: 'pack4',
       quantity: 1,
-      unitPrice: 270,
-      bottlesPerPack: 3
+      unitPrice: 160,
+      bottlesPerPack: 4
     });
     setIsOrderModalOpen(true);
   };
@@ -197,7 +198,11 @@ export const App: React.FC = () => {
   };
 
   if (isAdminOpen) {
-    return <AdminConsole onClose={handleCloseAdmin} />;
+    return (
+      <Suspense fallback={<div style={{ minHeight: '100vh', background: '#111', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading Console...</div>}>
+        <AdminConsole onClose={handleCloseAdmin} />
+      </Suspense>
+    );
   }
 
   const currentThemeBg = FLAVORS[activeHeroFlavor].themeBg;
@@ -215,7 +220,6 @@ export const App: React.FC = () => {
           activeFlavorKey={activeHeroFlavor}
           onSelectFlavor={(k) => {
             setActiveHeroFlavor(k);
-            setActiveAccordionFlavor(k);
           }}
           heroHeadline={cms.hero_headline}
           heroSub={cms.hero_sub}
@@ -261,20 +265,24 @@ export const App: React.FC = () => {
 
       <Footer />
 
-      {/* Checkout Modal */}
-      <OrderModal
-        isOpen={isOrderModalOpen}
-        onClose={() => setIsOrderModalOpen(false)}
-        cart={cart}
-        whatsappConcierge={cms.whatsapp_phone}
-      />
-
-      {/* Review Modal */}
-      <ReviewModal
-        isOpen={isReviewModalOpen}
-        onClose={() => setIsReviewModalOpen(false)}
-        onReviewSubmitted={loadRemoteData}
-      />
+      {/* Lazy-Loaded Modals */}
+      <Suspense fallback={null}>
+        {isOrderModalOpen && (
+          <OrderModal
+            isOpen={isOrderModalOpen}
+            onClose={() => setIsOrderModalOpen(false)}
+            cart={cart}
+            whatsappConcierge={cms.whatsapp_phone}
+          />
+        )}
+        {isReviewModalOpen && (
+          <ReviewModal
+            isOpen={isReviewModalOpen}
+            onClose={() => setIsReviewModalOpen(false)}
+            onReviewSubmitted={loadRemoteData}
+          />
+        )}
+      </Suspense>
     </div>
   );
 };

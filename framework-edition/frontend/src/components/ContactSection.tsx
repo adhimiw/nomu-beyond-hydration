@@ -57,17 +57,6 @@ export const ContactSection: React.FC = () => {
                 Follow @drinkitnomu
               </a>
             </div>
-
-            {/* Channel 3: Chennai Workshop */}
-            <div className="contact-channel-card">
-              <div>
-                <h3 className="contact-channel-title">Chennai Workshop</h3>
-                <p className="contact-channel-body">
-                  Small-batch infusion laboratory and dispatch center located in Chennai, Tamil Nadu.
-                </p>
-              </div>
-              <div className="channel-location-info">Chennai, Tamil Nadu, India</div>
-            </div>
           </div>
         </div>
       </section>

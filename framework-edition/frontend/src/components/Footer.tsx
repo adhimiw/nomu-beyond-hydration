@@ -7,15 +7,15 @@ export const Footer: React.FC = () => {
         <div className="footer-brand">
           <div className="footer-logo-row">
             <div className="brand-logo-badge" style={{ width: '28px', height: '28px' }}>
-              <img src="/img/nomu/nomu_logo_clean.png" alt="NOMU Logo" width="20" height="20" />
+              <img src="/img/nomu/nomu_logo_clean.png" alt="NOMU Logo" width="20" height="20" loading="lazy" decoding="async" />
             </div>
-            <img src="/img/nomu/nomu_wordmark_transparent.png" alt="NOMU" height="18" />
+            <img src="/img/nomu/nomu_wordmark_transparent.png" alt="NOMU" width="88" height="18" loading="lazy" decoding="async" />
           </div>
           <p className="footer-mission" style={{ marginTop: '0.85rem' }}>
             Beyond Hydration. Clean herb-infused water crafted as a daily wellness ritual. Four herbs, zero nonsense.
           </p>
           <p className="footer-sustainability">
-            100% recyclable glass bottles with aluminum seal caps. Small-batch crafted in Chennai, India.
+            100% recyclable glass bottles with aluminum seal caps. Small-batch crafted in India.
           </p>
         </div>
 
@@ -43,7 +43,7 @@ export const Footer: React.FC = () => {
         <div className="footer-col">
           <h4 className="footer-heading">Small-Batch Dispatch</h4>
           <p className="footer-address">
-            Crafted fresh in Chennai.<br />
+            Crafted fresh in India.<br />
             Express local deliveries.<br />
             Concierge: +91 98400 00000
           </p>

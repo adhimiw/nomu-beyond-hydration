@@ -15,9 +15,9 @@
   --brand-crimson-light: #EA3435;
 
   /* The 4 Signature Herbal Flavors */
-  --flavor-vetiver: #443826;
+  --flavor-vetiver: #4E301B;
   --flavor-vetiver-badge: #E8DFD0;
-  --flavor-vetiver-text: #241D12;
+  --flavor-vetiver-text: #2D1A0C;
 
   --flavor-chamomile: #C88A1E;
   --flavor-chamomile-badge: #FDF3D6;
@@ -66,9 +66,9 @@
 
 /* Flavor Theme Variants */
 body[data-flavor="vetiver"] {
-  --flavor-primary: #443826;
+  --flavor-primary: #4E301B;
   --flavor-badge: #E8DFD0;
-  --flavor-text: #241D12;
+  --flavor-text: #2D1A0C;
 }
 
 body[data-flavor="chamomile"] {
@@ -385,7 +385,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 }
 
 .hero-dribbble-stage[data-hero-flavor="chamomile"] {
-  --hero-bg: #8A5404; /* Warm Roasted Golden Amber (WCAG 6.3:1) */
+  --hero-bg: #B27C08; /* Radiant Warm Golden Chamomile Yellow */
 }
 
 .hero-dribbble-stage[data-hero-flavor="grapefruit"] {

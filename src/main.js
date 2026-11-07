@@ -13,7 +13,7 @@ export const FLAVORS = {
     subtitle: 'Natural Khus Root Infusion',
     positioning: 'Earthy, Cooling & Deeply Grounding',
     tagline: 'Ancient South Indian Khus roots traditionally cold-steeped to dissipate internal heat, anchor the mind, and restore constitutional balance.',
-    themeBg: '#D5360C', // Burnt Orange / Terracotta as requested
+    themeBg: '#4E301B', // Warm Botanical Khus Earth Brown
     accentColor: '#E6D5BD',
     bottleImage: '/img/bottles/vetiver_isolated.png',
     packshotImage: '/img/bottles/vetiver_packshot.jpg',
@@ -50,7 +50,7 @@ export const FLAVORS = {
     subtitle: 'Blossoms & Soft Lavender',
     positioning: 'Floral, Delicate & Gently Calming',
     tagline: 'Sun-dried German chamomile blossoms delivering apigenin-rich relaxation, settling digestion and quieting evening neural chatter.',
-    themeBg: '#8A5404', // Warm Golden Amber / Roasted Honey Steep (WCAG 6.2:1)
+    themeBg: '#B27C08', // Radiant Warm Golden Chamomile Yellow
     accentColor: '#E6D5BD',
     bottleImage: '/img/bottles/chamomile_isolated.png',
     packshotImage: '/img/bottles/chamomile_packshot.jpg',

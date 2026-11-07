@@ -18,7 +18,7 @@ export const RitualBoxBuilder: React.FC<RitualBoxBuilderProps> = ({
   onOpenCheckout
 }) => {
   const [selectedFlavor, setSelectedFlavor] = useState<FlavorKey>('vetiver');
-  const [selectedPack, setSelectedPack] = useState<PackKey>('pack3');
+  const [selectedPack, setSelectedPack] = useState<PackKey>('pack4');
   const [qty, setQty] = useState<number>(1);
 
   const activeFlavorData = FLAVORS[selectedFlavor];
@@ -60,7 +60,7 @@ export const RitualBoxBuilder: React.FC<RitualBoxBuilderProps> = ({
               id="preset-discovery"
               onClick={() => onApplyPreset('discovery')}
             >
-              <span>Discovery Flight (1 of Each Blend · 4 Bottles) · ₹360</span>
+              <span>Discovery Flight (1 of Each Blend · 4 Bottles) · ₹160</span>
             </button>
             <button
               type="button"
@@ -69,7 +69,7 @@ export const RitualBoxBuilder: React.FC<RitualBoxBuilderProps> = ({
               onClick={() => onApplyPreset('pantry')}
             >
               <span className="badge-mini">FREE SHIPPING</span>
-              <span>Pantry Ritual (3 of Each Blend · 12 Bottles) · ₹999</span>
+              <span>Pantry Ritual (3 of Each Blend · 12 Bottles) · ₹480</span>
             </button>
             <button
               type="button"
@@ -91,10 +91,14 @@ export const RitualBoxBuilder: React.FC<RitualBoxBuilderProps> = ({
                 alt={`Selected NOMU ${activeFlavorData.name} Preview`}
                 id="builder-preview-img"
                 className="builder-bottle-preview"
+                width={320}
+                height={480}
+                loading="lazy"
+                decoding="async"
               />
             </div>
             <div className="builder-finish-selector">
-              <span className="builder-craft-badge">100% Whole Herb Infusion · Small-Batch Chennai</span>
+              <span className="builder-craft-badge">100% Whole Herb Infusion · Small-Batch India</span>
             </div>
           </div>
 
@@ -115,7 +119,7 @@ export const RitualBoxBuilder: React.FC<RitualBoxBuilderProps> = ({
                     aria-selected={isSelected}
                   >
                     <span className="tab-dot" style={{ background: item.themeBg }} />
-                    <span>{item.indexNum} · {item.name}</span>
+                    <span>{item.name}</span>
                   </button>
                 );
               })}
@@ -128,26 +132,26 @@ export const RitualBoxBuilder: React.FC<RitualBoxBuilderProps> = ({
                 className={`pack-choice-btn ${selectedPack === 'single' ? 'is-active' : ''}`}
                 onClick={() => setSelectedPack('single')}
               >
-                <span className="pack-choice-title">SINGLE BOTTLE · ₹95</span>
-                <span className="pack-choice-desc">1x 330ml Glass Bottle · Perfect discovery trial</span>
+                <span className="pack-choice-title">SINGLE BOTTLE · ₹40</span>
+                <span className="pack-choice-desc">1x 500ml Glass Bottle · Perfect discovery trial</span>
               </button>
               <button
                 type="button"
-                className={`pack-choice-btn ${selectedPack === 'pack3' ? 'is-active' : ''}`}
-                onClick={() => setSelectedPack('pack3')}
+                className={`pack-choice-btn ${selectedPack === 'pack4' || selectedPack === 'pack3' ? 'is-active' : ''}`}
+                onClick={() => setSelectedPack('pack4')}
               >
-                <span className="pack-choice-title">3-PACK RITUAL BOX · ₹270</span>
-                <span className="pack-choice-desc">3x 330ml Bottles · 3-day daily wellness routine</span>
-                <span className="pack-choice-badge">SAVE 5%</span>
+                <span className="pack-choice-title">4-PACK RITUAL BOX · ₹160</span>
+                <span className="pack-choice-desc">4x 500ml Glass Bottles · 4-day daily wellness routine</span>
+                <span className="pack-choice-badge">POPULAR</span>
               </button>
               <button
                 type="button"
                 className={`pack-choice-btn ${selectedPack === 'pack12' ? 'is-active' : ''}`}
                 onClick={() => setSelectedPack('pack12')}
               >
-                <span className="pack-choice-title">12-PACK PANTRY BOX · ₹999</span>
-                <span className="pack-choice-desc">12x 330ml Bottles · Full 2-week sustained ritual</span>
-                <span className="pack-choice-badge">FREE CHENNAI EXPRESS</span>
+                <span className="pack-choice-title">12-PACK PANTRY BOX · ₹480</span>
+                <span className="pack-choice-desc">12x 500ml Glass Bottles · Sustained daily ritual</span>
+                <span className="pack-choice-badge">FREE EXPRESS SHIPPING</span>
               </button>
             </div>
 

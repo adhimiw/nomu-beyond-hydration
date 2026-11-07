@@ -38,13 +38,14 @@ export interface FlavorItem {
   mediaPoster?: string;
   ctaText: string;
   priceSingle: number;
-  pricePack3: number;
+  pricePack4: number;
   pricePack12: number;
+  pricePack3?: number;
   tastingNotes: TastingNotes;
   meters: TastingMeters;
 }
 
-export type PackKey = 'single' | 'pack3' | 'pack12';
+export type PackKey = 'single' | 'pack4' | 'pack12' | 'pack3';
 
 export interface PackTier {
   id: PackKey;

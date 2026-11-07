@@ -146,43 +146,6 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
             ))
           )}
         </div>
-
-        {/* Trust Features Row */}
-        <div className="reviews-trust-bar" data-ui>
-          <div className="trust-item">
-            <span className="trust-check-icon" aria-hidden="true">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-            </span>
-            <div className="trust-text">
-              <strong>100% Whole Herb Distillates</strong>
-              <small>No synthetic aroma oils, added sugars, or extracts</small>
-            </div>
-          </div>
-          <div className="trust-item">
-            <span className="trust-check-icon" aria-hidden="true">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-            </span>
-            <div className="trust-text">
-              <strong>Sterilized Glass Packaging</strong>
-              <small>Fresh small-batch bottled weekly in Chennai</small>
-            </div>
-          </div>
-          <div className="trust-item">
-            <span className="trust-check-icon" aria-hidden="true">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-            </span>
-            <div className="trust-text">
-              <strong>Same-Day Chennai Express</strong>
-              <small>Delivered direct to your doorstep via WhatsApp</small>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
   );
