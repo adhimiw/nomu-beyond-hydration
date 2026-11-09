@@ -63,12 +63,15 @@ const INITIAL_REVIEWS: ReviewRecord[] = [
 
 const renderTickerContent = (text: string) => {
   const target = 'join the ritual';
-  const lower = text.toLowerCase();
+  const effectiveText = (text && text.toLowerCase().includes(target))
+    ? text
+    : 'Made in India, join the ritual';
+  const lower = effectiveText.toLowerCase();
   const idx = lower.indexOf(target);
   if (idx !== -1) {
-    const before = text.slice(0, idx);
-    const match = text.slice(idx, idx + target.length);
-    const after = text.slice(idx + target.length);
+    const before = effectiveText.slice(0, idx);
+    const match = effectiveText.slice(idx, idx + target.length);
+    const after = effectiveText.slice(idx + target.length);
     return (
       <>
         {before}
@@ -77,7 +80,7 @@ const renderTickerContent = (text: string) => {
       </>
     );
   }
-  return text;
+  return effectiveText;
 };
 
 export const App: React.FC = () => {
@@ -113,10 +116,10 @@ export const App: React.FC = () => {
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
-  // Fetch approved reviews and CMS on load
+  // Fetch approved reviews and CMS on load (cache-busted to bypass CDN edge caching)
   const loadRemoteData = async () => {
     try {
-      const cmsRes = await fetch('/api/content');
+      const cmsRes = await fetch(`/api/content?_t=${Date.now()}`, { cache: 'no-store' });
       if (cmsRes.ok) {
         const cmsData = await cmsRes.json();
         setCms(cmsData);
@@ -124,7 +127,7 @@ export const App: React.FC = () => {
     } catch (e) {}
 
     try {
-      const revRes = await fetch('/api/reviews');
+      const revRes = await fetch(`/api/reviews?_t=${Date.now()}`, { cache: 'no-store' });
       if (revRes.ok) {
         const revData = await revRes.json();
         if (revData && Array.isArray(revData.reviews)) {
