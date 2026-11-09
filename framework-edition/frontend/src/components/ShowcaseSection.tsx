@@ -18,10 +18,10 @@ export const ShowcaseSection: React.FC<ShowcaseSectionProps> = ({
   const handleMouseEnter = (key: FlavorKey) => {
     if (typeof window !== 'undefined' && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
       if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
-      // Calm, intentional 420ms hover debounce prevents jittery rapid animations
+      // Responsive, smooth 100ms hover debounce prevents jitter while feeling instantaneous
       hoverTimerRef.current = setTimeout(() => {
         onSelectAccordion(key);
-      }, 420);
+      }, 100);
     }
   };
 
@@ -119,9 +119,6 @@ export const ShowcaseSection: React.FC<ShowcaseSectionProps> = ({
                     <div className="pillar-expanded-header">
                       <div className="pillar-title-lockup">
                         <h3 className="pillar-full-name">{item.name}</h3>
-                      </div>
-                      <div className="pillar-kanji-sub">
-                        {item.flavorKanji} · {item.kanjiMark}
                       </div>
                       <div className="pillar-mood-wrap">
                         <span className="pillar-mood-pill">Mood: {item.mood}</span>

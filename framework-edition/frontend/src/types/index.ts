@@ -121,6 +121,7 @@ export interface ReviewRecord {
   headline: string;
   review_text: string;
   status?: 'pending' | 'approved' | 'rejected';
+  is_visible?: number;
   created_at: string;
 }
 

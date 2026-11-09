@@ -895,8 +895,13 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   text-transform: uppercase;
 }
 
-.ticker-item span {
-  color: var(--nomu-red);
+.ticker-item .ticker-accent {
+  color: var(--nomu-red, #D01C1D);
+}
+
+.ticker-item .ticker-dot {
+  color: var(--nomu-ink, #1F1916);
+  opacity: 0.4;
 }
 
 @keyframes tickerSlide {

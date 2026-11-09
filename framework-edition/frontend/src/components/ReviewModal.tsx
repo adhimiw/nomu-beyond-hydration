@@ -132,7 +132,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
                 <option value="vetiver">Blend I · Vetiver (Khus Root)</option>
                 <option value="chamomile">Blend II · German Chamomile</option>
                 <option value="grapefruit">Blend III · Grapefruit (Ruby Peel)</option>
-                <option value="lemongrass">Blend IV · Lemongrass (Nilgiri)</option>
+                <option value="lemongrass">Blend IV · Lemongrass</option>
               </select>
             </div>
 

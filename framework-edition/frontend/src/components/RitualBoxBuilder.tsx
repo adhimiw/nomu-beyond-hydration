@@ -5,6 +5,7 @@ import { CartItem, FlavorKey, PackKey } from '../types';
 interface RitualBoxBuilderProps {
   cart: CartItem[];
   onAddToCart: (item: CartItem) => void;
+  onUpdateQuantity?: (id: string, delta: number) => void;
   onRemoveFromCart: (id: string) => void;
   onApplyPreset: (preset: 'discovery' | 'pantry' | 'reset') => void;
   onOpenCheckout: () => void;
@@ -13,6 +14,7 @@ interface RitualBoxBuilderProps {
 export const RitualBoxBuilder: React.FC<RitualBoxBuilderProps> = ({
   cart,
   onAddToCart,
+  onUpdateQuantity,
   onRemoveFromCart,
   onApplyPreset,
   onOpenCheckout
@@ -52,7 +54,10 @@ export const RitualBoxBuilder: React.FC<RitualBoxBuilderProps> = ({
 
         {/* Quick Bundle Presets */}
         <div className="builder-presets-bar">
-          <span className="preset-label">Quick Ritual Bundles:</span>
+          <div className="preset-header-row">
+            <span className="preset-label">Quick Ritual Bundles:</span>
+            <span className="preset-sub-hint">Instant 1-click curated combinations</span>
+          </div>
           <div className="preset-buttons-group">
             <button
               type="button"
@@ -60,7 +65,7 @@ export const RitualBoxBuilder: React.FC<RitualBoxBuilderProps> = ({
               id="preset-discovery"
               onClick={() => onApplyPreset('discovery')}
             >
-              <span>Discovery Flight (1 of Each Blend · 4 Bottles) · ₹160</span>
+              <span className="preset-pill-title">Discovery Flight (1 of Each Blend · 4 Bottles) · ₹160</span>
             </button>
             <button
               type="button"
@@ -69,11 +74,11 @@ export const RitualBoxBuilder: React.FC<RitualBoxBuilderProps> = ({
               onClick={() => onApplyPreset('pantry')}
             >
               <span className="badge-mini">FREE SHIPPING</span>
-              <span>Pantry Ritual (3 of Each Blend · 12 Bottles) · ₹480</span>
+              <span className="preset-pill-title">Pantry Ritual (3 of Each Blend · 12 Bottles) · ₹480</span>
             </button>
             <button
               type="button"
-              className="preset-pill-btn"
+              className="preset-pill-btn btn-reset"
               id="preset-clear"
               onClick={() => onApplyPreset('reset')}
             >
@@ -210,26 +215,39 @@ export const RitualBoxBuilder: React.FC<RitualBoxBuilderProps> = ({
                             {' '}· {pack?.name} (×{item.quantity})
                           </span>
                         </div>
-                        <div className="cart-item-actions" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                          <span style={{ fontWeight: 700, color: 'var(--soft-black)' }}>
+                        <div className="cart-item-actions" style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                          {onUpdateQuantity && (
+                            <div className="cart-inline-stepper">
+                              <button
+                                type="button"
+                                className="cart-inline-step-btn"
+                                onClick={() => onUpdateQuantity(item.id, -1)}
+                                aria-label="Decrease quantity"
+                              >
+                                −
+                              </button>
+                              <span className="cart-inline-step-qty">{item.quantity}</span>
+                              <button
+                                type="button"
+                                className="cart-inline-step-btn"
+                                onClick={() => onUpdateQuantity(item.id, 1)}
+                                aria-label="Increase quantity"
+                              >
+                                +
+                              </button>
+                            </div>
+                          )}
+                          <span style={{ fontWeight: 700, color: 'var(--soft-black)', minWidth: '48px', textAlign: 'right' }}>
                             ₹{item.quantity * item.unitPrice}
                           </span>
                           <button
                             type="button"
                             onClick={() => onRemoveFromCart(item.id)}
-                            style={{
-                              background: 'transparent',
-                              border: 'none',
-                              color: 'var(--nomu-red)',
-                              cursor: 'pointer',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              padding: '2px'
-                            }}
+                            className="cart-inline-remove-btn"
                             aria-label={`Remove ${flv?.name}`}
+                            title={`Remove ${flv?.name}`}
                           >
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                               <line x1="18" y1="6" x2="6" y2="18" />
                               <line x1="6" y1="6" x2="18" y2="18" />
                             </svg>

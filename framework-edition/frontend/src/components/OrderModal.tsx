@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { CartItem } from '../types';
-import { FLAVORS, PACK_TIERS } from '../data/flavors';
+import { CartItem, FlavorKey, PackKey } from '../types';
+import { FLAVORS, FLAVOR_KEYS, PACK_TIERS } from '../data/flavors';
 
 interface OrderModalProps {
   isOpen: boolean;
   onClose: () => void;
   cart: CartItem[];
+  onUpdateQuantity?: (id: string, delta: number) => void;
+  onRemoveFromCart?: (id: string) => void;
+  onAddToCart?: (item: CartItem) => void;
   apiBaseUrl?: string;
   whatsappConcierge?: string;
 }
@@ -14,6 +17,9 @@ export const OrderModal: React.FC<OrderModalProps> = ({
   isOpen,
   onClose,
   cart,
+  onUpdateQuantity,
+  onRemoveFromCart,
+  onAddToCart,
   apiBaseUrl = '/api',
   whatsappConcierge = '919840000000'
 }) => {
@@ -29,8 +35,28 @@ export const OrderModal: React.FC<OrderModalProps> = ({
   const totalBottles = cart.reduce((acc, it) => acc + it.quantity * it.bottlesPerPack, 0);
   const grandTotal = cart.reduce((acc, it) => acc + it.quantity * it.unitPrice, 0);
 
+  const handleAddPackFromModal = (fKey: FlavorKey, pKey: PackKey) => {
+    if (onAddToCart) {
+      const pData = PACK_TIERS[pKey];
+      onAddToCart({
+        id: `${fKey}-${pKey}`,
+        flavorKey: fKey,
+        packKey: pKey,
+        quantity: 1,
+        unitPrice: pData.price,
+        bottlesPerPack: pData.bottlesCount
+      });
+      setErrorMsg('');
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (cart.length === 0) {
+      setErrorMsg('Your ritual cart is empty. Please add at least one botanical pack to proceed.');
+      return;
+    }
 
     if (!name.trim() || !phone.trim() || !email.trim() || !address.trim()) {
       setErrorMsg('Please complete all required fields (Name, Phone, Email, Delivery Address).');
@@ -135,23 +161,132 @@ Please confirm my order and share payment link / UPI instructions. Thank you!`;
         {/* Cart Summary */}
         <div className="modal-order-summary" data-ui>
           <div className="modal-summary-head">
-            <span>SELECTED RITUAL BOX</span>
-            <span className="summary-highlight-tag">{totalBottles} Bottles</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span>SELECTED RITUAL BOX</span>
+              <span className="summary-highlight-tag">{totalBottles} Bottle{totalBottles === 1 ? '' : 's'}</span>
+            </div>
+            {cart.length > 0 && (
+              <span style={{ fontSize: '0.78rem', color: '#666', fontWeight: 600 }}>
+                {cart.length} item{cart.length === 1 ? '' : 's'}
+              </span>
+            )}
           </div>
-          <div className="modal-summary-list">
-            {cart.map((it) => {
-              const flv = FLAVORS[it.flavorKey];
-              const pck = PACK_TIERS[it.packKey];
-              return (
-                <div key={it.id} className="modal-summary-row">
-                  <span>{flv.name} ({it.quantity}x {pck.name.split('·')[0].trim()})</span>
-                  <strong>₹{it.unitPrice * it.quantity}</strong>
-                </div>
-              );
-            })}
-          </div>
+
+          {cart.length === 0 ? (
+            <div className="modal-empty-cart">
+              <p style={{ margin: '0 0 0.75rem', color: '#777', fontSize: '0.875rem' }}>
+                Your cart is currently empty. Tap a blend below to add it:
+              </p>
+              <div className="modal-quick-add-grid">
+                {FLAVOR_KEYS.map((fk) => {
+                  const flv = FLAVORS[fk];
+                  return (
+                    <button
+                      key={fk}
+                      type="button"
+                      className="modal-quick-add-chip"
+                      onClick={() => handleAddPackFromModal(fk, 'pack4')}
+                    >
+                      <span className="chip-dot" style={{ background: flv.themeBg }} />
+                      <span>+ {flv.name} (4-Pk · ₹160)</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            <div className="modal-summary-list">
+              {cart.map((it) => {
+                const flv = FLAVORS[it.flavorKey];
+                const pck = PACK_TIERS[it.packKey];
+                return (
+                  <div key={it.id} className="modal-summary-row">
+                    <div className="modal-item-info">
+                      <span className="modal-item-dot" style={{ background: flv?.themeBg || '#D01C1D' }} />
+                      <div className="modal-item-names">
+                        <strong className="modal-item-title">{flv?.name}</strong>
+                        <span className="modal-item-pack">{pck?.name.split('·')[0].trim()}</span>
+                      </div>
+                    </div>
+
+                    <div className="modal-item-controls">
+                      {onUpdateQuantity && (
+                        <div className="modal-qty-stepper">
+                          <button
+                            type="button"
+                            className="modal-qty-btn"
+                            onClick={() => onUpdateQuantity(it.id, -1)}
+                            aria-label={`Decrease ${flv?.name}`}
+                          >
+                            −
+                          </button>
+                          <span className="modal-qty-val">{it.quantity}</span>
+                          <button
+                            type="button"
+                            className="modal-qty-btn"
+                            onClick={() => onUpdateQuantity(it.id, 1)}
+                            aria-label={`Increase ${flv?.name}`}
+                          >
+                            +
+                          </button>
+                        </div>
+                      )}
+
+                      <strong className="modal-item-price">₹{it.unitPrice * it.quantity}</strong>
+
+                      {onRemoveFromCart && (
+                        <button
+                          type="button"
+                          className="modal-remove-item-btn"
+                          onClick={() => onRemoveFromCart(it.id)}
+                          aria-label={`Remove ${flv?.name}`}
+                          title={`Remove ${flv?.name}`}
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                          </svg>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Quick Add Other Packs Bar */}
+          {cart.length > 0 && (
+            <div className="modal-add-more-section">
+              <div className="modal-add-more-header">
+                <span className="modal-add-more-label">+ ADD OTHER PACKS</span>
+              </div>
+              <div className="modal-quick-add-grid">
+                {FLAVOR_KEYS.map((fk) => {
+                  const flv = FLAVORS[fk];
+                  return (
+                    <button
+                      key={fk}
+                      type="button"
+                      className="modal-quick-add-chip"
+                      onClick={() => handleAddPackFromModal(fk, 'pack4')}
+                    >
+                      <span className="chip-dot" style={{ background: flv.themeBg }} />
+                      <span>+ {flv.name} (4-Pk)</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           <div className="modal-summary-total">
-            <span>Order Total:</span>
+            <div className="modal-total-labels">
+              <span>Order Total:</span>
+              <small style={{ color: '#2E7D32', fontWeight: 600, display: 'block', fontSize: '0.72rem' }}>
+                ✓ Free Express Delivery (Chennai)
+              </small>
+            </div>
             <strong>₹{grandTotal}</strong>
           </div>
         </div>

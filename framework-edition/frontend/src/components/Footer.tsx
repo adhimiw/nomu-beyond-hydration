@@ -25,7 +25,7 @@ export const Footer: React.FC = () => {
             <li><a href="#showcase">Vetiver (Khus Root)</a></li>
             <li><a href="#showcase">German Chamomile</a></li>
             <li><a href="#showcase">Grapefruit (Ruby Peel)</a></li>
-            <li><a href="#showcase">Lemongrass (Nilgiri)</a></li>
+            <li><a href="#showcase">Lemongrass</a></li>
           </ul>
         </div>
 

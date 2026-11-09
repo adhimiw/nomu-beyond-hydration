@@ -26,7 +26,8 @@ const INITIAL_REVIEWS: ReviewRecord[] = [
     rating: 5,
     headline: 'Replaced my afternoon iced tea completely',
     review_text: 'The cooling earthiness of Vetiver is grounding. It has an unmistakable freshness without being bitter or sweet. Drinking it chilled after work in Chennai heat is an instant reset.',
-    created_at: '2 days ago'
+    created_at: '2 days ago',
+    is_visible: 1
   },
   {
     id: 102,
@@ -35,7 +36,8 @@ const INITIAL_REVIEWS: ReviewRecord[] = [
     rating: 5,
     headline: 'Deep restorative calm for evening sleep',
     review_text: 'Gentle honeyed floral aroma without any artificial stevia aftertaste. It settles evening nervous energy and quiets neural chatter. I order the 12-pack pantry box every fortnight.',
-    created_at: '4 days ago'
+    created_at: '4 days ago',
+    is_visible: 1
   },
   {
     id: 103,
@@ -43,8 +45,9 @@ const INITIAL_REVIEWS: ReviewRecord[] = [
     flavor_key: 'lemongrass',
     rating: 5,
     headline: 'Clean herbal clarity during long hospital shifts',
-    review_text: 'As a surgeon I avoid caffeinated energy drinks. NOMU Lemongrass with Holy Basil gives a sharp, crisp hydration burst without any heart rate spike or sugar crash.',
-    created_at: '1 week ago'
+    review_text: 'As a surgeon I avoid caffeinated energy drinks. NOMU Lemongrass gives a sharp, crisp hydration burst without any heart rate spike or sugar crash.',
+    created_at: '1 week ago',
+    is_visible: 1
   },
   {
     id: 104,
@@ -53,9 +56,29 @@ const INITIAL_REVIEWS: ReviewRecord[] = [
     rating: 5,
     headline: 'Vibrant ruby peel aroma with zero calories',
     review_text: 'The citrus peel distillation captures pure essential limonene aromatics. It feels luxurious, perfectly tart, and makes drinking 2 liters of daily water a genuine pleasure.',
-    created_at: '1 week ago'
+    created_at: '1 week ago',
+    is_visible: 1
   }
 ];
+
+const renderTickerContent = (text: string) => {
+  const target = 'join the ritual';
+  const lower = text.toLowerCase();
+  const idx = lower.indexOf(target);
+  if (idx !== -1) {
+    const before = text.slice(0, idx);
+    const match = text.slice(idx, idx + target.length);
+    const after = text.slice(idx + target.length);
+    return (
+      <>
+        {before}
+        <span className="ticker-accent">{match}</span>
+        {after}
+      </>
+    );
+  }
+  return text;
+};
 
 export const App: React.FC = () => {
   const [activeHeroFlavor, setActiveHeroFlavor] = useState<FlavorKey>('vetiver');
@@ -81,7 +104,7 @@ export const App: React.FC = () => {
   const [cms, setCms] = useState<CmsData>({
     hero_headline: 'BEYOND HYDRATION',
     hero_sub: 'Ancient South Indian botanical distillates crafted in small batches across India.',
-    ticker_text: '100% RECYCLED GLASS · NO CHEMICALS · SMALL-BATCH DISTILLED · CHENNAI EXPRESS',
+    ticker_text: 'Made in India, join the ritual',
     whatsapp_phone: '919840000000'
   });
 
@@ -104,9 +127,11 @@ export const App: React.FC = () => {
       if (revRes.ok) {
         const revData = await revRes.json();
         if (revData && Array.isArray(revData.reviews)) {
-          const existingIds = new Set(revData.reviews.map((r: ReviewRecord) => String(r.id)));
-          const uniqueSeeds = INITIAL_REVIEWS.filter((r) => !existingIds.has(String(r.id)));
-          setReviews([...revData.reviews, ...uniqueSeeds]);
+          if (revData.reviews.length > 0) {
+            setReviews(revData.reviews);
+          } else {
+            setReviews(INITIAL_REVIEWS);
+          }
         }
       }
     } catch (e) {}
@@ -140,6 +165,20 @@ export const App: React.FC = () => {
 
   const handleRemoveFromCart = (id: string) => {
     setCart((prev) => prev.filter((it) => it.id !== id));
+  };
+
+  const handleUpdateQuantity = (id: string, delta: number) => {
+    setCart((prev) =>
+      prev
+        .map((it) => {
+          if (it.id === id) {
+            const nextQty = it.quantity + delta;
+            return nextQty > 0 ? { ...it, quantity: nextQty } : null;
+          }
+          return it;
+        })
+        .filter((it): it is CartItem => it !== null)
+    );
   };
 
   const handleApplyPreset = (preset: 'discovery' | 'pantry' | 'reset') => {
@@ -229,10 +268,12 @@ export const App: React.FC = () => {
         {/* Continuous Marquee Ribbon matching Dribbble */}
         <div className="ticker-ribbon" aria-hidden="true">
           <div className="ticker-track">
-            <span className="ticker-item">{cms.ticker_text || '100% RECYCLED GLASS · NO CHEMICALS · SMALL-BATCH DISTILLED · CHENNAI EXPRESS'} <span className="ticker-dot">•</span></span>
-            <span className="ticker-item">{cms.ticker_text || '100% RECYCLED GLASS · NO CHEMICALS · SMALL-BATCH DISTILLED · CHENNAI EXPRESS'} <span className="ticker-dot">•</span></span>
-            <span className="ticker-item">{cms.ticker_text || '100% RECYCLED GLASS · NO CHEMICALS · SMALL-BATCH DISTILLED · CHENNAI EXPRESS'} <span className="ticker-dot">•</span></span>
-            <span className="ticker-item">{cms.ticker_text || '100% RECYCLED GLASS · NO CHEMICALS · SMALL-BATCH DISTILLED · CHENNAI EXPRESS'} <span className="ticker-dot">•</span></span>
+            {Array.from({ length: 12 }).map((_, i) => (
+              <span className="ticker-item" key={i}>
+                {renderTickerContent(cms.ticker_text || 'Made in India, join the ritual')}
+                <span className="ticker-dot">•</span>
+              </span>
+            ))}
           </div>
         </div>
 
@@ -249,6 +290,7 @@ export const App: React.FC = () => {
         <RitualBoxBuilder
           cart={cart}
           onAddToCart={handleAddToCart}
+          onUpdateQuantity={handleUpdateQuantity}
           onRemoveFromCart={handleRemoveFromCart}
           onApplyPreset={handleApplyPreset}
           onOpenCheckout={() => setIsOrderModalOpen(true)}
@@ -272,6 +314,9 @@ export const App: React.FC = () => {
             isOpen={isOrderModalOpen}
             onClose={() => setIsOrderModalOpen(false)}
             cart={cart}
+            onUpdateQuantity={handleUpdateQuantity}
+            onRemoveFromCart={handleRemoveFromCart}
+            onAddToCart={handleAddToCart}
             whatsappConcierge={cms.whatsapp_phone}
           />
         )}

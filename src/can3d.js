@@ -51,7 +51,7 @@ export const FLAVORS = {
     tag: 'CHAMOMILE',
     price: 95,
     tastingNotes: {
-      top: 'Whole sun-dried Roman chamomile blossoms',
+      top: 'Whole sun-dried German chamomile blossoms',
       heart: 'Subtle sweet lavender & elderflower',
       base: 'Natural magnesium chelate & Himalayan minerals'
     },

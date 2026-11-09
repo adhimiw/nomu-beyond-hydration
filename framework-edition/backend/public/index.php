@@ -109,6 +109,7 @@ $pdo->exec("
         headline VARCHAR(200) NOT NULL,
         review_text TEXT NOT NULL,
         status VARCHAR(20) DEFAULT 'pending',
+        is_visible TINYINT(1) DEFAULT 1,
         moderated_at DATETIME,
         moderated_by VARCHAR(100),
         ip_address VARCHAR(45),
@@ -147,6 +148,10 @@ $pdo->exec("
     ) {$engine};
 ");
 
+try {
+    $pdo->exec("ALTER TABLE reviews ADD COLUMN is_visible TINYINT(1) DEFAULT 1");
+} catch (\Throwable $e) {}
+
 // Database Seeder Function
 function seedDatabase(PDO $pdo, bool $force = false): array {
     $seeded = ['cms' => 0, 'media' => 0, 'reviews' => 0];
@@ -157,7 +162,7 @@ function seedDatabase(PDO $pdo, bool $force = false): array {
     $cmsDefaults = [
         ['hero_headline', 'BEYOND HYDRATION', 'hero'],
         ['hero_sub', 'Ancient South Indian botanical distillates crafted in small batches across India.', 'hero'],
-        ['ticker_text', '100% RECYCLED GLASS · NO CHEMICALS · SMALL-BATCH DISTILLED · CHENNAI EXPRESS', 'general'],
+        ['ticker_text', 'Made in India, join the ritual', 'general'],
         ['font_family', 'editorial-serif', 'design'],
         ['whatsapp_phone', '919840000000', 'contact'],
         ['hero_video_url', '/video/nomu_showcase.mp4', 'media'],
@@ -191,8 +196,8 @@ function seedDatabase(PDO $pdo, bool $force = false): array {
         ['showcase', 'image', 'Chamomile Blossoms & Lavender Harvest', '/img/ingredients/chamomile_lavender_harvest.jpg', 'Fresh Egyptian and German chamomile blossoms', 1],
         ['showcase', 'image', 'Blend III — Grapefruit Bottle Packshot', '/img/bottles/grapefruit_isolated.png', 'NOMU Grapefruit isolated bottle packshot', 1],
         ['showcase', 'image', 'Ruby Red Grapefruit Peel Harvest', '/img/ingredients/grapefruit_harvest.jpg', 'Sun-drenched citrus peel and essential oil distillation', 1],
-        ['showcase', 'image', 'Blend IV — Lemongrass Bottle Packshot', '/img/bottles/lemongrass_isolated.png', 'NOMU Nilgiri Lemongrass isolated bottle packshot', 1],
-        ['showcase', 'image', 'Nilgiri Lemongrass Harvest', '/img/ingredients/lemongrass_harvest.jpg', 'Fresh high-altitude Nilgiri lemongrass stalks', 1],
+        ['showcase', 'image', 'Blend IV — Lemongrass Bottle Packshot', '/img/bottles/lemongrass_isolated.png', 'NOMU Lemongrass isolated bottle packshot', 1],
+        ['showcase', 'image', 'Lemongrass Harvest', '/img/ingredients/lemongrass_harvest.jpg', 'Fresh high-altitude lemongrass stalks', 1],
         ['brand', 'image', 'NOMU Clean Monogram Logo', '/img/nomu/nomu_logo_clean.png', 'NOMU Japanese Kanji & botanical seal mark', 1],
         ['brand', 'image', 'NOMU Wordmark Transparent', '/img/nomu/nomu_wordmark_transparent.png', 'NOMU architectural wordmark logo', 1]
     ];
@@ -205,15 +210,15 @@ function seedDatabase(PDO $pdo, bool $force = false): array {
 
     // 3. Seed Authentic Community Reviews
     $reviewsDefaults = [
-        ['Dr. Radhika Menon', 'radhika.m@apollohospitals.com', 'vetiver', 5, 'Gentle, non-acidic hydration for long clinical shifts', 'I keep a bottle of Vetiver chilled during long OT rotations. Unlike sparkling flavored water that triggers acid reflux, NOMU is silky smooth, subtly earthy, and leaves no sugar crash.', 'approved', date('Y-m-d H:i:s'), 'System Seeder', '127.0.0.1'],
-        ['Vikramaditya S.', 'vikram.s@thehindu.co.in', 'chamomile', 5, 'Replaced my evening chamomile tea with cold distilled NOMU', 'The floral notes are authentic, not synthetic essence. It has become my wind-down ritual at 9 PM after newsroom deadlines. Clean, relaxing, and exceptional glass packaging.', 'approved', date('Y-m-d H:i:s'), 'System Seeder', '127.0.0.1'],
-        ['Ananya Deshmukh', 'ananya.deshmukh@studioarch.in', 'grapefruit', 5, 'Vibrant ruby peel aroma with zero calories', 'The citrus peel distillation captures pure essential limonene aromatics. It feels luxurious, perfectly tart, and makes drinking 2 liters of daily water a genuine pleasure.', 'approved', date('Y-m-d H:i:s'), 'System Seeder', '127.0.0.1'],
-        ['Karthik R.', 'karthik.r@zoho.com', 'lemongrass', 5, 'Crisp Nilgiri lemongrass with a refreshing mineral finish', 'Ordered the 12-pack discovery box on WhatsApp. Delivered same day in Besant Nagar. Lemongrass is crisp, uplifting, and pairs remarkably well with light South Indian meals.', 'approved', date('Y-m-d H:i:s'), 'System Seeder', '127.0.0.1']
+        ['Dr. Radhika Menon', 'radhika.m@apollohospitals.com', 'vetiver', 5, 'Gentle, non-acidic hydration for long clinical shifts', 'I keep a bottle of Vetiver chilled during long OT rotations. Unlike sparkling flavored water that triggers acid reflux, NOMU is silky smooth, subtly earthy, and leaves no sugar crash.', 'approved', 1, date('Y-m-d H:i:s'), 'System Seeder', '127.0.0.1'],
+        ['Vikramaditya S.', 'vikram.s@thehindu.co.in', 'chamomile', 5, 'Replaced my evening chamomile tea with cold distilled NOMU', 'The floral notes are authentic, not synthetic essence. It has become my wind-down ritual at 9 PM after newsroom deadlines. Clean, relaxing, and exceptional glass packaging.', 'approved', 1, date('Y-m-d H:i:s'), 'System Seeder', '127.0.0.1'],
+        ['Ananya Deshmukh', 'ananya.deshmukh@studioarch.in', 'grapefruit', 5, 'Vibrant ruby peel aroma with zero calories', 'The citrus peel distillation captures pure essential limonene aromatics. It feels luxurious, perfectly tart, and makes drinking 2 liters of daily water a genuine pleasure.', 'approved', 1, date('Y-m-d H:i:s'), 'System Seeder', '127.0.0.1'],
+        ['Karthik R.', 'karthik.r@zoho.com', 'lemongrass', 5, 'Crisp lemongrass with a refreshing mineral finish', 'Ordered the 12-pack discovery box on WhatsApp. Delivered same day in Besant Nagar. Lemongrass is crisp, uplifting, and pairs remarkably well with light South Indian meals.', 'approved', 1, date('Y-m-d H:i:s'), 'System Seeder', '127.0.0.1']
     ];
 
     $chkRev = $pdo->query("SELECT COUNT(*) FROM reviews")->fetchColumn();
     if ($chkRev == 0 || $force) {
-        $insRev = $pdo->prepare("INSERT INTO reviews (customer_name, customer_email, flavor_key, rating, headline, review_text, status, moderated_at, moderated_by, ip_address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $insRev = $pdo->prepare("INSERT INTO reviews (customer_name, customer_email, flavor_key, rating, headline, review_text, status, is_visible, moderated_at, moderated_by, ip_address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         foreach ($reviewsDefaults as $r) {
             $insRev->execute($r);
             $seeded['reviews']++;
@@ -280,9 +285,9 @@ function sanitizeMediaUrl(string $url): string {
 $method = $_SERVER['REQUEST_METHOD'];
 $pathInfo = $_SERVER['PATH_INFO'] ?? '';
 if (empty($pathInfo)) {
-    $uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
-    $pathInfo = preg_replace('#^/api#', '', $uri);
+    $pathInfo = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
 }
+$pathInfo = preg_replace('#^/api#', '', $pathInfo);
 $pathInfo = '/' . trim($pathInfo, '/');
 
 // 0. PUBLIC: GET /health or /status
@@ -307,14 +312,14 @@ if ($method === 'GET' && ($pathInfo === '/content' || $pathInfo === '/')) {
     exit;
 }
 
-// 2. PUBLIC: GET /reviews (approved only)
+// 2. PUBLIC: GET /reviews (approved and visible only)
 if ($method === 'GET' && $pathInfo === '/reviews') {
     $flavor = $_GET['flavor'] ?? 'all';
     if ($flavor !== 'all') {
-        $stmt = $pdo->prepare("SELECT id, customer_name, flavor_key, rating, headline, review_text, created_at FROM reviews WHERE status = 'approved' AND flavor_key = ? ORDER BY id DESC LIMIT 30");
+        $stmt = $pdo->prepare("SELECT id, customer_name, flavor_key, rating, headline, review_text, is_visible, created_at FROM reviews WHERE status = 'approved' AND (is_visible = 1 OR is_visible IS NULL) AND flavor_key = ? ORDER BY id DESC LIMIT 30");
         $stmt->execute([$flavor]);
     } else {
-        $stmt = $pdo->query("SELECT id, customer_name, flavor_key, rating, headline, review_text, created_at FROM reviews WHERE status = 'approved' ORDER BY id DESC LIMIT 30");
+        $stmt = $pdo->query("SELECT id, customer_name, flavor_key, rating, headline, review_text, is_visible, created_at FROM reviews WHERE status = 'approved' AND (is_visible = 1 OR is_visible IS NULL) ORDER BY id DESC LIMIT 30");
     }
     $reviews = $stmt->fetchAll();
     echo json_encode(['status' => 'success', 'reviews' => $reviews]);
@@ -609,6 +614,27 @@ if (str_starts_with($pathInfo, '/admin')) {
             exit;
         }
 
+        if ($action === 'toggle_visibility') {
+            $stmt = $pdo->prepare("SELECT is_visible FROM reviews WHERE id = ?");
+            $stmt->execute([$reviewId]);
+            $current = $stmt->fetchColumn();
+            $newVisible = ($current === 1 || $current === '1' || $current === null) ? 0 : 1;
+            $pdo->prepare("UPDATE reviews SET is_visible = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?")->execute([$newVisible, $reviewId]);
+            $msg = $newVisible === 1 ? 'Review is now visible on site' : 'Review is now hidden from site';
+            nomuLog($pdo, 'NOTICE', 'REVIEW_VISIBILITY_TOGGLED', "Review ID {$reviewId} visible={$newVisible}");
+            echo json_encode(['status' => 'success', 'message' => $msg, 'is_visible' => $newVisible]);
+            exit;
+        }
+
+        if ($action === 'show' || $action === 'hide') {
+            $newVisible = ($action === 'show') ? 1 : 0;
+            $pdo->prepare("UPDATE reviews SET is_visible = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?")->execute([$newVisible, $reviewId]);
+            $msg = $newVisible === 1 ? 'Review is now visible on site' : 'Review is now hidden from site';
+            nomuLog($pdo, 'NOTICE', 'REVIEW_VISIBILITY_SET', "Review ID {$reviewId} visible={$newVisible}");
+            echo json_encode(['status' => 'success', 'message' => $msg, 'is_visible' => $newVisible]);
+            exit;
+        }
+
         if (!in_array($action, ['approve', 'reject'], true)) {
             http_response_code(400);
             echo json_encode(['error' => 'Invalid moderation action']);
@@ -616,7 +642,8 @@ if (str_starts_with($pathInfo, '/admin')) {
         }
 
         $newStatus = $action === 'approve' ? 'approved' : 'rejected';
-        $stmt = $pdo->prepare("UPDATE reviews SET status = ?, moderated_at = CURRENT_TIMESTAMP, moderated_by = 'admin', updated_at = CURRENT_TIMESTAMP WHERE id = ?");
+        $visSql = $newStatus === 'approved' ? ', is_visible = 1' : '';
+        $stmt = $pdo->prepare("UPDATE reviews SET status = ? {$visSql}, moderated_at = CURRENT_TIMESTAMP, moderated_by = 'admin', updated_at = CURRENT_TIMESTAMP WHERE id = ?");
         $stmt->execute([$newStatus, $reviewId]);
 
         nomuLog($pdo, 'NOTICE', 'REVIEW_MODERATED', "Review ID {$reviewId} marked as {$newStatus}");

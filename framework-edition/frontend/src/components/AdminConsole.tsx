@@ -210,7 +210,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
     } catch (e) {}
   };
 
-  const handleModerateReview = async (reviewId: number, action: 'approve' | 'reject' | 'delete') => {
+  const handleModerateReview = async (reviewId: number, action: 'approve' | 'reject' | 'delete' | 'toggle_visibility') => {
     try {
       await fetch(`${apiBaseUrl}/admin/reviews/${reviewId}/moderate`, {
         method: 'POST',
@@ -640,8 +640,17 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
               {adminReviews.map((r) => (
                 <div key={r.id} style={{ background: '#1A1918', border: '1px solid #2C2926', borderRadius: '10px', padding: '1.25rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                      <span style={{ fontSize: '0.7rem', textTransform: 'uppercase', padding: '0.2rem 0.5rem', borderRadius: '4px', background: '#333' }}>{r.status}</span>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', alignItems: 'center' }}>
+                      <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                        <span style={{ fontSize: '0.7rem', textTransform: 'uppercase', padding: '0.2rem 0.5rem', borderRadius: '4px', background: r.status === 'approved' ? '#1E3A24' : r.status === 'rejected' ? '#3B1D1D' : '#333', color: r.status === 'approved' ? '#4ADE80' : r.status === 'rejected' ? '#F87171' : '#FFF' }}>
+                          {r.status}
+                        </span>
+                        {r.status === 'approved' && (
+                          <span style={{ fontSize: '0.68rem', padding: '0.2rem 0.45rem', borderRadius: '4px', background: r.is_visible !== 0 ? '#064E3B' : '#374151', color: r.is_visible !== 0 ? '#34D399' : '#9CA3AF', fontWeight: 700 }}>
+                            {r.is_visible !== 0 ? 'LIVE: ON' : 'LIVE: OFF'}
+                          </span>
+                        )}
+                      </div>
                       <span style={{ color: '#D97706', display: 'flex', gap: '2px' }}>
                         {Array.from({ length: r.rating || 5 }).map((_, idx) => (
                           <svg key={idx} width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -656,7 +665,23 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
                     <p style={{ fontSize: '0.85rem', color: '#CCC', lineHeight: 1.45 }}>{r.review_text}</p>
                   </div>
 
-                  <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid #2C2926' }}>
+                  <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid #2C2926', flexWrap: 'wrap', alignItems: 'center' }}>
+                    {r.status === 'approved' && (
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        style={{
+                          background: r.is_visible !== 0 ? '#065F46' : '#1F2937',
+                          color: r.is_visible !== 0 ? '#A7F3D0' : '#D1D5DB',
+                          fontSize: '0.75rem',
+                          padding: '0.35rem 0.65rem'
+                        }}
+                        onClick={() => handleModerateReview(r.id, 'toggle_visibility')}
+                        title="Turn visibility on or off on live storefront"
+                      >
+                        {r.is_visible !== 0 ? 'Hide (Turn OFF)' : 'Show (Turn ON)'}
+                      </button>
+                    )}
                     {r.status !== 'approved' && (
                       <button type="button" className="btn btn-secondary" style={{ background: '#1E3A24', color: '#4ADE80', fontSize: '0.75rem', padding: '0.35rem 0.65rem' }} onClick={() => handleModerateReview(r.id, 'approve')}>
                         Approve
