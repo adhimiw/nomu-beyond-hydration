@@ -29,7 +29,7 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({
       <div className="container">
         <div className="reviews-section-header">
           <div className="reviews-header-top">
-            <span data-ui className="reviews-badge">COMMUNITY TASTING NOTES — お客様の声</span>
+            <span data-ui className="reviews-badge">COMMUNITY TASTING NOTES</span>
             <div className="reviews-rating-summary">
               <span className="stars-gold-row" aria-hidden="true">
                 {renderStars(5)}

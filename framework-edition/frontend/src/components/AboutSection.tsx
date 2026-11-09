@@ -7,7 +7,7 @@ export const AboutSection: React.FC = () => {
         <div className="about-nomu-grid">
           {/* Left Column: Sticky Title & Japanese Subtitle */}
           <div className="about-nomu-left">
-            <span data-ui className="about-nomu-badge">ABOUT US — 私たちについて</span>
+            <span data-ui className="about-nomu-badge">ABOUT US</span>
             <p className="about-nomu-headline">
               NOT JUST WATER.<br />
               <span className="text-nomu-red">NOT JUST A</span><br />
