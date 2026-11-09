@@ -29,6 +29,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
   const [address, setAddress] = useState('');
   const [notes, setNotes] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isOpen) return null;
 
@@ -102,14 +103,25 @@ export const OrderModal: React.FC<OrderModalProps> = ({
       total_amount: grandTotal
     };
 
-    // Asynchronously register order in the backend database
+    // Await order capture in the backend database
+    setIsSubmitting(true);
     try {
-      fetch(`${apiBaseUrl}/orders`, {
+      const response = await fetch(`${apiBaseUrl}/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
-      }).catch(() => {});
-    } catch (err) {}
+      });
+      if (response.ok) {
+        const resData = await response.json();
+        console.log('Backend order captured successfully:', resData);
+      } else {
+        console.warn('Backend responded with status:', response.status);
+      }
+    } catch (err) {
+      console.warn('Network error recording order in backend:', err);
+    } finally {
+      setIsSubmitting(false);
+    }
 
     // Construct formatted WhatsApp message
     let itemsText = '';
@@ -363,8 +375,12 @@ Please confirm my order and share payment link / UPI instructions. Thank you!`;
           )}
 
           <div className="modal-footer" style={{ marginTop: '0.75rem' }}>
-            <button type="submit" className="btn btn-burnt-orange btn-large btn-block">
-              <span>CONFIRM & OPEN WHATSAPP CHAT</span>
+            <button
+              type="submit"
+              className="btn btn-burnt-orange btn-large btn-block"
+              disabled={isSubmitting}
+            >
+              <span>{isSubmitting ? 'SECURING YOUR RITUAL ORDER...' : 'CONFIRM & OPEN WHATSAPP CHAT'}</span>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                 <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>

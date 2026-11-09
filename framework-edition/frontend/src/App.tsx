@@ -83,6 +83,7 @@ const renderTickerContent = (text: string) => {
 export const App: React.FC = () => {
   const [activeHeroFlavor, setActiveHeroFlavor] = useState<FlavorKey>('vetiver');
   const [activeAccordionFlavor, setActiveAccordionFlavor] = useState<FlavorKey>('vetiver');
+  const [builderFlavor, setBuilderFlavor] = useState<FlavorKey>('vetiver');
   const [isAdminOpen, setIsAdminOpen] = useState(false);
 
   // Cart State
@@ -205,16 +206,14 @@ export const App: React.FC = () => {
     }
   };
 
-  const handleQuickOrder = (flavor: FlavorKey) => {
-    handleAddToCart({
-      id: `${flavor}-pack4`,
-      flavorKey: flavor,
-      packKey: 'pack4',
-      quantity: 1,
-      unitPrice: 160,
-      bottlesPerPack: 4
-    });
-    setIsOrderModalOpen(true);
+  const handleMoveToBuilder = (flavor: FlavorKey) => {
+    setBuilderFlavor(flavor);
+    setTimeout(() => {
+      const shopEl = document.getElementById('shop');
+      if (shopEl) {
+        shopEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 60);
   };
 
   const scrollToPillars = (flavorKey?: FlavorKey) => {
@@ -282,13 +281,14 @@ export const App: React.FC = () => {
         <ShowcaseSection
           activeAccordionKey={activeAccordionFlavor}
           onSelectAccordion={(k) => setActiveAccordionFlavor(k)}
-          onQuickOrderWhatsapp={handleQuickOrder}
+          onMoveToBuilder={handleMoveToBuilder}
         />
 
         <ManifestoSection />
 
         <RitualBoxBuilder
           cart={cart}
+          selectedFlavor={builderFlavor}
           onAddToCart={handleAddToCart}
           onUpdateQuantity={handleUpdateQuantity}
           onRemoveFromCart={handleRemoveFromCart}

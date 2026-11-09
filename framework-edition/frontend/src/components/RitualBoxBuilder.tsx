@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FLAVORS, FLAVOR_KEYS, PACK_TIERS } from '../data/flavors';
 import { CartItem, FlavorKey, PackKey } from '../types';
 
 interface RitualBoxBuilderProps {
   cart: CartItem[];
+  selectedFlavor?: FlavorKey;
   onAddToCart: (item: CartItem) => void;
   onUpdateQuantity?: (id: string, delta: number) => void;
   onRemoveFromCart: (id: string) => void;
@@ -13,15 +14,22 @@ interface RitualBoxBuilderProps {
 
 export const RitualBoxBuilder: React.FC<RitualBoxBuilderProps> = ({
   cart,
+  selectedFlavor: controlledFlavor,
   onAddToCart,
   onUpdateQuantity,
   onRemoveFromCart,
   onApplyPreset,
   onOpenCheckout
 }) => {
-  const [selectedFlavor, setSelectedFlavor] = useState<FlavorKey>('vetiver');
+  const [selectedFlavor, setSelectedFlavor] = useState<FlavorKey>(controlledFlavor || 'vetiver');
   const [selectedPack, setSelectedPack] = useState<PackKey>('pack4');
   const [qty, setQty] = useState<number>(1);
+
+  useEffect(() => {
+    if (controlledFlavor) {
+      setSelectedFlavor(controlledFlavor);
+    }
+  }, [controlledFlavor]);
 
   const activeFlavorData = FLAVORS[selectedFlavor];
   const activePackData = PACK_TIERS[selectedPack];

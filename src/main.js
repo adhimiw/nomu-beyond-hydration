@@ -423,6 +423,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Showcase Pillar CTA: Move to Build Your Ritual with selected flavor
+  document.querySelectorAll('.accordion-pillar .btn-ivory-pill').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const flavorKey = btn.getAttribute('data-flavor');
+      if (flavorKey) {
+        syncConfigurator(flavorKey);
+      }
+      const shopEl = document.getElementById('shop');
+      if (shopEl) {
+        shopEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
   // Quantity Stepper
   const btnMinus = document.getElementById('btn-qty-minus');
   const btnPlus = document.getElementById('btn-qty-plus');

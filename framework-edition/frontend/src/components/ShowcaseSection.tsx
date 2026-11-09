@@ -5,13 +5,13 @@ import { FlavorKey } from '../types';
 interface ShowcaseSectionProps {
   activeAccordionKey: FlavorKey;
   onSelectAccordion: (key: FlavorKey) => void;
-  onQuickOrderWhatsapp: (flavor: FlavorKey) => void;
+  onMoveToBuilder: (flavor: FlavorKey) => void;
 }
 
 export const ShowcaseSection: React.FC<ShowcaseSectionProps> = ({
   activeAccordionKey,
   onSelectAccordion,
-  onQuickOrderWhatsapp
+  onMoveToBuilder
 }) => {
   const hoverTimerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -189,18 +189,16 @@ export const ShowcaseSection: React.FC<ShowcaseSectionProps> = ({
                       <span className="pillar-price-tag">
                         SINGLE ₹{item.priceSingle} · 4-PACK ₹{item.pricePack4} · 12-PACK ₹{item.pricePack12}
                       </span>
-                      <a
-                        href={`https://wa.me/919840000000?text=Hi%20NOMU%2C%20I%20would%20like%20to%20order%20NOMU%20${encodeURIComponent(item.name)}.`}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <button
+                        type="button"
                         className="btn btn-ivory-pill"
                         onClick={(e) => {
                           e.stopPropagation();
-                          onQuickOrderWhatsapp(key);
+                          onMoveToBuilder(key);
                         }}
                       >
                         ORDER {item.miniName ? item.miniName.toUpperCase() : item.name.toUpperCase()} ON WHATSAPP &rarr;
-                      </a>
+                      </button>
                     </div>
                   </div>
                 </div>
