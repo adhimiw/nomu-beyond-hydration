@@ -161,15 +161,13 @@ Please confirm my order and share payment link / UPI instructions. Thank you!`;
         {/* Cart Summary */}
         <div className="modal-order-summary" data-ui>
           <div className="modal-summary-head">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span>SELECTED RITUAL BOX</span>
+            <span className="modal-summary-title">SELECTED RITUAL BOX</span>
+            <div className="modal-summary-tags">
               <span className="summary-highlight-tag">{totalBottles} Bottle{totalBottles === 1 ? '' : 's'}</span>
+              {cart.length > 0 && (
+                <span className="summary-count-tag">({cart.length} item{cart.length === 1 ? '' : 's'})</span>
+              )}
             </div>
-            {cart.length > 0 && (
-              <span style={{ fontSize: '0.78rem', color: '#666', fontWeight: 600 }}>
-                {cart.length} item{cart.length === 1 ? '' : 's'}
-              </span>
-            )}
           </div>
 
           {cart.length === 0 ? (

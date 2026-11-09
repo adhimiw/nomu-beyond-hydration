@@ -3138,6 +3138,8 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.06em;
@@ -3145,6 +3147,24 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   margin-bottom: 0.65rem;
   padding-bottom: 0.4rem;
   border-bottom: 1px solid #F1ECE3;
+}
+
+.modal-summary-title {
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #777;
+}
+
+.modal-summary-tags {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.summary-count-tag {
+  font-size: 0.75rem;
+  color: #6B655D;
+  font-weight: 600;
 }
 
 .summary-highlight-tag {
