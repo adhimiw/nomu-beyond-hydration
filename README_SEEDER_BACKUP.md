@@ -28,8 +28,9 @@
 4. **`public/nomu_database.sqlite`**: Pre-seeded SQLite database ready for direct deployment.
 
 5. **`public/img/nomu/`**:
-   - `nomu_symbol_master.png` (Official master brand symbol)
+   - `nomu_symbol_master.png` (Official master brand symbol used in Header & Footer)
    - `nomu_wordmark_transparent.png` (Architectural wordmark)
+   - `archive/` (Archived historical footer logos and wordmarks)
 
 ---
 
