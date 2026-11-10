@@ -39,7 +39,8 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
     hero_sub: 'Ancient South Indian botanical distillates crafted in small batches across India.',
     ticker_text: '100% RECYCLED GLASS · NO CHEMICALS · SMALL-BATCH DISTILLED · CHENNAI EXPRESS',
     font_family: 'editorial-serif',
-    whatsapp_phone: '919840000000',
+    whatsapp_phone: '919345214712',
+    site_logo: '/img/nomu/nomu_symbol_master.png',
     hero_video_url: '/video/nomu_showcase.mp4',
     hero_poster_url: '/img/nomu/nomu_film_poster.jpg',
     vetiver_bottle_img: '/img/bottles/vetiver_isolated.png',
@@ -323,7 +324,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
               marginBottom: '1rem',
               color: '#FFFFFF'
             }}>
-              <img src="/img/nomu/nomu_logo_clean.png" alt="NOMU" width="30" height="30" />
+              <img src="/img/nomu/nomu_symbol_master.png" alt="NOMU" width="30" height="30" />
             </div>
             <h2 style={{
               fontFamily: 'var(--font-display)',
@@ -768,6 +769,17 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
                     style={{ background: '#121110', border: '1px solid #333', color: '#FFF' }}
                     value={cmsData.whatsapp_phone || ''}
                     onChange={(e) => setCmsData({ ...cmsData, whatsapp_phone: e.target.value })}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label" style={{ color: '#AAA' }}>Master Brand Logo URL</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    style={{ background: '#121110', border: '1px solid #333', color: '#FFF' }}
+                    value={cmsData.site_logo || ''}
+                    onChange={(e) => setCmsData({ ...cmsData, site_logo: e.target.value })}
                   />
                 </div>
               </div>

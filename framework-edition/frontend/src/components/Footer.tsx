@@ -1,13 +1,17 @@
 import React from 'react';
 
-export const Footer: React.FC = () => {
+interface FooterProps {
+  siteLogo?: string;
+}
+
+export const Footer: React.FC<FooterProps> = ({ siteLogo = '/img/nomu/nomu_symbol_master.png' }) => {
   return (
     <footer className="site-footer">
       <div className="container footer-grid">
         <div className="footer-brand">
           <div className="footer-logo-row">
             <div className="brand-logo-badge" style={{ width: '28px', height: '28px' }}>
-              <img src="/img/nomu/nomu_logo_clean.png" alt="NOMU Logo" width="20" height="20" loading="lazy" decoding="async" />
+              <img src={siteLogo || '/img/nomu/nomu_symbol_master.png'} alt="NOMU Logo" width="20" height="20" loading="lazy" decoding="async" />
             </div>
             <img src="/img/nomu/nomu_wordmark_transparent.png" alt="NOMU" width="88" height="18" loading="lazy" decoding="async" />
           </div>
@@ -45,7 +49,7 @@ export const Footer: React.FC = () => {
           <p className="footer-address">
             Crafted fresh in India.<br />
             Express local deliveries.<br />
-            Concierge: +91 98400 00000
+            Concierge: +91 93452 14712
           </p>
           <span className="footer-copyright">© 2026 NOMU BEVERAGES PRIVATE LIMITED. All rights reserved.</span>
         </div>

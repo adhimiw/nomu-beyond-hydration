@@ -6,12 +6,14 @@ interface HeaderProps {
   onToggleAdmin?: () => void;
   onOpenCheckout?: () => void;
   cartItemCount?: number;
+  siteLogo?: string;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   currentThemeBg,
   onOpenCheckout,
-  cartItemCount = 0
+  cartItemCount = 0,
+  siteLogo = '/img/nomu/nomu_symbol_master.png'
 }) => {
   return (
     <header
@@ -22,7 +24,7 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="container header-inner">
         <a href="#hero" className="brand-group" aria-label="NOMU Home">
           <img
-            src="/img/nomu/nomu_symbol_master.png"
+            src={siteLogo || '/img/nomu/nomu_symbol_master.png'}
             alt="NOMU"
             className="brand-master-logo"
             width="42"

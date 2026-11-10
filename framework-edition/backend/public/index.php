@@ -167,7 +167,8 @@ function seedDatabase(PDO $pdo, bool $force = false): array {
         ['hero_sub', 'Ancient South Indian botanical distillates crafted in small batches across India.', 'hero'],
         ['ticker_text', 'Made in India, join the ritual', 'general'],
         ['font_family', 'editorial-serif', 'design'],
-        ['whatsapp_phone', '919840000000', 'contact'],
+        ['whatsapp_phone', '919345214712', 'contact'],
+        ['site_logo', '/img/nomu/nomu_symbol_master.png', 'brand'],
         ['hero_video_url', '/video/nomu_showcase.mp4', 'media'],
         ['hero_poster_url', '/img/nomu/nomu_film_poster.jpg', 'media'],
         ['vetiver_bottle_img', '/img/bottles/vetiver_isolated.png', 'media'],
@@ -201,7 +202,8 @@ function seedDatabase(PDO $pdo, bool $force = false): array {
         ['showcase', 'image', 'Ruby Red Grapefruit Peel Harvest', '/img/ingredients/grapefruit_harvest.jpg', 'Sun-drenched citrus peel and essential oil distillation', 1],
         ['showcase', 'image', 'Blend IV — Lemongrass Bottle Packshot', '/img/bottles/lemongrass_isolated.png', 'NOMU Lemongrass isolated bottle packshot', 1],
         ['showcase', 'image', 'Lemongrass Harvest', '/img/ingredients/lemongrass_harvest.jpg', 'Fresh high-altitude lemongrass stalks', 1],
-        ['brand', 'image', 'NOMU Clean Monogram Logo', '/img/nomu/nomu_logo_clean.png', 'NOMU Japanese Kanji & botanical seal mark', 1],
+        ['brand', 'image', 'NOMU Master Brand Symbol', '/img/nomu/nomu_symbol_master.png', 'NOMU primary botanical brand symbol logo', 1],
+        ['brand', 'image', 'NOMU Clean Monogram Logo', '/img/nomu/nomu_logo_clean.png', 'NOMU botanical brand monogram logo', 1],
         ['brand', 'image', 'NOMU Wordmark Transparent', '/img/nomu/nomu_wordmark_transparent.png', 'NOMU architectural wordmark logo', 1]
     ];
 
@@ -666,6 +668,7 @@ if (str_starts_with($pathInfo, '/admin')) {
 
         $textKeys = ['hero_headline', 'hero_sub', 'ticker_text', 'font_family', 'whatsapp_phone', 'banner_text'];
         $mediaKeys = [
+            'site_logo',
             'hero_video_url', 'hero_poster_url',
             'vetiver_bottle_img', 'vetiver_splash_img', 'vetiver_packshot_img',
             'chamomile_bottle_img', 'chamomile_splash_img', 'chamomile_packshot_img',

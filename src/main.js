@@ -160,7 +160,7 @@ const PACKS = {
   pack12: { id: 'pack12', name: '12-Pack Pantry Box', price: 999 }
 };
 
-const WHATSAPP_PHONE = '919840000000';
+const WHATSAPP_PHONE = '919345214712';
 
 document.addEventListener('DOMContentLoaded', () => {
   let heroActiveIndex = 0; // 0: Vetiver, 1: Chamomile, 2: Grapefruit, 3: Lemongrass

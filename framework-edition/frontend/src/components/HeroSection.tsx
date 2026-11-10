@@ -8,13 +8,15 @@ interface HeroSectionProps {
   heroHeadline?: string;
   heroSub?: string;
   onExploreClick: (flavorKey: FlavorKey) => void;
+  whatsappPhone?: string;
 }
 
 export const HeroSection: React.FC<HeroSectionProps> = ({
   activeFlavorKey,
   onSelectFlavor,
   heroHeadline,
-  onExploreClick
+  onExploreClick,
+  whatsappPhone = '919345214712'
 }) => {
   // Two-phase transition: 'idle' (visible) | 'exit' (fading out to 0 before swap)
   const [swapPhase, setSwapPhase] = useState<'idle' | 'exit'>('idle');
@@ -238,7 +240,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         <div className="hero-bottom-bar">
           <div className="hero-bottom-left">
             <a
-              href={`https://wa.me/919840000000?text=Hi%20NOMU%2C%20I%20would%20like%20to%20order%20NOMU%20${encodeURIComponent(activeFlavor.name)}.`}
+              href={`https://wa.me/${whatsappPhone || '919345214712'}?text=Hi%20NOMU%2C%20I%20would%20like%20to%20order%20NOMU%20${encodeURIComponent(activeFlavor.name)}.`}
               target="_blank"
               rel="noopener noreferrer"
               className="hero-circle-btn"

@@ -131,6 +131,7 @@ export interface CmsData {
   ticker_text?: string;
   font_family?: string;
   whatsapp_phone?: string;
+  site_logo?: string;
   banner_text?: string;
   hero_video_url?: string;
   hero_poster_url?: string;

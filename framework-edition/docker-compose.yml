@@ -47,7 +47,7 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - NOMU_ADMIN_TOKEN=nomu_admin_sec_token_98400_botanical_2026
-      - NOMU_WHATSAPP_CONCIERGE=919840000000
+      - NOMU_WHATSAPP_CONCIERGE=919345214712
     depends_on:
       - redis
     networks:

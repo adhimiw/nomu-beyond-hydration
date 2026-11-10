@@ -1,6 +1,10 @@
 import React from 'react';
 
-export const ContactSection: React.FC = () => {
+interface ContactSectionProps {
+  whatsappPhone?: string;
+}
+
+export const ContactSection: React.FC<ContactSectionProps> = ({ whatsappPhone = '919345214712' }) => {
   return (
     <>
       {/* Brand Statement Banner matching Original Storefront */}
@@ -31,7 +35,7 @@ export const ContactSection: React.FC = () => {
                 </p>
               </div>
               <a
-                href="https://wa.me/919840000000"
+                href={`https://wa.me/${whatsappPhone || '919345214712'}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-burnt-orange btn-block"

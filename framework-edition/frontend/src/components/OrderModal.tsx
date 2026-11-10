@@ -21,7 +21,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
   onRemoveFromCart,
   onAddToCart,
   apiBaseUrl = '/api',
-  whatsappConcierge = '919840000000'
+  whatsappConcierge = '919345214712'
 }) => {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');

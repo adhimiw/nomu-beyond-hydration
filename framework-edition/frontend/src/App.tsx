@@ -100,7 +100,8 @@ export const App: React.FC = () => {
     hero_headline: 'BEYOND HYDRATION',
     hero_sub: 'Ancient South Indian botanical distillates crafted in small batches across India.',
     ticker_text: 'Made in India, join the ritual',
-    whatsapp_phone: '919840000000'
+    whatsapp_phone: '919345214712',
+    site_logo: '/img/nomu/nomu_symbol_master.png'
   });
 
   // Modals
@@ -244,6 +245,7 @@ export const App: React.FC = () => {
         currentThemeBg={currentThemeBg}
         onOpenCheckout={() => setIsOrderModalOpen(true)}
         cartItemCount={cart.reduce((a, b) => a + b.quantity * b.bottlesPerPack, 0)}
+        siteLogo={cms.site_logo}
       />
 
       <main>
@@ -255,6 +257,7 @@ export const App: React.FC = () => {
           heroHeadline={cms.hero_headline}
           heroSub={cms.hero_sub}
           onExploreClick={scrollToPillars}
+          whatsappPhone={cms.whatsapp_phone}
         />
 
         {/* Continuous Marquee Ribbon matching Dribbble */}
@@ -295,10 +298,10 @@ export const App: React.FC = () => {
           onOpenWriteReview={() => setIsReviewModalOpen(true)}
         />
 
-        <ContactSection />
+        <ContactSection whatsappPhone={cms.whatsapp_phone} />
       </main>
 
-      <Footer />
+      <Footer siteLogo={cms.site_logo} />
 
       {/* Lazy-Loaded Modals */}
       <Suspense fallback={null}>
