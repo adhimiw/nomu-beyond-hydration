@@ -89,17 +89,8 @@ export const App: React.FC = () => {
   const [builderFlavor, setBuilderFlavor] = useState<FlavorKey>('vetiver');
   const [isAdminOpen, setIsAdminOpen] = useState(false);
 
-  // Cart State
-  const [cart, setCart] = useState<CartItem[]>([
-    {
-      id: 'vetiver-pack4',
-      flavorKey: 'vetiver',
-      packKey: 'pack4',
-      quantity: 1,
-      unitPrice: 160,
-      bottlesPerPack: 4
-    }
-  ]);
+  // Cart State (Initialized empty; users choose their blends and add to cart)
+  const [cart, setCart] = useState<CartItem[]>([]);
 
   // Reviews State
   const [reviews, setReviews] = useState<ReviewRecord[]>(INITIAL_REVIEWS);

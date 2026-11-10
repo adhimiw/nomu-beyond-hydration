@@ -462,16 +462,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================================================
   // MULTI-PRODUCT RITUAL BOX BUILDER
   // ==========================================================================
-  let ritualBoxCart = [
-    {
-      id: 'vetiver-pack3',
-      flavorKey: 'vetiver',
-      packKey: 'pack3',
-      quantity: 1,
-      unitPrice: 270,
-      bottlesPerPack: 3
-    }
-  ];
+  let ritualBoxCart = [];
 
   function renderMultiCart() {
     const cartListEl = document.getElementById('multi-cart-items-list');
