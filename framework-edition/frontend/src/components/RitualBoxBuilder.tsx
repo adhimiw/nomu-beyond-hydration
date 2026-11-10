@@ -69,20 +69,35 @@ export const RitualBoxBuilder: React.FC<RitualBoxBuilderProps> = ({
           <div className="preset-buttons-group">
             <button
               type="button"
-              className="preset-pill-btn"
+              className="preset-pill-btn preset-col-btn"
               id="preset-discovery"
               onClick={() => onApplyPreset('discovery')}
+              aria-label="Discovery Flight: 1 of each blend, 4 bottles, ₹160"
             >
-              <span className="preset-pill-title">Discovery Flight (1 of Each Blend · 4 Bottles) · ₹160</span>
+              <div className="preset-card-top-row">
+                <span className="badge-mini badge-neutral">STARTER SET</span>
+              </div>
+              <div className="preset-btn-body">
+                <span className="preset-pill-title">Discovery Flight</span>
+                <span className="preset-pill-sub">1 of Each · 4 Bottles</span>
+                <span className="preset-pill-price">₹160</span>
+              </div>
             </button>
             <button
               type="button"
-              className="preset-pill-btn is-popular"
+              className="preset-pill-btn preset-col-btn is-popular"
               id="preset-pantry"
               onClick={() => onApplyPreset('pantry')}
+              aria-label="Pantry Ritual: Free shipping, 3 of each blend, 12 bottles, ₹480"
             >
-              <span className="badge-mini">FREE SHIPPING</span>
-              <span className="preset-pill-title">Pantry Ritual (3 of Each Blend · 12 Bottles) · ₹480</span>
+              <div className="preset-card-top-row">
+                <span className="badge-mini">FREE SHIPPING</span>
+              </div>
+              <div className="preset-btn-body">
+                <span className="preset-pill-title">Pantry Ritual</span>
+                <span className="preset-pill-sub">3 of Each · 12 Bottles</span>
+                <span className="preset-pill-price">₹480</span>
+              </div>
             </button>
             <button
               type="button"

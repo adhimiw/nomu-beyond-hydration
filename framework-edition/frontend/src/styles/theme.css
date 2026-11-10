@@ -3363,12 +3363,11 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 }
 
 .preset-buttons-group {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-start;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 0.65rem;
   width: 100%;
+  max-width: 640px;
 }
 
 .preset-pill-btn {
@@ -3388,6 +3387,21 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   gap: 0.45rem;
 }
 
+.preset-pill-btn.preset-col-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  text-align: left;
+  padding: 0.75rem 0.85rem;
+  border-radius: 12px;
+  border: 1px solid #D5CBBF;
+  background-color: #FFFFFF;
+  min-height: 84px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
 .preset-pill-btn:hover {
   background-color: #F6F1EA;
   border-color: #B8ACA0;
@@ -3404,31 +3418,89 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   background-color: #FFF2F2;
 }
 
+.preset-card-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  margin-bottom: 0.35rem;
+}
+
 .preset-pill-btn .badge-mini {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   background-color: var(--nomu-red, #D01C1D);
   color: #FFFFFF;
-  font-size: 0.625rem;
+  font-size: 0.6rem;
   font-weight: 800;
   letter-spacing: 0.05em;
-  padding: 0.2rem 0.45rem;
+  padding: 0.18rem 0.45rem;
   border-radius: 4px;
   text-transform: uppercase;
   line-height: 1;
   white-space: nowrap;
-  margin-right: 0.25rem;
 }
 
-.preset-pill-btn.btn-reset {
+.preset-pill-btn .badge-mini.badge-neutral {
+  background-color: #EFE7DC;
+  color: #4A453E;
+  border: 1px solid #D5CBBF;
+}
+
+.preset-btn-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+  width: 100%;
+}
+
+.preset-pill-title {
+  font-family: var(--font-display, "PP Neue Montreal", sans-serif);
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--soft-black, #1A1918);
+  line-height: 1.25;
+}
+
+.preset-pill-sub {
+  font-size: 0.72rem;
   color: #7A756D;
-  border-style: dashed;
+  line-height: 1.25;
 }
 
-.preset-pill-btn.btn-reset:hover {
+.preset-pill-price {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--burnt-orange, #8F3419);
+  margin-top: 0.35rem;
+  display: block;
+}
+
+.preset-buttons-group .btn-reset {
+  grid-column: 1 / -1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0.45rem 0.85rem;
+  border-radius: 8px;
+  border: 1px dashed #D5CBBF;
+  background-color: transparent;
+  color: #7A756D;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease-out;
+  margin-top: 0.15rem;
+  box-sizing: border-box;
+}
+
+.preset-buttons-group .btn-reset:hover {
   color: var(--nomu-red);
   border-color: var(--nomu-red);
+  background-color: #FFF7F7;
 }
 
 /* Inline Cart Drawer Controls */
@@ -4195,21 +4267,41 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .builder-presets-bar {
     align-items: flex-start;
     margin-bottom: 1.25rem;
+    width: 100%;
   }
 
   .preset-buttons-group {
-    flex-direction: column;
-    align-items: stretch;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 0.5rem;
+    width: 100%;
   }
 
-  .preset-pill-btn {
+  .preset-pill-btn.preset-col-btn {
     width: 100%;
-    justify-content: flex-start;
-    text-align: left;
-    padding: 0.6rem 0.85rem;
-    font-size: 0.78rem;
+    padding: 0.6rem 0.65rem;
+    min-height: 84px;
     box-sizing: border-box;
+  }
+
+  .preset-pill-title {
+    font-size: 0.78rem;
+  }
+
+  .preset-pill-sub {
+    font-size: 0.68rem;
+  }
+
+  .preset-pill-price {
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+  }
+
+  .preset-buttons-group .btn-reset {
+    grid-column: 1 / -1;
+    width: 100%;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.72rem;
   }
 
   .modal-form .form-row {
