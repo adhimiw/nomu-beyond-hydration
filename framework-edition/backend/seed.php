@@ -13,23 +13,53 @@ declare(strict_types=1);
 require_once __DIR__ . '/database/seeders/DatabaseSeeder.php';
 use Database\Seeders\DatabaseSeeder;
 
-$dbPath = __DIR__ . '/public/nomu_database.sqlite';
-
-try {
-    $pdo = new PDO("sqlite:" . $dbPath);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    echo "ERROR: Failed to connect to SQLite database at {$dbPath}: " . $e->getMessage() . "\n";
-    exit(1);
-}
-
 $args = array_slice($argv, 1);
 $force = in_array('--force', $args, true);
 $status = in_array('--status', $args, true);
+$forceSqlite = in_array('--sqlite', $args, true);
+
+$dbPath = file_exists(__DIR__ . '/nomu_database.sqlite')
+    ? __DIR__ . '/nomu_database.sqlite'
+    : __DIR__ . '/public/nomu_database.sqlite';
+
+$pdo = null;
+$connectionType = 'sqlite';
+
+if (!$forceSqlite) {
+    $dbHost = getenv('DB_HOST') ?: '127.0.0.1';
+    $dbPort = getenv('DB_PORT') ?: '3306';
+    $dbName = getenv('DB_NAME') ?: 'u244089748_nomustanging';
+    $dbUser = getenv('DB_USER') ?: 'u244089748_nomustanging';
+    $dbPass = getenv('DB_PASS') ?: 'Nomu2026';
+
+    try {
+        $dsn = "mysql:host={$dbHost};port={$dbPort};dbname={$dbName};charset=utf8mb4";
+        $pdo = new PDO($dsn, $dbUser, $dbPass, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_TIMEOUT => 2
+        ]);
+        $connectionType = 'mysql';
+    } catch (\Throwable $e) {
+        $pdo = null;
+    }
+}
+
+if (!$pdo) {
+    try {
+        $pdo = new PDO("sqlite:" . $dbPath, null, null, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+        ]);
+        $connectionType = 'sqlite';
+    } catch (PDOException $e) {
+        echo "ERROR: Failed to connect to SQLite database at {$dbPath}: " . $e->getMessage() . "\n";
+        exit(1);
+    }
+}
 
 if ($status) {
-    echo "=== NOMU Database Status ===\n";
+    echo "=== NOMU Database Status [{$connectionType}] ===\n";
     $cmsCount = $pdo->query("SELECT COUNT(*) FROM cms_contents")->fetchColumn();
     $mediaCount = $pdo->query("SELECT COUNT(*) FROM media_assets")->fetchColumn();
     $reviewsCount = $pdo->query("SELECT COUNT(*) FROM reviews")->fetchColumn();
