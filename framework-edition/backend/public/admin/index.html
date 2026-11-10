@@ -1,0 +1,2081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NOMU — Content Management & Operations Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Cinzel:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #121110;
+      --bg-card: #1A1918;
+      --bg-elevated: #242220;
+      --border-subtle: #2C2926;
+      --text-main: #F4EFEB;
+      --text-muted: #8E8882;
+      --brand-orange: #D5360C;
+      --brand-orange-hover: #B82E0A;
+      --color-green: #2E7D32;
+      --color-gold: #D97706;
+      --color-blue: #2563EB;
+      --color-red: #DC2626;
+      --radius: 10px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Navigation Bar */
+    .admin-nav {
+      background-color: #171615;
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand-cluster {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .admin-brand-logo {
+      height: 32px;
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+    }
+
+    .admin-user-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #E2E8F0;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+    }
+
+    .user-status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background-color: #22C55E;
+      box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
+      display: inline-block;
+    }
+
+    .btn-admin-logout {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #FF6B6B;
+      background: rgba(208, 28, 29, 0.12);
+      border: 1px solid rgba(208, 28, 29, 0.35);
+      padding: 0.38rem 0.85rem;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.2s;
+    }
+
+    .btn-admin-logout:hover {
+      background-color: #D01C1D;
+      color: #FFFFFF;
+      border-color: #D01C1D;
+    }
+
+    /* Admin Login Screen */
+    #admin-login-screen {
+      min-height: 100vh;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 50% 25%, #1f1d1a 0%, #0d0f12 75%);
+      padding: 1.5rem;
+      box-sizing: border-box;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 99999;
+    }
+
+    .admin-login-card {
+      background-color: #171615;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 420px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    .admin-login-logo {
+      height: 56px;
+      width: auto;
+      object-fit: contain;
+      margin-bottom: 1.25rem;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+    }
+
+    .admin-login-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #FFF;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.4rem;
+    }
+
+    .admin-login-sub {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      margin-bottom: 1.75rem;
+      line-height: 1.4;
+    }
+
+    .admin-login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.15rem;
+      text-align: left;
+    }
+
+    .admin-login-form .form-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #CBD5E1;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.35rem;
+      display: block;
+    }
+
+    .admin-login-form .login-input {
+      width: 100%;
+      padding: 0.75rem 0.95rem;
+      background-color: #11100F;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      color: #FFF;
+      font-size: 0.875rem;
+      outline: none;
+      box-sizing: border-box;
+      transition: border-color 0.2s;
+    }
+
+    .admin-login-form .login-input:focus {
+      border-color: var(--brand-orange);
+    }
+
+    .btn-login-submit {
+      width: 100%;
+      padding: 0.85rem;
+      background-color: var(--brand-orange);
+      color: #FFF;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.925rem;
+      cursor: pointer;
+      transition: background-color 0.2s, opacity 0.2s;
+      margin-top: 0.5rem;
+    }
+
+    .btn-login-submit:hover {
+      background-color: #E64317;
+    }
+
+    .btn-login-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .login-error-alert {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #FCA5A5;
+      padding: 0.65rem 0.85rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      display: none;
+      text-align: center;
+    }
+
+    .login-back-link {
+      display: inline-block;
+      margin-top: 1.25rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .login-back-link:hover {
+      color: #FFF;
+    }
+
+    .brand-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .brand-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.2rem 0.55rem;
+      border-radius: 9999px;
+      background-color: var(--bg-elevated);
+      color: var(--brand-orange);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .token-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 0.3rem 0.6rem;
+    }
+
+    .token-input {
+      background: none;
+      border: none;
+      color: var(--text-main);
+      font-size: 0.75rem;
+      width: 180px;
+      outline: none;
+    }
+
+    .btn-public-site {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 0.4rem 0.75rem;
+      border-radius: 6px;
+      transition: color 0.2s, background-color 0.2s;
+    }
+
+    .btn-public-site:hover {
+      color: #FFF;
+      background-color: var(--bg-elevated);
+    }
+
+    /* Tabs Bar */
+    .tabs-bar {
+      background-color: #171615;
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0 1.5rem;
+      display: flex;
+      gap: 1.5rem;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.9rem 0.2rem;
+      cursor: pointer;
+      position: relative;
+      white-space: nowrap;
+      transition: color 0.2s;
+    }
+
+    .tab-btn:hover { color: var(--text-main); }
+    .tab-btn.is-active {
+      color: #FFF;
+      font-weight: 700;
+    }
+
+    .tab-btn.is-active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background-color: var(--brand-orange);
+    }
+
+    .tab-count {
+      display: inline-block;
+      font-size: 0.7rem;
+      padding: 0.15rem 0.45rem;
+      border-radius: 9999px;
+      background-color: var(--bg-elevated);
+      color: var(--text-muted);
+      margin-left: 0.4rem;
+    }
+
+    /* Main Container */
+    .main-wrap {
+      flex: 1;
+      padding: 1.75rem;
+      max-width: 1300px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .tab-pane { display: none; }
+    .tab-pane.is-active { display: block; animation: fadeIn 0.25s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Cards & Grids */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .stat-lbl {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-val {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .stat-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Filter Toolbar */
+    .toolbar-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .search-input, .select-input {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      padding: 0.55rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .search-input:focus, .select-input:focus {
+      border-color: var(--brand-orange);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.55rem 1rem;
+      border-radius: 6px;
+      font-size: 0.825rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: background-color 0.2s, transform 0.15s;
+    }
+
+    .btn-orange {
+      background-color: var(--brand-orange);
+      color: #FFF;
+    }
+    .btn-orange:hover { background-color: var(--brand-orange-hover); }
+
+    .btn-secondary {
+      background-color: var(--bg-elevated);
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
+    }
+    .btn-secondary:hover { background-color: #2F2C29; }
+
+    /* Tables */
+    .table-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.85rem;
+    }
+
+    .data-table th {
+      background-color: #161514;
+      padding: 0.75rem 1rem;
+      font-weight: 700;
+      font-size: 0.725rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .data-table td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border-subtle);
+      vertical-align: middle;
+    }
+
+    .data-table tr:hover td {
+      background-color: rgba(255, 255, 255, 0.015);
+    }
+
+    .badge-status {
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      border-radius: 9999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .badge-pending { background-color: rgba(217, 119, 6, 0.15); color: #F59E0B; }
+    .badge-confirmed { background-color: rgba(37, 99, 235, 0.15); color: #60A5FA; }
+    .badge-dispatched { background-color: rgba(168, 85, 247, 0.15); color: #C084FC; }
+    .badge-delivered { background-color: rgba(46, 125, 50, 0.15); color: #4ADE80; }
+    .badge-rejected { background-color: rgba(220, 38, 38, 0.15); color: #F87171; }
+    .badge-approved { background-color: rgba(46, 125, 50, 0.15); color: #4ADE80; }
+
+    /* Review Cards Grid in Admin */
+    .admin-reviews-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .admin-review-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .review-top-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+
+    .review-author-line {
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .review-email-line {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .review-text-content {
+      font-size: 0.875rem;
+      line-height: 1.5;
+      color: #D1CBC5;
+    }
+
+    .review-action-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .btn-sm {
+      padding: 0.35rem 0.65rem;
+      font-size: 0.75rem;
+      border-radius: 4px;
+      cursor: pointer;
+      border: none;
+      font-weight: 700;
+    }
+
+    .btn-approve { background-color: #1E3A24; color: #4ADE80; }
+    .btn-approve:hover { background-color: #264A2E; }
+    .btn-reject { background-color: #3B1D1D; color: #F87171; }
+    .btn-reject:hover { background-color: #4C2626; }
+    .btn-del { background-color: var(--bg-elevated); color: var(--text-muted); }
+    .btn-del:hover { color: #FFF; }
+
+    /* CMS Form */
+    .cms-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .form-panel {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .panel-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .cms-field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .cms-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .cms-input, .cms-textarea, .cms-select {
+      background-color: #141312;
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      color: var(--text-main);
+      padding: 0.65rem 0.85rem;
+      font-family: inherit;
+      font-size: 0.875rem;
+      outline: none;
+    }
+
+    .cms-input:focus, .cms-textarea:focus { border-color: var(--brand-orange); }
+
+    /* Live Preview Panel */
+    .preview-panel {
+      background-color: #FAF8F5;
+      color: #121110;
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .preview-badge {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: var(--brand-orange);
+      text-transform: uppercase;
+    }
+
+    .preview-hero-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.75rem;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .preview-hero-sub {
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: #555;
+    }
+
+    /* Logs Terminal */
+    .logs-terminal {
+      background-color: #0E0D0C;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius);
+      padding: 1rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+      max-height: 500px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .log-row {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      padding: 0.25rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .log-time { color: #666; flex-shrink: 0; }
+    .log-lvl { font-weight: 700; flex-shrink: 0; width: 60px; }
+    .log-lvl-INFO { color: #60A5FA; }
+    .log-lvl-NOTICE { color: #F59E0B; }
+    .log-lvl-WARNING { color: #F97316; }
+    .log-lvl-ERROR { color: #EF4444; }
+    .log-act { color: #E5E7EB; font-weight: 600; flex-shrink: 0; }
+    .log-msg { color: #9CA3AF; }
+
+    /* Media Management Grid in CMS */
+    .cms-section-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .cms-section-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #FFF;
+      margin-bottom: 0.35rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .cms-section-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+    }
+
+    .media-slots-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .media-slot-item {
+      background-color: var(--bg-dark);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .media-slot-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #E2E8F0;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .media-preview-box {
+      width: 100%;
+      height: 120px;
+      border-radius: 6px;
+      background-color: #1A1918;
+      border: 1px dashed #3A3632;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .media-preview-img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .media-preview-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .media-upload-action-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .media-url-input {
+      flex: 1;
+      padding: 0.4rem 0.6rem;
+      font-size: 0.75rem;
+      background-color: #121110;
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      color: #FFF;
+      outline: none;
+    }
+
+    .media-url-input:focus {
+      border-color: var(--brand-orange);
+    }
+
+    .btn-media-upload {
+      padding: 0.4rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border-radius: 4px;
+      background-color: #2C2926;
+      color: #FFF;
+      border: 1px solid #444;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      white-space: nowrap;
+      transition: background-color 0.2s;
+    }
+
+    .btn-media-upload:hover {
+      background-color: var(--brand-orange);
+      border-color: var(--brand-orange);
+    }
+
+    /* Live Website Preview Tab */
+    .preview-tab-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      height: calc(100vh - 140px);
+    }
+
+    .preview-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius);
+      padding: 0.75rem 1.25rem;
+    }
+
+    .device-switcher-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .device-switch-btn {
+      background-color: var(--bg-elevated);
+      color: var(--text-muted);
+      border: 1px solid var(--border-subtle);
+      padding: 0.4rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+    }
+
+    .device-switch-btn:hover {
+      color: #FFF;
+      border-color: #666;
+    }
+
+    .device-switch-btn.is-active {
+      background-color: var(--brand-orange);
+      color: #FFF;
+      border-color: var(--brand-orange);
+    }
+
+    .preview-actions-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .preview-stage-container {
+      flex: 1;
+      min-height: 500px;
+      background-color: #0A0908;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: auto;
+      padding: 1.5rem;
+      position: relative;
+    }
+
+    .device-viewport-frame {
+      background-color: #000;
+      border-radius: 12px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1), height 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+
+    .device-viewport-frame.mode-desktop {
+      width: 100%;
+      max-width: 1366px;
+      height: 768px;
+      border: 2px solid #333;
+    }
+
+    .device-viewport-frame.mode-tablet {
+      width: 768px;
+      height: 880px;
+      border: 8px solid #222;
+      border-radius: 24px;
+    }
+
+    .device-viewport-frame.mode-mobile {
+      width: 390px;
+      height: 844px;
+      border: 10px solid #1E1D1B;
+      border-radius: 40px;
+    }
+
+    .mobile-notch-bar {
+      height: 28px;
+      background-color: #1E1D1B;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .device-viewport-frame.mode-mobile .mobile-notch-bar {
+      display: flex;
+    }
+
+    .mobile-speaker-pill {
+      width: 60px;
+      height: 5px;
+      background-color: #333;
+      border-radius: 9999px;
+    }
+
+    .preview-iframe-element {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      border: none;
+      background-color: #121110;
+    }
+
+    @media (max-width: 900px) {
+      .cms-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Secure Admin Login Screen -->
+  <div id="admin-login-screen">
+    <div class="admin-login-card">
+      <img src="/img/nomu/nomu_symbol_master.png" alt="NOMU Master Logo" class="admin-login-logo" />
+      <h2 class="admin-login-title">NOMU OPERATIONS CONSOLE</h2>
+      <p class="admin-login-sub">Enter administrative credentials to access Orders, Reviews, and Headless CMS.</p>
+
+      <div id="login-error-msg" class="login-error-alert"></div>
+
+      <form id="admin-login-form" class="admin-login-form">
+        <div>
+          <label class="form-label" for="login-username">Admin Username</label>
+          <input type="text" id="login-username" class="login-input" value="admin" required autocomplete="username" />
+        </div>
+
+        <div>
+          <label class="form-label" for="login-password">Password / Access Token</label>
+          <input type="password" id="login-password" class="login-input" placeholder="Enter password (e.g. nomu2026)" required autocomplete="current-password" autofocus />
+        </div>
+
+        <button type="submit" id="btn-submit-login" class="btn-login-submit">
+          Sign In to Operations Console →
+        </button>
+      </form>
+
+      <a href="/" class="login-back-link">← Return to Storefront</a>
+    </div>
+  </div>
+
+  <!-- Authenticated Operations Console Application -->
+  <div id="admin-app" style="display: none;">
+    <!-- Top Navigation -->
+    <header class="admin-nav">
+      <div class="brand-cluster">
+        <img src="/img/nomu/nomu_symbol_master.png" alt="NOMU" class="admin-brand-logo" />
+        <div>
+          <h1 class="brand-title">NOMU</h1>
+        </div>
+        <span class="brand-badge">OPERATIONS CONSOLE</span>
+      </div>
+
+      <div class="nav-actions">
+        <span class="admin-user-pill">
+          <span class="user-status-dot"></span>
+          <span id="active-admin-user">admin</span>
+        </span>
+        <a href="/" target="_blank" class="btn-public-site">View Storefront ↗</a>
+        <button type="button" id="btn-admin-logout" class="btn-admin-logout" title="Sign Out of Admin Console">
+          Sign Out ⎋
+        </button>
+      </div>
+    </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="tabs-bar" role="tablist">
+    <button class="tab-btn is-active" data-tab="orders" role="tab">
+      Orders Ledger <span class="tab-count" id="count-orders">0</span>
+    </button>
+    <button class="tab-btn" data-tab="reviews" role="tab">
+      Review Moderation <span class="tab-count" id="count-pending-reviews">0</span>
+    </button>
+    <button class="tab-btn" data-tab="cms" role="tab">
+      Content Management (CMS)
+    </button>
+    <button class="tab-btn" data-tab="preview" role="tab">
+      Live Website Preview
+    </button>
+    <button class="tab-btn" data-tab="system" role="tab">
+      System Telemetry & Logs
+    </button>
+  </nav>
+
+  <!-- Main View Area -->
+  <main class="main-wrap">
+
+    <!-- TAB 1: ORDERS LEDGER -->
+    <section class="tab-pane is-active" id="pane-orders" role="tabpanel">
+      <!-- Top Stat Cards -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <span class="stat-lbl">Total Registered Orders</span>
+          <span class="stat-val" id="stat-total-orders">0</span>
+          <span class="stat-sub">Direct WhatsApp inquiries</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-lbl">Pending Confirmation</span>
+          <span class="stat-val" id="stat-pending-orders" style="color:#F59E0B;">0</span>
+          <span class="stat-sub">Awaiting dispatch concierge</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-lbl">Revenue Generated</span>
+          <span class="stat-val" id="stat-total-revenue" style="color:var(--brand-orange);">₹0</span>
+          <span class="stat-sub">Bottles ordered</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-lbl">Dispatched / Delivered</span>
+          <span class="stat-val" id="stat-delivered-orders" style="color:#4ADE80;">0</span>
+          <span class="stat-sub">Fulfilled in Chennai</span>
+        </div>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="toolbar-bar">
+        <div class="toolbar-left">
+          <input type="text" id="order-search-input" class="search-input" placeholder="Search customer, phone, ref..." />
+          <select id="order-status-filter" class="select-input">
+            <option value="all">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="dispatched">Dispatched</option>
+            <option value="delivered">Delivered</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+          <button type="button" class="btn btn-secondary" id="btn-refresh-orders">Refresh</button>
+        </div>
+        <div>
+          <button type="button" class="btn btn-orange" id="btn-export-orders-csv">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            Export CSV
+          </button>
+        </div>
+      </div>
+
+      <!-- Orders Table -->
+      <div class="table-card">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Order Ref</th>
+              <th>Customer</th>
+              <th>Phone</th>
+              <th>Ritual Items</th>
+              <th>Bottles</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="orders-table-body">
+            <tr>
+              <td colspan="9" style="text-align:center;padding:2rem;color:var(--text-muted);">
+                Loading orders ledger...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB 2: REVIEW MODERATION -->
+    <section class="tab-pane" id="pane-reviews" role="tabpanel">
+      <div class="toolbar-bar">
+        <div class="toolbar-left">
+          <select id="review-status-filter" class="select-input">
+            <option value="all">All Reviews</option>
+            <option value="pending" selected>Pending Moderation (Action Required)</option>
+            <option value="approved">Approved & Live</option>
+            <option value="rejected">Rejected</option>
+          </select>
+          <button type="button" class="btn btn-secondary" id="btn-refresh-reviews">Refresh</button>
+        </div>
+        <div style="font-size:0.85rem;color:var(--text-muted);">
+          Approved reviews immediately reflect on the live storefront tasting ledger.
+        </div>
+      </div>
+
+      <div class="admin-reviews-grid" id="admin-reviews-container">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- TAB 3: CONTENT MANAGEMENT SYSTEM (CMS) -->
+    <section class="tab-pane" id="pane-cms" role="tabpanel">
+      <!-- Hidden file input for uploads -->
+      <input type="file" id="media-file-uploader" style="display:none;" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" />
+
+      <!-- Top Toolbar with Save & Publish -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;background:#1A1918;border:1px solid var(--border-subtle);border-radius:var(--radius);padding:1rem 1.5rem;">
+        <div>
+          <h2 style="font-size:1.15rem;font-weight:700;color:#FFF;margin-bottom:0.25rem;">Content Management System & Media Asset Vault</h2>
+          <p style="font-size:0.8rem;color:var(--text-muted);">Update headlines, typography, harvest photography, and video assets across all website sections.</p>
+        </div>
+        <div style="display:flex;align-items:center;gap:1rem;">
+          <span id="cms-save-status" style="font-size:0.85rem;color:#4ADE80;" hidden>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline-block;vertical-align:-2px;margin-right:4px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Changes published successfully
+          </span>
+          <button type="button" class="btn btn-orange" id="btn-save-cms" style="padding:0.6rem 1.4rem;font-size:0.85rem;font-weight:700;">
+            Save & Publish Changes
+          </button>
+        </div>
+      </div>
+
+      <!-- Section 1: Hero Section Content & Media -->
+      <div class="cms-section-card">
+        <h3 class="cms-section-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+          1. Hero Section & Global Identity
+        </h3>
+        <p class="cms-section-desc">Manage the primary headline, brand manifesto subtext, running ticker text, and cinematic showcase video.</p>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:1rem;margin-bottom:1.25rem;">
+          <div class="cms-field-group">
+            <label class="cms-label">Hero Main Title Headline</label>
+            <input type="text" id="cms-hero-headline" class="cms-input" value="FOUR HERBS. ZERO NONSENSE." />
+          </div>
+
+          <div class="cms-field-group">
+            <label class="cms-label">Brand Ticker Bar Text</label>
+            <input type="text" id="cms-ticker-text" class="cms-input" value="100% RECYCLED GLASS · NO CHEMICALS · SMALL-BATCH DISTILLED · CHENNAI EXPRESS" />
+          </div>
+
+          <div class="cms-field-group">
+            <label class="cms-label">WhatsApp Concierge Phone Number</label>
+            <input type="text" id="cms-whatsapp-phone" class="cms-input" value="919345214712" />
+          </div>
+
+          <div class="cms-field-group">
+            <label class="cms-label">Typography Style Direction</label>
+            <select id="cms-font-family" class="cms-select">
+              <option value="editorial-serif">Editorial High-Taste (Syne Display + Instrument Sans)</option>
+              <option value="modern-grotesk">Clean Modern Grotesk</option>
+              <option value="minimal-sans">Minimal Contemporary Sans</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="cms-field-group" style="margin-bottom:1.25rem;">
+          <label class="cms-label">Hero Subtitle & Brand Statement</label>
+          <textarea id="cms-hero-sub" class="cms-textarea" rows="2">Ancient South Indian botanical distillates crafted in small batches across Chennai.</textarea>
+        </div>
+
+        <!-- Hero Media Upload Slots -->
+        <div class="media-slots-grid">
+          <div class="media-slot-item">
+            <span class="media-slot-label">Hero Cinematic Video (MP4 / WebM)</span>
+            <div class="media-preview-box">
+              <video id="prev-media-hero-video" class="media-preview-video" muted loop playsinline autoplay>
+                <source src="/video/nomu_showcase.mp4" type="video/mp4" />
+              </video>
+            </div>
+            <div class="media-upload-action-row">
+              <input type="text" id="cms-hero-video-url" class="media-url-input" value="/video/nomu_showcase.mp4" placeholder="/uploads/... or URL" />
+              <button type="button" class="btn-media-upload" onclick="triggerUpload('cms-hero-video-url', 'prev-media-hero-video', 'video')">Upload Video</button>
+            </div>
+          </div>
+
+          <div class="media-slot-item">
+            <span class="media-slot-label">Hero Video Poster Image</span>
+            <div class="media-preview-box">
+              <img id="prev-media-hero-poster" src="/img/nomu/nomu_film_poster.jpg" alt="Hero Poster" class="media-preview-img" />
+            </div>
+            <div class="media-upload-action-row">
+              <input type="text" id="cms-hero-poster-url" class="media-url-input" value="/img/nomu/nomu_film_poster.jpg" placeholder="/uploads/... or URL" />
+              <button type="button" class="btn-media-upload" onclick="triggerUpload('cms-hero-poster-url', 'prev-media-hero-poster', 'image')">Upload Image</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Botanical Quartet Media Assets (4 Blends) -->
+      <div class="cms-section-card">
+        <h3 class="cms-section-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+          2. Botanical Quartet — Flavour Imagery Vault
+        </h3>
+        <p class="cms-section-desc">Upload isolated transparent bottles, ingredient macro splashes, and studio packshots for each of the four functional blends.</p>
+
+        <!-- Blend I: Vetiver -->
+        <div style="background:#141312;border:1px solid #282522;border-radius:8px;padding:1rem;margin-bottom:1.25rem;">
+          <h4 style="font-size:0.95rem;font-weight:700;color:#E6D5BD;margin-bottom:0.75rem;">Blend I: Vetiver (Khus Root) — Ground</h4>
+          <div class="media-slots-grid">
+            <div class="media-slot-item">
+              <span class="media-slot-label">Bottle Isolated (PNG)</span>
+              <div class="media-preview-box">
+                <img id="prev-vetiver-bottle" src="/img/bottles/vetiver_isolated.png" alt="Vetiver Bottle" class="media-preview-img" />
+              </div>
+              <div class="media-upload-action-row">
+                <input type="text" id="cms-vetiver-bottle" class="media-url-input" value="/img/bottles/vetiver_isolated.png" />
+                <button type="button" class="btn-media-upload" onclick="triggerUpload('cms-vetiver-bottle', 'prev-vetiver-bottle', 'image')">Upload</button>
+              </div>
+            </div>
+
+            <div class="media-slot-item">
+              <span class="media-slot-label">Harvest Splash Ingredients</span>
+              <div class="media-preview-box">
+                <img id="prev-vetiver-splash" src="/img/ingredients/vetiver_khus_root.png" alt="Khus Root Splash" class="media-preview-img" />
+              </div>
+              <div class="media-upload-action-row">
+                <input type="text" id="cms-vetiver-splash" class="media-url-input" value="/img/ingredients/vetiver_khus_root.png" />
+                <button type="button" class="btn-media-upload" onclick="triggerUpload('cms-vetiver-splash', 'prev-vetiver-splash', 'image')">Upload</button>
+              </div>
+            </div>
+
+            <div class="media-slot-item">
+              <span class="media-slot-label">Studio Packshot Photo</span>
+              <div class="media-preview-box">
+                <img id="prev-vetiver-packshot" src="/img/bottles/vetiver_packshot.jpg" alt="Vetiver Packshot" class="media-preview-img" />
+              </div>
+              <div class="media-upload-action-row">
+                <input type="text" id="cms-vetiver-packshot" class="media-url-input" value="/img/bottles/vetiver_packshot.jpg" />
+                <button type="button" class="btn-media-upload" onclick="triggerUpload('cms-vetiver-packshot', 'prev-vetiver-packshot', 'image')">Upload</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Blend II: German Chamomile -->
+        <div style="background:#141312;border:1px solid #282522;border-radius:8px;padding:1rem;margin-bottom:1.25rem;">
+          <h4 style="font-size:0.95rem;font-weight:700;color:#FDF3D6;margin-bottom:0.75rem;">Blend II: German Chamomile (Blossoms) — Unwind</h4>
+          <div class="media-slots-grid">
+            <div class="media-slot-item">
+              <span class="media-slot-label">Bottle Isolated (PNG)</span>
+              <div class="media-preview-box">
+                <img id="prev-chamomile-bottle" src="/img/bottles/chamomile_isolated.png" alt="Chamomile Bottle" class="media-preview-img" />
+              </div>
+              <div class="media-upload-action-row">
+                <input type="text" id="cms-chamomile-bottle" class="media-url-input" value="/img/bottles/chamomile_isolated.png" />
+                <button type="button" class="btn-media-upload" onclick="triggerUpload('cms-chamomile-bottle', 'prev-chamomile-bottle', 'image')">Upload</button>
+              </div>
+            </div>
+
+            <div class="media-slot-item">
+              <span class="media-slot-label">Harvest Splash Ingredients</span>
+              <div class="media-preview-box">
+                <img id="prev-chamomile-splash" src="/img/ingredients/chamomile_lavender_harvest.jpg" alt="Chamomile Splash" class="media-preview-img" />
+              </div>
+              <div class="media-upload-action-row">
+                <input type="text" id="cms-chamomile-splash" class="media-url-input" value="/img/ingredients/chamomile_lavender_harvest.jpg" />
+                <button type="button" class="btn-media-upload" onclick="triggerUpload('cms-chamomile-splash', 'prev-chamomile-splash', 'image')">Upload</button>
+              </div>
+            </div>
+
+            <div class="media-slot-item">
+              <span class="media-slot-label">Studio Packshot Photo</span>
+              <div class="media-preview-box">
+                <img id="prev-chamomile-packshot" src="/img/bottles/chamomile_packshot.jpg" alt="Chamomile Packshot" class="media-preview-img" />
+              </div>
+              <div class="media-upload-action-row">
+                <input type="text" id="cms-chamomile-packshot" class="media-url-input" value="/img/bottles/chamomile_packshot.jpg" />
+                <button type="button" class="btn-media-upload" onclick="triggerUpload('cms-chamomile-packshot', 'prev-chamomile-packshot', 'image')">Upload</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Blend III: Grapefruit -->
+        <div style="background:#141312;border:1px solid #282522;border-radius:8px;padding:1rem;margin-bottom:1.25rem;">
+          <h4 style="font-size:0.95rem;font-weight:700;color:#FDE7E3;margin-bottom:0.75rem;">Blend III: Grapefruit (Ruby Peel) — Uplift</h4>
+          <div class="media-slots-grid">
+            <div class="media-slot-item">
+              <span class="media-slot-label">Bottle Isolated (PNG)</span>
+              <div class="media-preview-box">
+                <img id="prev-grapefruit-bottle" src="/img/bottles/grapefruit_isolated.png" alt="Grapefruit Bottle" class="media-preview-img" />
+              </div>
+              <div class="media-upload-action-row">
+                <input type="text" id="cms-grapefruit-bottle" class="media-url-input" value="/img/bottles/grapefruit_isolated.png" />
+                <button type="button" class="btn-media-upload" onclick="triggerUpload('cms-grapefruit-bottle', 'prev-grapefruit-bottle', 'image')">Upload</button>
+              </div>
+            </div>
+
+            <div class="media-slot-item">
+              <span class="media-slot-label">Harvest Splash Ingredients</span>
+              <div class="media-preview-box">
+                <img id="prev-grapefruit-splash" src="/img/ingredients/grapefruit_harvest.jpg" alt="Grapefruit Splash" class="media-preview-img" />
+              </div>
+              <div class="media-upload-action-row">
+                <input type="text" id="cms-grapefruit-splash" class="media-url-input" value="/img/ingredients/grapefruit_harvest.jpg" />
+                <button type="button" class="btn-media-upload" onclick="triggerUpload('cms-grapefruit-splash', 'prev-grapefruit-splash', 'image')">Upload</button>
+              </div>
+            </div>
+
+            <div class="media-slot-item">
+              <span class="media-slot-label">Studio Packshot Photo</span>
+              <div class="media-preview-box">
+                <img id="prev-grapefruit-packshot" src="/img/bottles/grapefruit_packshot.jpg" alt="Grapefruit Packshot" class="media-preview-img" />
+              </div>
+              <div class="media-upload-action-row">
+                <input type="text" id="cms-grapefruit-packshot" class="media-url-input" value="/img/bottles/grapefruit_packshot.jpg" />
+                <button type="button" class="btn-media-upload" onclick="triggerUpload('cms-grapefruit-packshot', 'prev-grapefruit-packshot', 'image')">Upload</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Blend IV: Lemongrass -->
+        <div style="background:#141312;border:1px solid #282522;border-radius:8px;padding:1rem;">
+          <h4 style="font-size:0.95rem;font-weight:700;color:#E3F2D4;margin-bottom:0.75rem;">Blend IV: Lemongrass (Nilgiri Stalks) — Refresh</h4>
+          <div class="media-slots-grid">
+            <div class="media-slot-item">
+              <span class="media-slot-label">Bottle Isolated (PNG)</span>
+              <div class="media-preview-box">
+                <img id="prev-lemongrass-bottle" src="/img/bottles/lemongrass_isolated.png" alt="Lemongrass Bottle" class="media-preview-img" />
+              </div>
+              <div class="media-upload-action-row">
+                <input type="text" id="cms-lemongrass-bottle" class="media-url-input" value="/img/bottles/lemongrass_isolated.png" />
+                <button type="button" class="btn-media-upload" onclick="triggerUpload('cms-lemongrass-bottle', 'prev-lemongrass-bottle', 'image')">Upload</button>
+              </div>
+            </div>
+
+            <div class="media-slot-item">
+              <span class="media-slot-label">Harvest Splash Ingredients</span>
+              <div class="media-preview-box">
+                <img id="prev-lemongrass-splash" src="/img/ingredients/lemongrass_harvest.jpg" alt="Lemongrass Splash" class="media-preview-img" />
+              </div>
+              <div class="media-upload-action-row">
+                <input type="text" id="cms-lemongrass-splash" class="media-url-input" value="/img/ingredients/lemongrass_harvest.jpg" />
+                <button type="button" class="btn-media-upload" onclick="triggerUpload('cms-lemongrass-splash', 'prev-lemongrass-splash', 'image')">Upload</button>
+              </div>
+            </div>
+
+            <div class="media-slot-item">
+              <span class="media-slot-label">Studio Packshot Photo</span>
+              <div class="media-preview-box">
+                <img id="prev-lemongrass-packshot" src="/img/bottles/lemongrass_packshot.jpg" alt="Lemongrass Packshot" class="media-preview-img" />
+              </div>
+              <div class="media-upload-action-row">
+                <input type="text" id="cms-lemongrass-packshot" class="media-url-input" value="/img/bottles/lemongrass_packshot.jpg" />
+                <button type="button" class="btn-media-upload" onclick="triggerUpload('cms-lemongrass-packshot', 'prev-lemongrass-packshot', 'image')">Upload</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Story & Manifesto Editorial Photography -->
+      <div class="cms-section-card">
+        <h3 class="cms-section-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+          3. Brand Narrative & Botanical Manifesto Photography
+        </h3>
+        <p class="cms-section-desc">Manage editorial photographs in the Brand Story section and the Botanical Equilibrium Manifesto section.</p>
+
+        <div class="media-slots-grid">
+          <div class="media-slot-item">
+            <span class="media-slot-label">Manifesto Hero Showcase Photo</span>
+            <div class="media-preview-box">
+              <img id="prev-manifesto-img" src="/img/nomu/nomu_bottles_hero_real.jpg" alt="Manifesto Art Frame" class="media-preview-img" />
+            </div>
+            <div class="media-upload-action-row">
+              <input type="text" id="cms-manifesto-img" class="media-url-input" value="/img/nomu/nomu_bottles_hero_real.jpg" />
+              <button type="button" class="btn-media-upload" onclick="triggerUpload('cms-manifesto-img', 'prev-manifesto-img', 'image')">Upload Image</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: LIVE WEBSITE PREVIEW (RESPONSIVE VIEWPORTS) -->
+    <section class="tab-pane" id="pane-preview" role="tabpanel">
+      <div class="preview-tab-wrapper">
+        <!-- Viewport Controls Toolbar -->
+        <div class="preview-toolbar">
+          <div class="device-switcher-group">
+            <span style="font-size:0.8rem;color:var(--text-muted);font-weight:700;margin-right:0.5rem;">VIEWPORT:</span>
+            <button type="button" class="device-switch-btn is-active" id="btn-view-desktop" onclick="switchPreviewMode('desktop')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+              Desktop (1366px)
+            </button>
+            <button type="button" class="device-switch-btn" id="btn-view-tablet" onclick="switchPreviewMode('tablet')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+              Tablet (768px)
+            </button>
+            <button type="button" class="device-switch-btn" id="btn-view-mobile" onclick="switchPreviewMode('mobile')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+              Mobile Portrait (390px · Android/iOS)
+            </button>
+          </div>
+
+          <div class="preview-actions-group">
+            <span id="preview-dimensions-tag" style="font-size:0.75rem;background:#1A1918;border:1px solid #333;padding:0.25rem 0.6rem;border-radius:4px;color:#AAA;">1366 × 768 px</span>
+            <button type="button" class="btn btn-secondary" onclick="reloadPreviewIframe()" style="padding:0.4rem 0.85rem;font-size:0.8rem;display:inline-flex;align-items:center;gap:0.35rem;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+              Reload Frame
+            </button>
+            <a href="/" target="_blank" rel="noopener" class="btn btn-secondary" style="padding:0.4rem 0.85rem;font-size:0.8rem;text-decoration:none;display:inline-flex;align-items:center;gap:0.35rem;">
+              Open in New Window ↗
+            </a>
+          </div>
+        </div>
+
+        <!-- Stage Container with Framed Viewport -->
+        <div class="preview-stage-container">
+          <div class="device-viewport-frame mode-desktop" id="preview-frame-bezel">
+            <div class="mobile-notch-bar">
+              <div class="mobile-speaker-pill"></div>
+            </div>
+            <iframe id="live-storefront-iframe" class="preview-iframe-element" src="/" title="NOMU Storefront Live Viewport"></iframe>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: SYSTEM TELEMETRY & LOGS -->
+    <section class="tab-pane" id="pane-system" role="tabpanel">
+      <!-- Runtime Stat Cards -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <span class="stat-lbl">PHP Engine Version</span>
+          <span class="stat-val" id="sys-php-version">PHP 8.3</span>
+          <span class="stat-sub" id="sys-sapi">CLI / FastCGI</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-lbl">Memory Consumption</span>
+          <span class="stat-val" id="sys-mem-val">0.0 MB</span>
+          <span class="stat-sub" id="sys-mem-peak">Peak: 0.0 MB</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-lbl">Database Engine</span>
+          <span class="stat-val" id="sys-db-engine">MySQL Enterprise</span>
+          <span class="stat-sub" id="sys-db-sub">Hostinger Production Server</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-lbl">OPcache Acceleration</span>
+          <span class="stat-val" id="sys-opcache-val" style="color:#4ADE80;">Active</span>
+          <span class="stat-sub">Bytecode Pre-compiled</span>
+        </div>
+      </div>
+
+      <div class="toolbar-bar">
+        <div class="toolbar-left">
+          <h3 style="font-size:1rem;font-weight:700;">System Event & Audit Logs</h3>
+          <select id="log-level-filter" class="select-input">
+            <option value="all">All Levels</option>
+            <option value="INFO">INFO</option>
+            <option value="NOTICE">NOTICE</option>
+            <option value="WARNING">WARNING</option>
+            <option value="ERROR">ERROR</option>
+          </select>
+          <button type="button" class="btn btn-secondary" id="btn-refresh-logs">Refresh Logs</button>
+        </div>
+        <div style="font-size:0.8rem;color:var(--text-muted);">
+          Records all order registrations, review moderations, and CMS configuration updates.
+        </div>
+      </div>
+
+      <div class="logs-terminal" id="logs-container">
+        <!-- Live log entries -->
+      </div>
+    </section>
+
+  </main>
+  </div> <!-- /admin-app -->
+
+  <script>
+    const API_BASE = '/api';
+
+    function getAdminToken() {
+      return sessionStorage.getItem('nomu_admin_token') || '';
+    }
+
+    // Tabs Switcher
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('is-active'));
+        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('is-active'));
+
+        btn.classList.add('is-active');
+        const target = document.getElementById(`pane-${tab}`);
+        if (target) target.classList.add('is-active');
+
+        if (tab === 'orders') loadOrders();
+        if (tab === 'reviews') loadReviews();
+        if (tab === 'cms') loadCms();
+        if (tab === 'preview') reloadPreviewIframe();
+        if (tab === 'system') { loadSystemStatus(); loadSystemLogs(); }
+      });
+    });
+
+    // 1. ORDERS ENGINE
+    async function loadOrders() {
+      const status = document.getElementById('order-status-filter').value;
+      const search = document.getElementById('order-search-input').value.trim();
+      const token = getAdminToken();
+
+      const url = new URL(`${window.location.origin}${API_BASE}/admin/orders`);
+      url.searchParams.set('_t', Date.now());
+      if (status !== 'all') url.searchParams.set('status', status);
+      if (search) url.searchParams.set('search', search);
+
+      try {
+        const res = await fetch(url.toString(), {
+          cache: 'no-store',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+
+        if (data && data.orders) {
+          renderOrdersTable(data.orders);
+          updateOrderStats(data.orders);
+        }
+      } catch (err) {
+        document.getElementById('orders-table-body').innerHTML = `
+          <tr><td colspan="9" style="text-align:center;padding:2rem;color:#F87171;">Failed to load orders. Please verify server connection and token.</td></tr>
+        `;
+      }
+    }
+
+    function renderOrdersTable(orders) {
+      const tbody = document.getElementById('orders-table-body');
+      if (!orders || orders.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text-muted);">No orders matching your criteria.</td></tr>`;
+        return;
+      }
+
+      let html = '';
+      orders.forEach(o => {
+        let itemsSummary = '';
+        if (Array.isArray(o.items)) {
+          itemsSummary = o.items.map(it => `${it.quantity}x ${it.pack || ''} ${it.flavor || ''}`).join(', ');
+        } else {
+          itemsSummary = 'Custom Ritual Box';
+        }
+
+        const dateStr = o.created_at ? new Date(o.created_at).toLocaleString() : '';
+
+        html += `
+          <tr>
+            <td><strong>${o.order_ref}</strong></td>
+            <td>
+              <div><strong>${o.customer_name}</strong></div>
+              <div style="font-size:0.75rem;color:var(--text-muted);">${o.customer_email}</div>
+            </td>
+            <td>
+              <a href="https://wa.me/91${o.customer_phone}" target="_blank" style="color:#60A5FA;text-decoration:none;">
+                ${o.customer_phone} ↗
+              </a>
+            </td>
+            <td style="max-width:220px;font-size:0.8rem;" title="${o.delivery_address}">${itemsSummary}</td>
+            <td><strong>${o.total_bottles || 1}</strong></td>
+            <td><strong style="color:var(--brand-orange);">₹${o.total_amount}</strong></td>
+            <td><span class="badge-status badge-${o.status}">${o.status}</span></td>
+            <td style="font-size:0.75rem;color:var(--text-muted);">${dateStr}</td>
+            <td>
+              <select class="select-input" style="padding:0.25rem 0.45rem;font-size:0.75rem;" onchange="updateOrderStatus(${o.id}, this.value)">
+                <option value="pending" ${o.status === 'pending' ? 'selected' : ''}>Pending</option>
+                <option value="confirmed" ${o.status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
+                <option value="dispatched" ${o.status === 'dispatched' ? 'selected' : ''}>Dispatched</option>
+                <option value="delivered" ${o.status === 'delivered' ? 'selected' : ''}>Delivered</option>
+                <option value="cancelled" ${o.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+              </select>
+            </td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = html;
+    }
+
+    function updateOrderStats(orders) {
+      document.getElementById('count-orders').textContent = orders.length;
+      document.getElementById('stat-total-orders').textContent = orders.length;
+
+      let pending = 0;
+      let revenue = 0;
+      let delivered = 0;
+
+      orders.forEach(o => {
+        if (o.status === 'pending') pending++;
+        if (o.status === 'delivered' || o.status === 'confirmed' || o.status === 'dispatched') delivered++;
+        revenue += parseFloat(o.total_amount || 0);
+      });
+
+      document.getElementById('stat-pending-orders').textContent = pending;
+      document.getElementById('stat-delivered-orders').textContent = delivered;
+      document.getElementById('stat-total-revenue').textContent = `₹${revenue.toLocaleString()}`;
+    }
+
+    window.updateOrderStatus = async function(orderId, newStatus) {
+      const token = getAdminToken();
+      try {
+        const res = await fetch(`${API_BASE}/admin/orders/${orderId}/status`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ status: newStatus })
+        });
+        if (res.ok) {
+          loadOrders();
+        }
+      } catch (err) {
+        alert('Failed to update order status');
+      }
+    };
+
+    // CSV Export
+    document.getElementById('btn-export-orders-csv').addEventListener('click', () => {
+      const token = getAdminToken();
+      window.open(`${API_BASE}/admin/orders?export=csv&token=${encodeURIComponent(token)}`, '_blank');
+    });
+
+    document.getElementById('order-status-filter').addEventListener('change', loadOrders);
+    document.getElementById('order-search-input').addEventListener('input', debounce(loadOrders, 350));
+    document.getElementById('btn-refresh-orders').addEventListener('click', loadOrders);
+
+    // 2. REVIEWS ENGINE
+    async function loadReviews() {
+      const status = document.getElementById('review-status-filter').value;
+      const token = getAdminToken();
+
+      const url = new URL(`${window.location.origin}${API_BASE}/admin/reviews`);
+      url.searchParams.set('_t', Date.now());
+      if (status !== 'all') url.searchParams.set('status', status);
+
+      try {
+        const res = await fetch(url.toString(), {
+          cache: 'no-store',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (data && data.reviews) {
+          renderReviewsGrid(data.reviews);
+        }
+      } catch (err) {
+        document.getElementById('admin-reviews-container').innerHTML = `<p style="color:#F87171;">Failed to load reviews.</p>`;
+      }
+    }
+
+    function renderReviewsGrid(reviews) {
+      const cont = document.getElementById('admin-reviews-container');
+      const pendingCount = reviews.filter(r => r.status === 'pending').length;
+      document.getElementById('count-pending-reviews').textContent = pendingCount;
+
+      if (!reviews || reviews.length === 0) {
+        cont.innerHTML = `<p style="color:var(--text-muted);grid-column:1/-1;">No reviews found matching this status.</p>`;
+        return;
+      }
+
+      let html = '';
+      reviews.forEach(r => {
+        const starCount = Math.max(1, Math.min(5, r.rating || 5));
+        const starsSvg = `<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="display:inline-block;vertical-align:-1px;margin-right:2px;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`.repeat(starCount);
+        html += `
+          <div class="admin-review-card">
+            <div>
+              <div class="review-top-meta">
+                <span class="badge-status badge-${r.status}">${r.status}</span>
+                <span style="color:#F59E0B;font-size:0.9rem;">${starsSvg}</span>
+              </div>
+              <div class="review-author-line">${r.customer_name} <span style="color:var(--brand-orange);font-size:0.75rem;">(${r.flavor_key})</span></div>
+              <div class="review-email-line">${r.customer_email} · ${new Date(r.created_at).toLocaleDateString()}</div>
+              <div style="font-weight:700;margin:0.5rem 0 0.25rem 0;font-size:0.9rem;">"${r.headline}"</div>
+              <p class="review-text-content">${r.review_text}</p>
+            </div>
+            <div class="review-action-row">
+              ${r.status !== 'approved' ? `<button type="button" class="btn-sm btn-approve" onclick="moderateReview(${r.id}, 'approve')">Approve</button>` : ''}
+              ${r.status !== 'rejected' ? `<button type="button" class="btn-sm btn-reject" onclick="moderateReview(${r.id}, 'reject')">Reject</button>` : ''}
+              <button type="button" class="btn-sm btn-del" onclick="moderateReview(${r.id}, 'delete')">Delete</button>
+            </div>
+          </div>
+        `;
+      });
+      cont.innerHTML = html;
+    }
+
+    window.moderateReview = async function(id, action) {
+      const token = getAdminToken();
+      try {
+        const res = await fetch(`${API_BASE}/admin/reviews/${id}/moderate`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ action: action })
+        });
+        if (res.ok) {
+          loadReviews();
+        }
+      } catch (err) {
+        alert('Action failed');
+      }
+    };
+
+    document.getElementById('review-status-filter').addEventListener('change', loadReviews);
+    document.getElementById('btn-refresh-reviews').addEventListener('click', loadReviews);
+
+    // 3. CMS CONTENT & MEDIA ASSET ENGINE
+    let currentUploadTargetInput = null;
+    let currentUploadTargetPreview = null;
+    let currentUploadTargetType = 'image';
+
+    const mediaUploaderInput = document.getElementById('media-file-uploader');
+
+    window.triggerUpload = function(inputId, previewId, type) {
+      currentUploadTargetInput = inputId;
+      currentUploadTargetPreview = previewId;
+      currentUploadTargetType = type;
+      mediaUploaderInput.click();
+    };
+
+    mediaUploaderInput.addEventListener('change', async (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+
+      const token = getAdminToken();
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const res = await fetch(`${API_BASE}/admin/media/upload`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          body: formData
+        });
+
+        const data = await res.json();
+        if (res.ok && data.url) {
+          if (currentUploadTargetInput) {
+            const inputElem = document.getElementById(currentUploadTargetInput);
+            if (inputElem) inputElem.value = data.url;
+          }
+
+          if (currentUploadTargetPreview) {
+            const prevElem = document.getElementById(currentUploadTargetPreview);
+            if (prevElem) {
+              if (currentUploadTargetType === 'video') {
+                prevElem.src = data.url;
+                prevElem.load();
+              } else {
+                prevElem.src = data.url;
+              }
+            }
+          }
+
+          alert('Asset uploaded and updated in form. Click "Save & Publish Changes" to apply globally.');
+        } else {
+          alert(data.message || 'File upload failed');
+        }
+      } catch (err) {
+        alert('Media upload failed. Please check network connection and file size.');
+      } finally {
+        mediaUploaderInput.value = '';
+      }
+    });
+
+    async function loadCms() {
+      try {
+        const res = await fetch(`${API_BASE}/content?_t=${Date.now()}`, { cache: 'no-store' });
+        const data = await res.json();
+        if (data) {
+          // Text Fields
+          if (data.hero_headline) document.getElementById('cms-hero-headline').value = data.hero_headline;
+          if (data.hero_sub) document.getElementById('cms-hero-sub').value = data.hero_sub;
+          if (data.ticker_text) document.getElementById('cms-ticker-text').value = data.ticker_text;
+          if (data.font_family) document.getElementById('cms-font-family').value = data.font_family;
+          if (data.whatsapp_phone) document.getElementById('cms-whatsapp-phone').value = data.whatsapp_phone;
+
+          // Hero Media
+          if (data.hero_video_url) {
+            document.getElementById('cms-hero-video-url').value = data.hero_video_url;
+            document.getElementById('prev-media-hero-video').src = data.hero_video_url;
+          }
+          if (data.hero_poster_url) {
+            document.getElementById('cms-hero-poster-url').value = data.hero_poster_url;
+            document.getElementById('prev-media-hero-poster').src = data.hero_poster_url;
+          }
+
+          // Quartet Blends Media
+          const blendKeys = ['vetiver', 'chamomile', 'grapefruit', 'lemongrass'];
+          blendKeys.forEach(k => {
+            const bKey = `${k}_bottle_img`;
+            const sKey = `${k}_splash_img`;
+            const pKey = `${k}_packshot_img`;
+
+            if (data[bKey]) {
+              const el = document.getElementById(`cms-${k}-bottle`);
+              if (el) el.value = data[bKey];
+              const p = document.getElementById(`prev-${k}-bottle`);
+              if (p) p.src = data[bKey];
+            }
+            if (data[sKey]) {
+              const el = document.getElementById(`cms-${k}-splash`);
+              if (el) el.value = data[sKey];
+              const p = document.getElementById(`prev-${k}-splash`);
+              if (p) p.src = data[sKey];
+            }
+            if (data[pKey]) {
+              const el = document.getElementById(`cms-${k}-packshot`);
+              if (el) el.value = data[pKey];
+              const p = document.getElementById(`prev-${k}-packshot`);
+              if (p) p.src = data[pKey];
+            }
+          });
+
+          // Manifesto & Story Media
+          if (data.manifesto_image_url) {
+            const el = document.getElementById('cms-manifesto-img');
+            if (el) el.value = data.manifesto_image_url;
+            const p = document.getElementById('prev-manifesto-img');
+            if (p) p.src = data.manifesto_image_url;
+          }
+        }
+      } catch (e) {}
+    }
+
+    document.getElementById('btn-save-cms').addEventListener('click', async () => {
+      const token = getAdminToken();
+      const payload = {
+        // Text
+        hero_headline: document.getElementById('cms-hero-headline').value,
+        hero_sub: document.getElementById('cms-hero-sub').value,
+        ticker_text: document.getElementById('cms-ticker-text').value,
+        font_family: document.getElementById('cms-font-family').value,
+        whatsapp_phone: document.getElementById('cms-whatsapp-phone').value,
+
+        // Hero Media
+        hero_video_url: document.getElementById('cms-hero-video-url').value,
+        hero_poster_url: document.getElementById('cms-hero-poster-url').value,
+
+        // Quartet Media
+        vetiver_bottle_img: document.getElementById('cms-vetiver-bottle').value,
+        vetiver_splash_img: document.getElementById('cms-vetiver-splash').value,
+        vetiver_packshot_img: document.getElementById('cms-vetiver-packshot').value,
+
+        chamomile_bottle_img: document.getElementById('cms-chamomile-bottle').value,
+        chamomile_splash_img: document.getElementById('cms-chamomile-splash').value,
+        chamomile_packshot_img: document.getElementById('cms-chamomile-packshot').value,
+
+        grapefruit_bottle_img: document.getElementById('cms-grapefruit-bottle').value,
+        grapefruit_splash_img: document.getElementById('cms-grapefruit-splash').value,
+        grapefruit_packshot_img: document.getElementById('cms-grapefruit-packshot').value,
+
+        lemongrass_bottle_img: document.getElementById('cms-lemongrass-bottle').value,
+        lemongrass_splash_img: document.getElementById('cms-lemongrass-splash').value,
+        lemongrass_packshot_img: document.getElementById('cms-lemongrass-packshot').value,
+
+        // Story & Manifesto Media
+        manifesto_image_url: document.getElementById('cms-manifesto-img').value
+      };
+
+      try {
+        const res = await fetch(`${API_BASE}/admin/content`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          const status = document.getElementById('cms-save-status');
+          status.removeAttribute('hidden');
+          setTimeout(() => status.setAttribute('hidden', ''), 3500);
+
+          // Refresh live preview iframe if present
+          reloadPreviewIframe();
+        }
+      } catch (err) {
+        alert('Failed to save CMS configuration');
+      }
+    });
+
+    // 4. LIVE WEBSITE PREVIEW CONTROLS
+    window.switchPreviewMode = function(mode) {
+      const bezel = document.getElementById('preview-frame-bezel');
+      const tag = document.getElementById('preview-dimensions-tag');
+      const btnDesk = document.getElementById('btn-view-desktop');
+      const btnTab = document.getElementById('btn-view-tablet');
+      const btnMob = document.getElementById('btn-view-mobile');
+
+      btnDesk.classList.remove('is-active');
+      btnTab.classList.remove('is-active');
+      btnMob.classList.remove('is-active');
+
+      bezel.className = 'device-viewport-frame mode-' + mode;
+
+      if (mode === 'desktop') {
+        btnDesk.classList.add('is-active');
+        tag.textContent = '1366 × 768 px (Desktop)';
+      } else if (mode === 'tablet') {
+        btnTab.classList.add('is-active');
+        tag.textContent = '768 × 880 px (Tablet)';
+      } else if (mode === 'mobile') {
+        btnMob.classList.add('is-active');
+        tag.textContent = '390 × 844 px (Mobile · Android/iOS)';
+      }
+    };
+
+    window.reloadPreviewIframe = function() {
+      const iframe = document.getElementById('live-storefront-iframe');
+      if (iframe) {
+        iframe.src = '/?ts=' + Date.now();
+      }
+    };
+
+    // 4. SYSTEM TELEMETRY & LOGS
+    async function loadSystemStatus() {
+      const token = getAdminToken();
+      try {
+        const res = await fetch(`${API_BASE}/admin/system/status`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (data && data.runtime) {
+          document.getElementById('sys-php-version').textContent = data.runtime.php_version || 'PHP 8.3';
+          document.getElementById('sys-sapi').textContent = `${data.runtime.sapi || 'FPM'} (${data.runtime.os || ''})`;
+          document.getElementById('sys-mem-val').textContent = `${data.runtime.memory_allocated_mb || 0} MB`;
+          document.getElementById('sys-mem-peak').textContent = `Peak: ${data.runtime.memory_peak_mb || 0} MB`;
+          document.getElementById('sys-opcache-val').textContent = data.runtime.opcache_active ? 'Active' : 'Standby';
+        }
+        if (data && data.database) {
+          const dbVal = document.getElementById('sys-db-engine');
+          if (dbVal) dbVal.textContent = data.database.engine || (data.database.driver === 'mysql' ? 'MySQL Enterprise' : 'SQLite 3');
+          const dbSub = document.getElementById('sys-db-sub');
+          if (dbSub) dbSub.textContent = data.database.driver === 'mysql' ? 'Hostinger Production Server' : 'Local WAL Mode';
+        }
+      } catch (e) {}
+    }
+
+    async function loadSystemLogs() {
+      const level = document.getElementById('log-level-filter').value;
+      const token = getAdminToken();
+      const url = new URL(`${window.location.origin}${API_BASE}/admin/system/logs`);
+      if (level !== 'all') url.searchParams.set('level', level);
+
+      try {
+        const res = await fetch(url.toString(), {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (data && data.logs) {
+          renderLogs(data.logs);
+        }
+      } catch (e) {}
+    }
+
+    function renderLogs(logs) {
+      const cont = document.getElementById('logs-container');
+      if (!logs || logs.length === 0) {
+        cont.innerHTML = `<div style="color:#666;">No audit log records found.</div>`;
+        return;
+      }
+
+      let html = '';
+      logs.forEach(l => {
+        const timeStr = l.created_at ? new Date(l.created_at).toLocaleTimeString() : '';
+        html += `
+          <div class="log-row">
+            <span class="log-time">[${timeStr}]</span>
+            <span class="log-lvl log-lvl-${l.level}">${l.level}</span>
+            <span class="log-act">${l.action}</span>
+            <span class="log-msg">${l.message} (${l.ip_address || '127.0.0.1'})</span>
+          </div>
+        `;
+      });
+      cont.innerHTML = html;
+    }
+
+    document.getElementById('log-level-filter').addEventListener('change', loadSystemLogs);
+    document.getElementById('btn-refresh-logs').addEventListener('click', loadSystemLogs);
+
+    function debounce(fn, ms) {
+      let timeout;
+      return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => fn.apply(this, args), ms);
+      };
+    }
+
+    // Session Auth & Security Management
+    function checkAuthSession() {
+      const token = sessionStorage.getItem('nomu_admin_token');
+      if (token) {
+        document.getElementById('admin-login-screen').style.display = 'none';
+        document.getElementById('admin-app').style.display = 'block';
+        const user = sessionStorage.getItem('nomu_admin_user') || 'admin';
+        const userEl = document.getElementById('active-admin-user');
+        if (userEl) userEl.textContent = user;
+        loadOrders();
+        loadReviews();
+        loadCms();
+        loadSystemStatus();
+      } else {
+        document.getElementById('admin-app').style.display = 'none';
+        document.getElementById('admin-login-screen').style.display = 'flex';
+      }
+    }
+
+    function logoutAdmin() {
+      sessionStorage.removeItem('nomu_admin_token');
+      sessionStorage.removeItem('nomu_admin_user');
+      document.getElementById('admin-app').style.display = 'none';
+      document.getElementById('admin-login-screen').style.display = 'flex';
+      const passInp = document.getElementById('login-password');
+      if (passInp) passInp.value = '';
+      const errBox = document.getElementById('login-error-msg');
+      if (errBox) errBox.style.display = 'none';
+    }
+
+    const logoutBtn = document.getElementById('btn-admin-logout');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', logoutAdmin);
+    }
+
+    const loginForm = document.getElementById('admin-login-form');
+    if (loginForm) {
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = document.getElementById('login-username').value.trim();
+        const password = document.getElementById('login-password').value;
+        const submitBtn = document.getElementById('btn-submit-login');
+        const errBox = document.getElementById('login-error-msg');
+
+        errBox.style.display = 'none';
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Authenticating...';
+
+        try {
+          const res = await fetch(`${API_BASE}/admin/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+          });
+          const data = await res.json();
+          if (res.ok && data.status === 'success' && data.token) {
+            sessionStorage.setItem('nomu_admin_token', data.token);
+            sessionStorage.setItem('nomu_admin_user', (data.user && data.user.username) || username || 'admin');
+            checkAuthSession();
+          } else {
+            errBox.textContent = data.message || 'Invalid username or password';
+            errBox.style.display = 'block';
+          }
+        } catch (err) {
+          errBox.textContent = 'Network or server error. Please try again.';
+          errBox.style.display = 'block';
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Sign In to Operations Console →';
+        }
+      });
+    }
+
+    // Run auth check on DOM ready
+    checkAuthSession();
+  </script>
+</body>
+</html>

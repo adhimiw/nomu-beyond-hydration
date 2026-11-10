@@ -15,7 +15,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
     return !!sessionStorage.getItem('nomu_admin_token');
   });
   const [adminToken, setAdminToken] = useState<string>(() => {
-    return sessionStorage.getItem('nomu_admin_token') || 'nomu_admin_sec_token_98400_botanical_2026';
+    return sessionStorage.getItem('nomu_admin_token') || '';
   });
   const [loginUsername, setLoginUsername] = useState('admin');
   const [loginPassword, setLoginPassword] = useState('');
@@ -313,19 +313,11 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
           boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6)'
         }}>
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-            <div style={{
-              width: '48px',
-              height: '48px',
-              backgroundColor: 'var(--nomu-red)',
-              borderRadius: '12px',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: '1rem',
-              color: '#FFFFFF'
-            }}>
-              <img src="/img/nomu/nomu_symbol_master.png" alt="NOMU" width="30" height="30" />
-            </div>
+            <img
+              src="/img/nomu/nomu_symbol_master.png"
+              alt="NOMU Master Logo"
+              style={{ height: '60px', width: 'auto', marginBottom: '1rem', objectFit: 'contain' }}
+            />
             <h2 style={{
               fontFamily: 'var(--font-display)',
               fontSize: '1.4rem',
@@ -458,7 +450,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
       {/* Top Header */}
       <div className="admin-nav" style={{ backgroundColor: '#171615', borderBottom: '1px solid #2C2926', padding: '0.85rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-          <div style={{ width: '30px', height: '30px', backgroundColor: '#D5360C', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, borderRadius: '6px' }}>N</div>
+          <img src="/img/nomu/nomu_symbol_master.png" alt="NOMU" style={{ height: '32px', width: 'auto', objectFit: 'contain' }} />
           <span style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.1rem' }}>NOMU OPERATIONS CONSOLE</span>
         </div>
 

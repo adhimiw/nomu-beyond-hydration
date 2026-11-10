@@ -495,6 +495,16 @@ if ($method === 'GET' && $pathInfo === '/media') {
     exit;
 }
 
+// Serve Admin Console Static Entrypoint
+if ($pathInfo === '/admin' || $pathInfo === '/admin/' || $pathInfo === '/admin/index.html') {
+    $adminHtmlPath = __DIR__ . '/admin/index.html';
+    if (file_exists($adminHtmlPath)) {
+        header('Content-Type: text/html; charset=UTF-8');
+        readfile($adminHtmlPath);
+        exit;
+    }
+}
+
 // --------------------------------------------------------------------------
 // ADMIN ENDPOINTS (Require Authorization)
 // --------------------------------------------------------------------------

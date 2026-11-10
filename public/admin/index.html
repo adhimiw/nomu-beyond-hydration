@@ -53,18 +53,187 @@
       gap: 0.85rem;
     }
 
-    .brand-mark {
-      width: 32px;
+    .admin-brand-logo {
       height: 32px;
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+    }
+
+    .admin-user-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #E2E8F0;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+    }
+
+    .user-status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background-color: #22C55E;
+      box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
+      display: inline-block;
+    }
+
+    .btn-admin-logout {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #FF6B6B;
+      background: rgba(208, 28, 29, 0.12);
+      border: 1px solid rgba(208, 28, 29, 0.35);
+      padding: 0.38rem 0.85rem;
       border-radius: 6px;
-      background-color: var(--brand-orange);
-      color: #FFF;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.2s;
+    }
+
+    .btn-admin-logout:hover {
+      background-color: #D01C1D;
+      color: #FFFFFF;
+      border-color: #D01C1D;
+    }
+
+    /* Admin Login Screen */
+    #admin-login-screen {
+      min-height: 100vh;
+      width: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 800;
-      font-size: 0.9rem;
+      background: radial-gradient(circle at 50% 25%, #1f1d1a 0%, #0d0f12 75%);
+      padding: 1.5rem;
+      box-sizing: border-box;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 99999;
+    }
+
+    .admin-login-card {
+      background-color: #171615;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 420px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    .admin-login-logo {
+      height: 56px;
+      width: auto;
+      object-fit: contain;
+      margin-bottom: 1.25rem;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+    }
+
+    .admin-login-title {
       font-family: 'Cinzel', serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #FFF;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.4rem;
+    }
+
+    .admin-login-sub {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      margin-bottom: 1.75rem;
+      line-height: 1.4;
+    }
+
+    .admin-login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.15rem;
+      text-align: left;
+    }
+
+    .admin-login-form .form-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #CBD5E1;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.35rem;
+      display: block;
+    }
+
+    .admin-login-form .login-input {
+      width: 100%;
+      padding: 0.75rem 0.95rem;
+      background-color: #11100F;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      color: #FFF;
+      font-size: 0.875rem;
+      outline: none;
+      box-sizing: border-box;
+      transition: border-color 0.2s;
+    }
+
+    .admin-login-form .login-input:focus {
+      border-color: var(--brand-orange);
+    }
+
+    .btn-login-submit {
+      width: 100%;
+      padding: 0.85rem;
+      background-color: var(--brand-orange);
+      color: #FFF;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.925rem;
+      cursor: pointer;
+      transition: background-color 0.2s, opacity 0.2s;
+      margin-top: 0.5rem;
+    }
+
+    .btn-login-submit:hover {
+      background-color: #E64317;
+    }
+
+    .btn-login-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .login-error-alert {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #FCA5A5;
+      padding: 0.65rem 0.85rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      display: none;
+      text-align: center;
+    }
+
+    .login-back-link {
+      display: inline-block;
+      margin-top: 1.25rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .login-back-link:hover {
+      color: #FFF;
     }
 
     .brand-title {
@@ -767,24 +936,58 @@
 </head>
 <body>
 
-  <!-- Top Navigation -->
-  <header class="admin-nav">
-    <div class="brand-cluster">
-      <div class="brand-mark">N</div>
-      <div>
-        <h1 class="brand-title">NOMU</h1>
-      </div>
-      <span class="brand-badge">OPERATIONS CONSOLE</span>
-    </div>
+  <!-- Secure Admin Login Screen -->
+  <div id="admin-login-screen">
+    <div class="admin-login-card">
+      <img src="/img/nomu/nomu_symbol_master.png" alt="NOMU Master Logo" class="admin-login-logo" />
+      <h2 class="admin-login-title">NOMU OPERATIONS CONSOLE</h2>
+      <p class="admin-login-sub">Enter administrative credentials to access Orders, Reviews, and Headless CMS.</p>
 
-    <div class="nav-actions">
-      <div class="token-input-wrap">
-        <span style="font-size:0.75rem;color:var(--text-muted);">Token:</span>
-        <input type="password" id="admin-token-input" class="token-input" value="nomu_admin_sec_token_98400_botanical_2026" placeholder="Admin Bearer Token" />
-      </div>
-      <a href="/" target="_blank" class="btn-public-site">View Storefront ↗</a>
+      <div id="login-error-msg" class="login-error-alert"></div>
+
+      <form id="admin-login-form" class="admin-login-form">
+        <div>
+          <label class="form-label" for="login-username">Admin Username</label>
+          <input type="text" id="login-username" class="login-input" value="admin" required autocomplete="username" />
+        </div>
+
+        <div>
+          <label class="form-label" for="login-password">Password / Access Token</label>
+          <input type="password" id="login-password" class="login-input" placeholder="Enter password (e.g. nomu2026)" required autocomplete="current-password" autofocus />
+        </div>
+
+        <button type="submit" id="btn-submit-login" class="btn-login-submit">
+          Sign In to Operations Console →
+        </button>
+      </form>
+
+      <a href="/" class="login-back-link">← Return to Storefront</a>
     </div>
-  </header>
+  </div>
+
+  <!-- Authenticated Operations Console Application -->
+  <div id="admin-app" style="display: none;">
+    <!-- Top Navigation -->
+    <header class="admin-nav">
+      <div class="brand-cluster">
+        <img src="/img/nomu/nomu_symbol_master.png" alt="NOMU" class="admin-brand-logo" />
+        <div>
+          <h1 class="brand-title">NOMU</h1>
+        </div>
+        <span class="brand-badge">OPERATIONS CONSOLE</span>
+      </div>
+
+      <div class="nav-actions">
+        <span class="admin-user-pill">
+          <span class="user-status-dot"></span>
+          <span id="active-admin-user">admin</span>
+        </span>
+        <a href="/" target="_blank" class="btn-public-site">View Storefront ↗</a>
+        <button type="button" id="btn-admin-logout" class="btn-admin-logout" title="Sign Out of Admin Console">
+          Sign Out ⎋
+        </button>
+      </div>
+    </header>
 
   <!-- Navigation Tabs -->
   <nav class="tabs-bar" role="tablist">
@@ -1276,12 +1479,13 @@
     </section>
 
   </main>
+  </div> <!-- /admin-app -->
 
   <script>
     const API_BASE = '/api';
 
     function getAdminToken() {
-      return document.getElementById('admin-token-input').value.trim();
+      return sessionStorage.getItem('nomu_admin_token') || '';
     }
 
     // Tabs Switcher
@@ -1797,10 +2001,81 @@
       };
     }
 
-    // Initial load
-    loadOrders();
-    loadReviews();
-    loadCms();
+    // Session Auth & Security Management
+    function checkAuthSession() {
+      const token = sessionStorage.getItem('nomu_admin_token');
+      if (token) {
+        document.getElementById('admin-login-screen').style.display = 'none';
+        document.getElementById('admin-app').style.display = 'block';
+        const user = sessionStorage.getItem('nomu_admin_user') || 'admin';
+        const userEl = document.getElementById('active-admin-user');
+        if (userEl) userEl.textContent = user;
+        loadOrders();
+        loadReviews();
+        loadCms();
+        loadSystemStatus();
+      } else {
+        document.getElementById('admin-app').style.display = 'none';
+        document.getElementById('admin-login-screen').style.display = 'flex';
+      }
+    }
+
+    function logoutAdmin() {
+      sessionStorage.removeItem('nomu_admin_token');
+      sessionStorage.removeItem('nomu_admin_user');
+      document.getElementById('admin-app').style.display = 'none';
+      document.getElementById('admin-login-screen').style.display = 'flex';
+      const passInp = document.getElementById('login-password');
+      if (passInp) passInp.value = '';
+      const errBox = document.getElementById('login-error-msg');
+      if (errBox) errBox.style.display = 'none';
+    }
+
+    const logoutBtn = document.getElementById('btn-admin-logout');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', logoutAdmin);
+    }
+
+    const loginForm = document.getElementById('admin-login-form');
+    if (loginForm) {
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = document.getElementById('login-username').value.trim();
+        const password = document.getElementById('login-password').value;
+        const submitBtn = document.getElementById('btn-submit-login');
+        const errBox = document.getElementById('login-error-msg');
+
+        errBox.style.display = 'none';
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Authenticating...';
+
+        try {
+          const res = await fetch(`${API_BASE}/admin/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+          });
+          const data = await res.json();
+          if (res.ok && data.status === 'success' && data.token) {
+            sessionStorage.setItem('nomu_admin_token', data.token);
+            sessionStorage.setItem('nomu_admin_user', (data.user && data.user.username) || username || 'admin');
+            checkAuthSession();
+          } else {
+            errBox.textContent = data.message || 'Invalid username or password';
+            errBox.style.display = 'block';
+          }
+        } catch (err) {
+          errBox.textContent = 'Network or server error. Please try again.';
+          errBox.style.display = 'block';
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Sign In to Operations Console →';
+        }
+      });
+    }
+
+    // Run auth check on DOM ready
+    checkAuthSession();
   </script>
 </body>
 </html>
