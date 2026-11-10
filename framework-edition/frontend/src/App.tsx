@@ -21,41 +21,41 @@ import './styles/theme.css';
 const INITIAL_REVIEWS: ReviewRecord[] = [
   {
     id: 101,
-    customer_name: 'Ananya S.',
+    customer_name: 'Dr. Radhika Menon',
     flavor_key: 'vetiver',
     rating: 5,
-    headline: 'Replaced my afternoon iced tea completely',
-    review_text: 'The cooling earthiness of Vetiver is grounding. It has an unmistakable freshness without being bitter or sweet. Drinking it chilled after work in Chennai heat is an instant reset.',
+    headline: 'Gentle, non-acidic hydration for long clinical shifts',
+    review_text: 'I keep a bottle of Vetiver chilled during long OT rotations. Unlike sparkling flavored water that triggers acid reflux, NOMU is silky smooth, subtly earthy, and leaves no sugar crash.',
     created_at: '2 days ago',
     is_visible: 1
   },
   {
     id: 102,
-    customer_name: 'Karthik Raman',
+    customer_name: 'Vikramaditya S.',
     flavor_key: 'chamomile',
     rating: 5,
-    headline: 'Deep restorative calm for evening sleep',
-    review_text: 'Gentle honeyed floral aroma without any artificial stevia aftertaste. It settles evening nervous energy and quiets neural chatter. I order the 12-pack pantry box every fortnight.',
-    created_at: '4 days ago',
+    headline: 'Replaced my evening chamomile tea with cold distilled NOMU',
+    review_text: 'The floral notes are authentic, not synthetic essence. It has become my wind-down ritual at 9 PM after newsroom deadlines. Clean, relaxing, and exceptional glass packaging.',
+    created_at: '3 days ago',
     is_visible: 1
   },
   {
     id: 103,
-    customer_name: 'Dr. Meera Iyer',
-    flavor_key: 'lemongrass',
-    rating: 5,
-    headline: 'Clean herbal clarity during long hospital shifts',
-    review_text: 'As a surgeon I avoid caffeinated energy drinks. NOMU Lemongrass gives a sharp, crisp hydration burst without any heart rate spike or sugar crash.',
-    created_at: '1 week ago',
-    is_visible: 1
-  },
-  {
-    id: 104,
-    customer_name: 'Vikram Chandran',
+    customer_name: 'Ananya Deshmukh',
     flavor_key: 'grapefruit',
     rating: 5,
     headline: 'Vibrant ruby peel aroma with zero calories',
     review_text: 'The citrus peel distillation captures pure essential limonene aromatics. It feels luxurious, perfectly tart, and makes drinking 2 liters of daily water a genuine pleasure.',
+    created_at: '5 days ago',
+    is_visible: 1
+  },
+  {
+    id: 104,
+    customer_name: 'Karthik R.',
+    flavor_key: 'lemongrass',
+    rating: 5,
+    headline: 'Crisp lemongrass with a refreshing mineral finish',
+    review_text: 'Ordered the 12-pack discovery box on WhatsApp. Delivered same day in Besant Nagar. Lemongrass is crisp, uplifting, and pairs remarkably well with light South Indian meals.',
     created_at: '1 week ago',
     is_visible: 1
   }

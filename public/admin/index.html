@@ -948,7 +948,7 @@
 
           <div class="cms-field-group">
             <label class="cms-label">WhatsApp Concierge Phone Number</label>
-            <input type="text" id="cms-whatsapp-phone" class="cms-input" value="919840000000" />
+            <input type="text" id="cms-whatsapp-phone" class="cms-input" value="919345214712" />
           </div>
 
           <div class="cms-field-group">
@@ -1243,8 +1243,8 @@
         </div>
         <div class="stat-card">
           <span class="stat-lbl">Database Engine</span>
-          <span class="stat-val">SQLite 3</span>
-          <span class="stat-sub">WAL Mode Enabled</span>
+          <span class="stat-val" id="sys-db-engine">MySQL Enterprise</span>
+          <span class="stat-sub" id="sys-db-sub">Hostinger Production Server</span>
         </div>
         <div class="stat-card">
           <span class="stat-lbl">OPcache Acceleration</span>
@@ -1310,11 +1310,13 @@
       const token = getAdminToken();
 
       const url = new URL(`${window.location.origin}${API_BASE}/admin/orders`);
+      url.searchParams.set('_t', Date.now());
       if (status !== 'all') url.searchParams.set('status', status);
       if (search) url.searchParams.set('search', search);
 
       try {
         const res = await fetch(url.toString(), {
+          cache: 'no-store',
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await res.json();
@@ -1434,10 +1436,12 @@
       const token = getAdminToken();
 
       const url = new URL(`${window.location.origin}${API_BASE}/admin/reviews`);
+      url.searchParams.set('_t', Date.now());
       if (status !== 'all') url.searchParams.set('status', status);
 
       try {
         const res = await fetch(url.toString(), {
+          cache: 'no-store',
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await res.json();
@@ -1571,7 +1575,7 @@
 
     async function loadCms() {
       try {
-        const res = await fetch(`${API_BASE}/content`);
+        const res = await fetch(`${API_BASE}/content?_t=${Date.now()}`, { cache: 'no-store' });
         const data = await res.json();
         if (data) {
           // Text Fields
@@ -1733,6 +1737,12 @@
           document.getElementById('sys-mem-val').textContent = `${data.runtime.memory_allocated_mb || 0} MB`;
           document.getElementById('sys-mem-peak').textContent = `Peak: ${data.runtime.memory_peak_mb || 0} MB`;
           document.getElementById('sys-opcache-val').textContent = data.runtime.opcache_active ? 'Active' : 'Standby';
+        }
+        if (data && data.database) {
+          const dbVal = document.getElementById('sys-db-engine');
+          if (dbVal) dbVal.textContent = data.database.engine || (data.database.driver === 'mysql' ? 'MySQL Enterprise' : 'SQLite 3');
+          const dbSub = document.getElementById('sys-db-sub');
+          if (dbSub) dbSub.textContent = data.database.driver === 'mysql' ? 'Hostinger Production Server' : 'Local WAL Mode';
         }
       } catch (e) {}
     }

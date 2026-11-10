@@ -648,9 +648,9 @@ if (str_starts_with($pathInfo, '/admin')) {
         }
 
         $newStatus = $action === 'approve' ? 'approved' : 'rejected';
-        $visSql = $newStatus === 'approved' ? ', is_visible = 1' : '';
-        $stmt = $pdo->prepare("UPDATE reviews SET status = ? {$visSql}, moderated_at = CURRENT_TIMESTAMP, moderated_by = 'admin', updated_at = CURRENT_TIMESTAMP WHERE id = ?");
-        $stmt->execute([$newStatus, $reviewId]);
+        $newVisibility = $action === 'approve' ? 1 : 0;
+        $stmt = $pdo->prepare("UPDATE reviews SET status = ?, is_visible = ?, moderated_at = CURRENT_TIMESTAMP, moderated_by = 'admin', updated_at = CURRENT_TIMESTAMP WHERE id = ?");
+        $stmt->execute([$newStatus, $newVisibility, $reviewId]);
 
         nomuLog($pdo, 'NOTICE', 'REVIEW_MODERATED', "Review ID {$reviewId} marked as {$newStatus}");
 
@@ -678,7 +678,11 @@ if (str_starts_with($pathInfo, '/admin')) {
             'about_image_url', 'manifesto_image_url'
         ];
 
-        $upd = $pdo->prepare("INSERT INTO cms_contents (field_key, field_value) VALUES (?, ?) ON CONFLICT(field_key) DO UPDATE SET field_value = excluded.field_value, updated_at = CURRENT_TIMESTAMP");
+        $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+        $upsertSql = ($driver === 'mysql')
+            ? "INSERT INTO cms_contents (field_key, field_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE field_value = VALUES(field_value), updated_at = CURRENT_TIMESTAMP"
+            : "INSERT INTO cms_contents (field_key, field_value) VALUES (?, ?) ON CONFLICT(field_key) DO UPDATE SET field_value = excluded.field_value, updated_at = CURRENT_TIMESTAMP";
+        $upd = $pdo->prepare($upsertSql);
 
         $count = 0;
         foreach ($input as $k => $v) {
@@ -812,6 +816,8 @@ if (str_starts_with($pathInfo, '/admin')) {
                 'opcache_active' => function_exists('opcache_get_status') && is_array(@opcache_get_status())
             ],
             'database' => [
+                'driver' => $pdo->getAttribute(PDO::ATTR_DRIVER_NAME),
+                'engine' => ($pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'mysql') ? 'MySQL Enterprise' : 'SQLite 3 (WAL)',
                 'total_orders' => $totalOrders,
                 'pending_orders' => $pendingOrders,
                 'total_reviews' => $totalReviews,
