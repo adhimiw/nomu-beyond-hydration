@@ -81,9 +81,11 @@ class DatabaseSeeder
             ['showcase', 'image', 'Blend IV — Lemongrass Bottle Packshot', '/img/bottles/lemongrass_isolated.png', 'NOMU Lemongrass isolated bottle packshot', 1],
             ['showcase', 'image', 'Lemongrass Harvest', '/img/ingredients/lemongrass_harvest.jpg', 'Fresh high-altitude lemongrass stalks', 1],
             ['brand', 'image', 'NOMU Master Brand Symbol', '/img/nomu/nomu_symbol_master.png', 'NOMU primary botanical brand symbol logo', 1],
-            ['brand', 'image', 'NOMU Clean Monogram Logo', '/img/nomu/nomu_logo_clean.png', 'NOMU botanical brand monogram logo', 1],
             ['brand', 'image', 'NOMU Wordmark Transparent', '/img/nomu/nomu_wordmark_transparent.png', 'NOMU architectural wordmark logo', 1]
         ];
+
+        // Clean up legacy monogram logo if present
+        $this->pdo->exec("DELETE FROM media_assets WHERE url LIKE '%nomu_logo_clean.png%'");
 
         $insMedia = $this->pdo->prepare("{$insertIgnore} media_assets (section_key, asset_type, title, url, alt_text, is_active) VALUES (?, ?, ?, ?, ?, ?)");
         $updMedia = $this->pdo->prepare("UPDATE media_assets SET section_key = ?, asset_type = ?, title = ?, alt_text = ?, is_active = ?, updated_at = CURRENT_TIMESTAMP WHERE url = ?");

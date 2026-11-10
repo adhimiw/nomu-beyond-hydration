@@ -29,7 +29,6 @@
 
 5. **`public/img/nomu/`**:
    - `nomu_symbol_master.png` (Official master brand symbol)
-   - `nomu_logo_clean.png` (Botanical brand monogram)
    - `nomu_wordmark_transparent.png` (Architectural wordmark)
 
 ---

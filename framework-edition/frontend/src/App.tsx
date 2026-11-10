@@ -301,7 +301,7 @@ export const App: React.FC = () => {
         <ContactSection whatsappPhone={cms.whatsapp_phone} />
       </main>
 
-      <Footer siteLogo={cms.site_logo} />
+      <Footer />
 
       {/* Lazy-Loaded Modals */}
       <Suspense fallback={null}>

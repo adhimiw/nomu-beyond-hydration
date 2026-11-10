@@ -154,7 +154,7 @@ export class NomuCanScene {
 
     // Preload authentic brand image assets
     this.logoImg = new Image();
-    this.logoImg.src = '/img/nomu/nomu_logo_clean.png';
+    this.logoImg.src = '/img/nomu/nomu_symbol_master.png';
     this.wordmarkImg = new Image();
     this.wordmarkImg.src = '/img/nomu/nomu_wordmark_dark.png';
 

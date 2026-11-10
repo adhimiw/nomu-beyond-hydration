@@ -1,19 +1,20 @@
 import React from 'react';
 
-interface FooterProps {
-  siteLogo?: string;
-}
-
-export const Footer: React.FC<FooterProps> = ({ siteLogo = '/img/nomu/nomu_symbol_master.png' }) => {
+export const Footer: React.FC = () => {
   return (
     <footer className="site-footer">
       <div className="container footer-grid">
         <div className="footer-brand">
           <div className="footer-logo-row">
-            <div className="brand-logo-badge" style={{ width: '28px', height: '28px' }}>
-              <img src={siteLogo || '/img/nomu/nomu_symbol_master.png'} alt="NOMU Logo" width="20" height="20" loading="lazy" decoding="async" />
-            </div>
-            <img src="/img/nomu/nomu_wordmark_transparent.png" alt="NOMU" width="88" height="18" loading="lazy" decoding="async" />
+            <img
+              src="/img/nomu/nomu_wordmark_transparent.png"
+              alt="NOMU"
+              className="footer-brand-logo"
+              width="96"
+              height="20"
+              loading="lazy"
+              decoding="async"
+            />
           </div>
           <p className="footer-mission" style={{ marginTop: '0.85rem' }}>
             Beyond Hydration. Clean herb-infused water crafted as a daily wellness ritual. Four herbs, zero nonsense.
