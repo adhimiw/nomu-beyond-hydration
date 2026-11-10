@@ -4,8 +4,8 @@ export const FLAVORS = {
   lemongrass: {
     id: 'lemongrass',
     name: 'Lemongrass',
-    kanjiMark: '野武',
-    flavorKanji: '檸檬草',
+    kanjiMark: '',
+    flavorKanji: '',
     subtitle: 'Crisp, Citrusy & Uplifting',
     tagline: 'Restorative small-batch infusion for mental clarity, focus, and clean energy.',
     primaryColor: '#8EB021',
@@ -17,7 +17,7 @@ export const FLAVORS = {
     tag: 'LEMONGRASS',
     price: 95,
     tastingNotes: {
-      top: 'Cold-pressed Nilgiri lemongrass stalks',
+      top: 'Cold-pressed lemongrass stalks',
       heart: 'Citrus peel & wild holy basil (Tulsi)',
       base: 'Bioavailable electrolyte salts & prebiotic fiber'
     },
@@ -38,8 +38,8 @@ export const FLAVORS = {
   chamomile: {
     id: 'chamomile',
     name: 'Chamomile',
-    kanjiMark: '花',
-    flavorKanji: 'カモミール',
+    kanjiMark: '',
+    flavorKanji: '',
     subtitle: 'Gentle, Floral & Soothing',
     tagline: 'Calming botanical infusion crafted for evening relaxation, mindful stress relief, and deep rest.',
     primaryColor: '#D99B26',
@@ -72,8 +72,8 @@ export const FLAVORS = {
   vetiver: {
     id: 'vetiver',
     name: 'Vetiver',
-    kanjiMark: '根',
-    flavorKanji: '香根草',
+    kanjiMark: '',
+    flavorKanji: '',
     subtitle: 'Earthy, Cooling & Deeply Grounding',
     tagline: 'Traditional Indian Ayurvedic cooling root for internal heat balance, gut ease, and deep restorative calm.',
     primaryColor: '#4A6B52',
@@ -106,8 +106,8 @@ export const FLAVORS = {
   grapefruit: {
     id: 'grapefruit',
     name: 'Grapefruit',
-    kanjiMark: '果',
-    flavorKanji: 'グレープフルーツ',
+    kanjiMark: '',
+    flavorKanji: '',
     subtitle: 'Zesty, Ruby Pink & Effervescent',
     tagline: 'Invigorating citrus antioxidant infusion with natural ruby red grapefruit extract for all-day revival.',
     primaryColor: '#E05A47',
@@ -283,12 +283,11 @@ export class NomuCanScene {
     ctx.letterSpacing = '5px';
     ctx.fillText('HERB-INFUSED WATER', leftX, 180);
 
-    ctx.font = '500 20px "Noto Serif JP", serif';
-    ctx.letterSpacing = '8px';
+    ctx.font = '500 20px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    ctx.letterSpacing = '4px';
     ctx.fillStyle = '#52525B';
-    ctx.fillText('機能性天然ハーブ飲料', leftX, 230);
-    ctx.fillText('純国産ボタニカル水', leftX, 270);
-    ctx.fillText('BEYOND HYDRATION', leftX, 310);
+    ctx.fillText('NATURAL BOTANICAL WATER', leftX, 230);
+    ctx.fillText('BEYOND HYDRATION', leftX, 270);
 
     ctx.font = '400 18px monospace';
     ctx.fillStyle = '#71717A';

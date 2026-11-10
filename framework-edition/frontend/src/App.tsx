@@ -223,10 +223,9 @@ export const App: React.FC = () => {
     const targetFlavor = flavorKey || activeHeroFlavor;
     setActiveAccordionFlavor(targetFlavor);
     setTimeout(() => {
-      const targetId = `pillar-${targetFlavor}`;
-      const targetEl = document.getElementById(targetId) || document.getElementById('showcase');
-      if (targetEl) {
-        targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const showcaseEl = document.getElementById('showcase');
+      if (showcaseEl) {
+        showcaseEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }, 80);
   };

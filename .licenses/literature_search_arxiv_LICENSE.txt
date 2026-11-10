@@ -1,0 +1,7 @@
+arXiv API Terms of Use Notice
+Timestamp: 2026-11-10T10:55:00+05:30
+Terms: https://info.arxiv.org/help/api/index.html
+Always check the license of papers retrieved from arXiv for any restrictions.
+Retrieved papers:
+- arXiv:1901.00350: Responsive Equilibrium for Self-Adaptive Ubiquitous Interaction (https://arxiv.org/abs/1901.00350)
+- arXiv:2404.17619: VisAnywhere: Developing Multi-platform Scientific Visualization Applications (https://arxiv.org/abs/2404.17619)

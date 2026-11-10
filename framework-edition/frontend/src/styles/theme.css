@@ -97,6 +97,8 @@ body[data-flavor="lemongrass"] {
 html {
   scroll-behavior: smooth;
   font-size: 16px;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 body {
@@ -108,7 +110,13 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  width: 100%;
   transition: background-color var(--trans-base);
+}
+
+.nomu-app {
+  width: 100%;
+  overflow-x: hidden;
 }
 
 .container {
@@ -941,6 +949,9 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
    SECTION 2: TICKER RIBBON (Continuous Marquee)
    ========================================================================== */
 .ticker-ribbon {
+  width: 100%;
+  max-width: 100vw;
+  position: relative;
   background-color: var(--nomu-cream);
   color: var(--nomu-ink);
   overflow: hidden;
@@ -948,6 +959,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   padding: 1.15rem 0;
   border-top: 2px solid var(--nomu-ink);
   border-bottom: 2px solid var(--nomu-ink);
+  box-sizing: border-box;
 }
 
 .ticker-track {
@@ -1147,6 +1159,589 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   color: #4A5568;
   margin-top: 0.85rem;
   line-height: 1.6;
+}
+
+/* ==========================================================================
+   DESKTOP EDITORIAL SHOWCASE CAROUSEL (Active on min-width: 993px)
+   Eliminates narrow 60px pillar clipping. Every product name is fully
+   visible, beautifully presented, with silky smooth carousel transitions.
+   ========================================================================== */
+.showcase-master-section,
+#showcase {
+  padding: clamp(3.5rem, 6vw, 6rem) 0;
+  position: relative;
+  background-color: var(--warm-ivory-bg, #F9F6F0);
+  outline: none;
+  scroll-margin-top: calc(5.25rem + 1rem);
+}
+
+.showcase-master-section .container {
+  max-width: min(1440px, 95vw);
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 clamp(1rem, 2vw, 2.5rem);
+}
+
+/* Responsive Visibility Switcher */
+@media (min-width: 993px) {
+  .desktop-showcase-carousel {
+    display: block !important;
+  }
+  .mobile-showcase-accordion {
+    display: none !important;
+  }
+}
+
+@media (max-width: 992px) {
+  .desktop-showcase-carousel {
+    display: none !important;
+  }
+  .mobile-showcase-accordion {
+    display: block !important;
+  }
+}
+
+/* 1. Flavour Selector Tabs Track (Grid of 4) */
+.carousel-flavour-nav-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(0.75rem, 1.2vw, 1.25rem);
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+.carousel-nav-tab {
+  background: #FFFFFF;
+  border: 1.5px solid #E2D9CE;
+  border-radius: 18px;
+  padding: 0.95rem 1.15rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.carousel-nav-tab:hover {
+  transform: translateY(-2px);
+  border-color: #C4B5A5;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.carousel-nav-tab.is-active {
+  background-color: var(--tab-accent, #231A12) !important;
+  border-color: var(--tab-accent, #231A12) !important;
+  box-shadow: 0 10px 28px -4px rgba(0, 0, 0, 0.35);
+}
+
+.carousel-nav-tab.is-active .tab-index-tag {
+  color: var(--warm-ivory, #E6D5BD);
+}
+
+.carousel-nav-tab.is-active .tab-mood-chip {
+  background: rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+}
+
+.carousel-nav-tab.is-active .tab-product-title {
+  color: #FFFFFF;
+}
+
+.carousel-nav-tab.is-active .tab-product-subtitle {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.tab-thumb-bottle {
+  flex: 0 0 38px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tab-bottle-img {
+  max-height: 68px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.25));
+  transition: transform 0.4s var(--ease-spring);
+}
+
+.carousel-nav-tab:hover .tab-bottle-img {
+  transform: translateY(-3px) scale(1.06);
+}
+
+.tab-meta-content {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.tab-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.tab-index-tag {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #7A756D;
+  transition: color 0.3s ease;
+}
+
+.tab-mood-chip {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  background: #F0ECE4;
+  color: #555047;
+  letter-spacing: 0.02em;
+  transition: all 0.3s ease;
+}
+
+.tab-product-title {
+  font-family: var(--font-display, 'Syne', sans-serif);
+  font-size: clamp(0.95rem, 1.1vw, 1.125rem);
+  font-weight: 800;
+  color: var(--soft-black, #111111);
+  line-height: 1.2;
+  margin: 0.15rem 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.01em;
+  transition: color 0.3s ease;
+}
+
+.tab-product-subtitle {
+  font-size: 0.72rem;
+  color: #635F57;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.3s ease;
+}
+
+.tab-active-indicator {
+  position: absolute;
+  bottom: 0;
+  left: 1.25rem;
+  right: 1.25rem;
+  height: 3px;
+  border-radius: 9999px 9999px 0 0;
+  background: var(--warm-ivory, #E6D5BD);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.carousel-nav-tab.is-active .tab-active-indicator {
+  opacity: 1;
+}
+
+/* 2. Main Carousel Spotlight Viewport Frame & Hardware-Accelerated Sliding Track */
+.carousel-stage-card-frame {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  min-height: 590px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 24px 60px -15px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  background-color: #0E0704;
+}
+
+/* Continuous GPU-Accelerated Track containing all 4 preloaded slides */
+.carousel-stage-track {
+  display: flex;
+  width: 400%;
+  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+/* Individual Slide Pane */
+.carousel-slide-pane {
+  width: 25%;
+  flex: 0 0 25%;
+  min-width: 0;
+  box-sizing: border-box;
+  position: relative;
+  min-height: 590px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.carousel-slide-pane.theme-vetiver {
+  background: linear-gradient(135deg, #2B180E 0%, #170E08 55%, #0E0704 100%);
+}
+
+.carousel-slide-pane.theme-chamomile {
+  background: linear-gradient(135deg, #301E06 0%, #190F02 55%, #100901 100%);
+}
+
+.carousel-slide-pane.theme-grapefruit {
+  background: linear-gradient(135deg, #34090C 0%, #1B0406 55%, #110203 100%);
+}
+
+.carousel-slide-pane.theme-lemongrass {
+  background: linear-gradient(135deg, #16260D 0%, #0C1506 55%, #070D03 100%);
+}
+
+/* Carousel Navigation Arrows */
+.carousel-nav-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 25;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+}
+
+.carousel-nav-arrow.arrow-prev {
+  left: 1.25rem;
+}
+
+.carousel-nav-arrow.arrow-next {
+  right: 1.25rem;
+}
+
+.carousel-nav-arrow:hover {
+  background: var(--warm-ivory, #E6D5BD);
+  border-color: var(--warm-ivory, #E6D5BD);
+  color: var(--soft-black, #111111);
+  transform: translateY(-50%) scale(1.12);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+.carousel-nav-arrow:active {
+  transform: translateY(-50%) scale(0.96);
+}
+
+/* 3. Stage Content 2-Column Grid */
+.carousel-stage-grid {
+  display: grid;
+  grid-template-columns: minmax(320px, 420px) 1fr;
+  gap: clamp(2rem, 3.5vw, 4rem);
+  align-items: center;
+  padding: clamp(2.5rem, 3.5vw, 3.75rem) clamp(3.5rem, 4.5vw, 5rem);
+  min-height: 520px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Left Column: Artwork */
+.carousel-art-column {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.carousel-art-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 460px;
+}
+
+.carousel-large-bottle {
+  max-height: clamp(380px, 42vh, 480px);
+  width: auto;
+  object-fit: contain;
+  position: relative;
+  z-index: 3;
+  filter: drop-shadow(0 24px 36px rgba(0, 0, 0, 0.7));
+  transition: transform 0.6s var(--ease-spring);
+}
+
+.carousel-slide-pane:hover .carousel-large-bottle {
+  transform: translateY(-6px) scale(1.02);
+}
+
+.carousel-harvest-splash {
+  position: absolute;
+  width: clamp(260px, 24vw, 340px);
+  height: clamp(180px, 16vw, 230px);
+  object-fit: cover;
+  border-radius: 20px;
+  z-index: 2;
+  opacity: 0.88;
+  filter: contrast(1.05) brightness(0.92);
+  bottom: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+
+.carousel-stage-glow {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  opacity: 0.32;
+  filter: blur(65px);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Right Column: Narrative, Tasting Notes & Meters */
+.carousel-content-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  z-index: 3;
+  position: relative;
+}
+
+.carousel-slide-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.carousel-head-topline {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.carousel-blend-badge {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--warm-ivory, #E6D5BD);
+}
+
+.carousel-mood-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.2rem 0.65rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.14);
+  color: #FFFFFF;
+}
+
+.carousel-display-title {
+  font-family: var(--font-display, 'Syne', sans-serif);
+  font-size: clamp(2rem, 3.2vw, 3.25rem);
+  font-weight: 800;
+  color: #FFFFFF;
+  line-height: 1.06;
+  letter-spacing: -0.025em;
+  margin: 0.15rem 0 0;
+}
+
+.carousel-positioning-quote {
+  font-family: var(--font-display, 'Syne', sans-serif);
+  font-style: italic;
+  font-size: clamp(1rem, 1.25vw, 1.2rem);
+  color: var(--warm-ivory, #E6D5BD);
+  margin: 0.15rem 0 0;
+  line-height: 1.4;
+}
+
+/* Stabilized Narrative Paragraph: Exact Min-Height Prevents Any Vertical Bouncing */
+.carousel-narrative-copy {
+  font-size: clamp(0.875rem, 1vw, 0.95rem);
+  line-height: 1.6;
+  color: #CBD5E1;
+  max-width: 620px;
+  margin: 0;
+  min-height: 4.8rem;
+  display: flex;
+  align-items: flex-start;
+}
+
+/* Aromatic Architecture */
+.carousel-notes-matrix {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 0.95rem 1.25rem;
+  backdrop-filter: blur(6px);
+}
+
+.carousel-note-item {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+.note-badge-tag {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--warm-ivory, #E6D5BD);
+}
+
+.note-desc-text {
+  font-size: 0.85rem;
+  color: #F1F5F9;
+  line-height: 1.35;
+}
+
+/* Palate Spectrum Meters */
+.carousel-spectrum-matrix {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-top: 0.15rem;
+}
+
+.spectrum-meter-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.meter-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.72rem;
+  color: #CBD5E1;
+}
+
+.meter-label-row strong {
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.meter-track-groove {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.meter-fill-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--warm-ivory, #E6D5BD), #FFFFFF);
+  border-radius: 9999px;
+  transition: width 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Actions Row: Rock-Solid Baseline Stability Across All Blends */
+.carousel-stage-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  flex-wrap: wrap;
+}
+
+.carousel-price-statement {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--warm-ivory, #E6D5BD);
+  letter-spacing: 0.02em;
+}
+
+.carousel-cta-btn {
+  padding: 0.75rem 1.6rem;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  border-radius: 9999px;
+  background: #FFFFFF;
+  color: var(--soft-black, #111111);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.carousel-cta-btn:hover {
+  background: var(--warm-ivory, #E6D5BD);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+/* 4. Footer Indicators */
+.carousel-footer-indicators {
+  position: absolute;
+  bottom: 1.25rem;
+  left: clamp(3.5rem, 4.5vw, 5rem);
+  right: clamp(3.5rem, 4.5vw, 5rem);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.carousel-fraction-counter {
+  font-family: var(--font-display, 'Syne', sans-serif);
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--warm-ivory, #E6D5BD);
+  letter-spacing: 0.08em;
+}
+
+.carousel-progress-dots {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  pointer-events: auto;
+}
+
+.carousel-indicator-dot {
+  height: 6px;
+  width: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.carousel-indicator-dot:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.carousel-indicator-dot.is-active {
+  width: 26px;
+  border-radius: 9999px;
+  background: var(--warm-ivory, #E6D5BD);
 }
 
 /* Accordion Stage Wrap */
@@ -1492,9 +2087,21 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .pillar-spectrum-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: clamp(0.6rem, 1vw, 1rem);
+  gap: clamp(0.5rem, 1vw, 1rem);
   margin-bottom: 1.25rem;
   max-width: 680px;
+}
+
+@media (max-width: 580px) {
+  .pillar-spectrum-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem 1rem !important;
+  }
+  .pillar-meter-col .meter-info span {
+    overflow: visible !important;
+    text-overflow: clip !important;
+    font-size: 0.75rem !important;
+  }
 }
 
 .pillar-meter-col {
@@ -1647,6 +2254,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     align-items: flex-start !important;
     gap: 0.15rem !important;
     min-width: 0 !important;
+    flex: 1 1 auto !important;
   }
 
   .pillar-index-tag {
@@ -1659,7 +2267,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 
   .pillar-mini-name {
     font-family: var(--font-display);
-    font-size: 1.05rem;
+    font-size: clamp(0.95rem, 4vw, 1.05rem);
     font-weight: 800;
     color: #FFFFFF;
     line-height: 1.1;
@@ -1669,22 +2277,27 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   }
 
   .pillar-mini-sub {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     color: rgba(255, 255, 255, 0.7);
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .pillar-view-btn {
     flex: 0 0 auto !important;
+    flex-shrink: 0 !important;
     margin-top: 0 !important;
-    font-size: 0.72rem !important;
+    font-size: 0.7rem !important;
     font-weight: 700 !important;
-    padding: 0.35rem 0.7rem !important;
+    padding: 0.32rem 0.65rem !important;
     border-radius: 9999px !important;
     background-color: rgba(255, 255, 255, 0.15) !important;
     border: 1px solid rgba(255, 255, 255, 0.25) !important; /* taste-skill-ignore */
     color: #FFFFFF !important;
     white-space: nowrap !important;
+    min-width: max-content !important;
+    line-height: 1.2 !important;
     transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s var(--ease-spring);
   }
 
@@ -2407,6 +3020,13 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 }
 
 @media (max-width: 480px) {
+  .builder-viewport-card,
+  .builder-config-card {
+    padding: 1rem 0.75rem !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
   .site-header .btn-header-admin {
     padding: 0.42rem 0.75rem;
     font-size: 0.75rem;
