@@ -8,7 +8,6 @@ interface RitualBoxBuilderProps {
   onAddToCart: (item: CartItem) => void;
   onUpdateQuantity?: (id: string, delta: number) => void;
   onRemoveFromCart: (id: string) => void;
-  onApplyPreset: (preset: 'discovery' | 'pantry' | 'reset') => void;
   onOpenCheckout: () => void;
 }
 
@@ -18,7 +17,6 @@ export const RitualBoxBuilder: React.FC<RitualBoxBuilderProps> = ({
   onAddToCart,
   onUpdateQuantity,
   onRemoveFromCart,
-  onApplyPreset,
   onOpenCheckout
 }) => {
   const [selectedFlavor, setSelectedFlavor] = useState<FlavorKey>(controlledFlavor || 'vetiver');
@@ -58,56 +56,6 @@ export const RitualBoxBuilder: React.FC<RitualBoxBuilderProps> = ({
           <p className="section-sub">
             Select multiple herbal blends, configure your custom pack sizes, and order directly over WhatsApp.
           </p>
-        </div>
-
-        {/* Quick Bundle Presets */}
-        <div className="builder-presets-bar">
-          <div className="preset-header-row">
-            <span className="preset-label">Quick Ritual Bundles:</span>
-            <span className="preset-sub-hint">Instant 1-click curated combinations</span>
-          </div>
-          <div className="preset-buttons-group">
-            <button
-              type="button"
-              className="preset-pill-btn preset-col-btn"
-              id="preset-discovery"
-              onClick={() => onApplyPreset('discovery')}
-              aria-label="Discovery Flight: 1 of each blend, 4 bottles, ₹160"
-            >
-              <div className="preset-card-top-row">
-                <span className="badge-mini badge-neutral">STARTER SET</span>
-              </div>
-              <div className="preset-btn-body">
-                <span className="preset-pill-title">Discovery Flight</span>
-                <span className="preset-pill-sub">1 of Each · 4 Bottles</span>
-                <span className="preset-pill-price">₹160</span>
-              </div>
-            </button>
-            <button
-              type="button"
-              className="preset-pill-btn preset-col-btn is-popular"
-              id="preset-pantry"
-              onClick={() => onApplyPreset('pantry')}
-              aria-label="Pantry Ritual: Free shipping, 3 of each blend, 12 bottles, ₹480"
-            >
-              <div className="preset-card-top-row">
-                <span className="badge-mini">FREE SHIPPING</span>
-              </div>
-              <div className="preset-btn-body">
-                <span className="preset-pill-title">Pantry Ritual</span>
-                <span className="preset-pill-sub">3 of Each · 12 Bottles</span>
-                <span className="preset-pill-price">₹480</span>
-              </div>
-            </button>
-            <button
-              type="button"
-              className="preset-pill-btn btn-reset"
-              id="preset-clear"
-              onClick={() => onApplyPreset('reset')}
-            >
-              <span>Reset Cart</span>
-            </button>
-          </div>
         </div>
 
         <div className="builder-layout">

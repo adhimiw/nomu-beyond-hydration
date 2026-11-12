@@ -177,30 +177,6 @@ export const App: React.FC = () => {
     );
   };
 
-  const handleApplyPreset = (preset: 'discovery' | 'pantry' | 'reset') => {
-    if (preset === 'reset') {
-      setCart([]);
-      return;
-    }
-    if (preset === 'discovery') {
-      setCart([
-        { id: 'vetiver-single', flavorKey: 'vetiver', packKey: 'single', quantity: 1, unitPrice: 40, bottlesPerPack: 1 },
-        { id: 'chamomile-single', flavorKey: 'chamomile', packKey: 'single', quantity: 1, unitPrice: 40, bottlesPerPack: 1 },
-        { id: 'grapefruit-single', flavorKey: 'grapefruit', packKey: 'single', quantity: 1, unitPrice: 40, bottlesPerPack: 1 },
-        { id: 'lemongrass-single', flavorKey: 'lemongrass', packKey: 'single', quantity: 1, unitPrice: 40, bottlesPerPack: 1 }
-      ]);
-      return;
-    }
-    if (preset === 'pantry') {
-      setCart([
-        { id: 'vetiver-pack4', flavorKey: 'vetiver', packKey: 'pack4', quantity: 1, unitPrice: 160, bottlesPerPack: 4 },
-        { id: 'chamomile-pack4', flavorKey: 'chamomile', packKey: 'pack4', quantity: 1, unitPrice: 160, bottlesPerPack: 4 },
-        { id: 'grapefruit-pack4', flavorKey: 'grapefruit', packKey: 'pack4', quantity: 1, unitPrice: 160, bottlesPerPack: 4 }
-      ]);
-      return;
-    }
-  };
-
   const handleMoveToBuilder = (flavor: FlavorKey) => {
     setBuilderFlavor(flavor);
     setTimeout(() => {
@@ -257,6 +233,7 @@ export const App: React.FC = () => {
           heroHeadline={cms.hero_headline}
           heroSub={cms.hero_sub}
           onExploreClick={scrollToPillars}
+          onOrderClick={handleMoveToBuilder}
           whatsappPhone={cms.whatsapp_phone}
         />
 
@@ -288,7 +265,6 @@ export const App: React.FC = () => {
           onAddToCart={handleAddToCart}
           onUpdateQuantity={handleUpdateQuantity}
           onRemoveFromCart={handleRemoveFromCart}
-          onApplyPreset={handleApplyPreset}
           onOpenCheckout={() => setIsOrderModalOpen(true)}
         />
 

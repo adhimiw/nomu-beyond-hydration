@@ -258,10 +258,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const heroWaBtn = document.getElementById('hero-whatsapp-btn');
     if (heroWaBtn) {
-      const msg = `Hi NOMU, I would like to order NOMU ${flavor.name} Botanical Water (₹95 single / ₹270 3-pack).`;
-      heroWaBtn.href = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(msg)}`;
+      heroWaBtn.href = '#shop';
     }
   }
+
+  // Handle Hero "ORDER ON WHATSAPP" Scroll to Builder
+  const handleHeroOrderClick = (e) => {
+    e.preventDefault();
+    const curKey = FLAVOR_KEYS[heroActiveIndex] || 'vetiver';
+    const blendBtn = document.querySelector(`[data-builder-blend="${curKey}"]`);
+    if (blendBtn) blendBtn.click();
+    const shopSection = document.getElementById('shop');
+    if (shopSection) {
+      shopSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+  const heroOrderTrigger = document.getElementById('hero-order-scroll-trigger');
+  if (heroOrderTrigger) heroOrderTrigger.addEventListener('click', handleHeroOrderClick);
+  const heroWaBtn = document.getElementById('hero-whatsapp-btn');
+  if (heroWaBtn) heroWaBtn.addEventListener('click', handleHeroOrderClick);
 
   // Bind Pagination Dots
   document.querySelectorAll('.hero-dot-btn').forEach(dot => {

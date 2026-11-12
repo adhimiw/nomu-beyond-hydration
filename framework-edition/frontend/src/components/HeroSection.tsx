@@ -8,6 +8,7 @@ interface HeroSectionProps {
   heroHeadline?: string;
   heroSub?: string;
   onExploreClick: (flavorKey: FlavorKey) => void;
+  onOrderClick?: (flavorKey: FlavorKey) => void;
   whatsappPhone?: string;
 }
 
@@ -16,7 +17,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   onSelectFlavor,
   heroHeadline,
   onExploreClick,
-  whatsappPhone = '919345214712'
+  onOrderClick
 }) => {
   // Two-phase transition: 'idle' (visible) | 'exit' (fading out to 0 before swap)
   const [swapPhase, setSwapPhase] = useState<'idle' | 'exit'>('idle');
@@ -238,19 +239,37 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
         {/* Bottom Controls & Origin Accent */}
         <div className="hero-bottom-bar">
-          <div className="hero-bottom-left">
-            <a
-              href={`https://wa.me/${whatsappPhone || '919345214712'}?text=Hi%20NOMU%2C%20I%20would%20like%20to%20order%20NOMU%20${encodeURIComponent(activeFlavor.name)}.`}
-              target="_blank"
-              rel="noopener noreferrer"
+          <div
+            className="hero-bottom-left"
+            id="hero-order-scroll-trigger"
+            onClick={() => {
+              if (onOrderClick) {
+                onOrderClick(immediateFlavorKey);
+              } else {
+                document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            }}
+            role="button"
+            tabIndex={0}
+            aria-label="Order on WhatsApp - Scroll to ordering page"
+            style={{ cursor: 'pointer' }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                if (onOrderClick) onOrderClick(immediateFlavorKey);
+                else document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            }}
+          >
+            <div
               className="hero-circle-btn"
               id="hero-whatsapp-btn"
-              aria-label="Order on WhatsApp"
+              aria-hidden="true"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
-            </a>
+            </div>
             <span className="hero-btn-label">ORDER ON WHATSAPP</span>
           </div>
 
