@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NOMU Typography Studio · About Us Font Showcase</title>
+
+  <!-- Google Fonts Imports for All Candidate Families -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Outfit:wght@700;800&family=Space+Grotesk:wght@600;700&family=Instrument+Serif:ital@0;1&family=Syne:wght@700;800&family=Cabinet+Grotesk:wght@700;800&family=Clash+Display:wght@600;700&family=Fraunces:opsz,wght@9..144,700;9..144,800&family=Urbanist:wght@700;800&family=Manrope:wght@700;800&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    :root {
+      --nomu-red: #D8262C;
+      --soft-black: #111317;
+      --charcoal-sub: #4A453E;
+      --warm-ivory: #FAF8F5;
+      --surface-border: #E8E2D9;
+      --badge-bg: #F4EFE6;
+      --font-body: 'Instrument Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --global-headline-size: 2.75rem;
+      --global-letter-spacing: -0.02em;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: #F6F4F0;
+      color: var(--soft-black);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Sticky Control Toolbar */
+    .studio-toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--surface-border);
+      padding: 0.85rem 1.5rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .toolbar-container {
+      max-width: 1360px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .brand-cluster {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-home-link {
+      text-decoration: none;
+      display: inline-flex;
+    }
+
+    .return-site-btn {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--nomu-red);
+      text-decoration: none;
+      padding: 0.35rem 0.75rem;
+      border: 1px solid rgba(216, 38, 44, 0.25);
+      border-radius: 999px;
+      background: #FFF5F5;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .return-site-btn:hover {
+      background: var(--nomu-red);
+      color: #FFFFFF;
+      border-color: var(--nomu-red);
+    }
+
+    .brand-logo-pill {
+      background: var(--soft-black);
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      padding: 0.3rem 0.65rem;
+      border-radius: 6px;
+    }
+
+    .studio-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--soft-black);
+    }
+
+    .controls-cluster {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+    }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--charcoal-sub);
+    }
+
+    .control-group input[type="range"] {
+      width: 100px;
+      accent-color: var(--nomu-red);
+      cursor: pointer;
+    }
+
+    .quick-jump-nav {
+      display: flex;
+      gap: 0.4rem;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      max-width: 100%;
+    }
+
+    .jump-btn {
+      background: #FFFFFF;
+      border: 1px solid #DED7CB;
+      border-radius: 999px;
+      padding: 0.3rem 0.75rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--soft-black);
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+
+    .jump-btn:hover, .jump-btn.is-active {
+      background: var(--soft-black);
+      color: #FFFFFF;
+      border-color: var(--soft-black);
+    }
+
+    .theme-toggle-btn {
+      background: #FFFFFF;
+      border: 1px solid #DED7CB;
+      border-radius: 8px;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.15s ease;
+    }
+
+    .theme-toggle-btn:hover {
+      background: #F0ECE4;
+    }
+
+    /* Main Container */
+    .studio-main {
+      max-width: 1360px;
+      margin: 2rem auto 5rem;
+      padding: 0 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+    }
+
+    .intro-banner {
+      background: #FFFFFF;
+      border: 1px solid var(--surface-border);
+      border-radius: 16px;
+      padding: 1.75rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+    }
+
+    .intro-banner h1 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.35rem;
+    }
+
+    .intro-banner p {
+      font-size: 0.9rem;
+      color: var(--charcoal-sub);
+      max-width: 720px;
+    }
+
+    .badge-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.8rem;
+      background: #E8F5E9;
+      color: #2E7D32;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .badge-status::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      background: #2E7D32;
+      border-radius: 50%;
+    }
+
+    /* Font Showcase Card */
+    .font-card {
+      background: #FFFFFF;
+      border: 1px solid var(--surface-border);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .font-card:hover {
+      border-color: #BDB4A5;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+    }
+
+    .font-card.is-active-on-site {
+      border: 2px solid var(--nomu-red);
+      position: relative;
+    }
+
+    /* Card Header Meta */
+    .card-header {
+      padding: 1.25rem 2rem;
+      background: #FAF8F5;
+      border-bottom: 1px solid var(--surface-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .card-title-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .card-index {
+      font-size: 0.75rem;
+      font-weight: 800;
+      background: var(--soft-black);
+      color: #FFFFFF;
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+    }
+
+    .font-name {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--soft-black);
+    }
+
+    .font-category-badge {
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: #EAE4DA;
+      color: #4A453E;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+    }
+
+    .active-badge {
+      background: var(--nomu-red);
+      color: #FFFFFF;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+    }
+
+    .action-group {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .btn-copy-css {
+      background: #FFFFFF;
+      border: 1px solid #D5CBBF;
+      border-radius: 6px;
+      padding: 0.4rem 0.85rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--soft-black);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.15s ease;
+    }
+
+    .btn-copy-css:hover {
+      background: #F4EFE6;
+      border-color: #B8ACA0;
+    }
+
+    .btn-apply-font {
+      background: var(--soft-black);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 6px;
+      padding: 0.45rem 1rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .btn-apply-font:hover {
+      background: var(--nomu-red);
+    }
+
+    /* Live Component Preview Render */
+    .preview-stage {
+      padding: 2.5rem 2.25rem;
+    }
+
+    /* Ticker Ribbon Simulation */
+    .preview-ticker {
+      background: var(--soft-black);
+      color: #FFFFFF;
+      padding: 0.65rem 1.25rem;
+      border-radius: 8px;
+      margin-bottom: 2.5rem;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      white-space: nowrap;
+      font-size: 0.88rem;
+      letter-spacing: 0.04em;
+    }
+
+    .preview-ticker .ticker-accent {
+      color: var(--nomu-red);
+      margin-left: 0.25rem;
+    }
+
+    .preview-ticker .ticker-dot {
+      margin: 0 1rem;
+      color: #8C8479;
+    }
+
+    /* About Us Component Layout */
+    .about-preview-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3.5rem;
+      align-items: start;
+    }
+
+    @media (max-width: 960px) {
+      .about-preview-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+    }
+
+    .about-left-col {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .about-eyebrow {
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--nomu-red);
+      font-family: var(--font-body);
+    }
+
+    .about-display-headline {
+      font-size: var(--global-headline-size);
+      font-weight: 800;
+      line-height: 1.08;
+      letter-spacing: var(--global-letter-spacing);
+      text-transform: uppercase;
+      color: var(--soft-black);
+    }
+
+    .about-display-headline .highlight-red {
+      color: var(--nomu-red);
+      display: block;
+    }
+
+    .about-right-col {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .narrative-lead {
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: var(--soft-black);
+    }
+
+    .narrative-lead strong {
+      color: var(--nomu-red);
+      font-weight: 700;
+    }
+
+    .narrative-secondary {
+      font-size: 0.92rem;
+      line-height: 1.65;
+      color: #555047;
+    }
+
+    /* Stats Grid */
+    .preview-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border: 1px solid var(--surface-border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-top: 0.75rem;
+      background: #FFFFFF;
+    }
+
+    @media (max-width: 600px) {
+      .preview-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .stat-cell {
+      padding: 1.1rem 0.85rem;
+      text-align: center;
+      border-right: 1px solid var(--surface-border);
+    }
+
+    .stat-cell:last-child {
+      border-right: none;
+    }
+
+    .stat-number {
+      font-size: 1.6rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 0.4rem;
+      color: var(--soft-black);
+    }
+
+    .stat-cell:first-child .stat-number {
+      color: var(--nomu-red);
+    }
+
+    .stat-label {
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #6C665D;
+      line-height: 1.25;
+    }
+
+    /* Toast Notification */
+    .toast-popup {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--soft-black);
+      color: #FFFFFF;
+      padding: 0.75rem 1.4rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 9999;
+    }
+
+    .toast-popup.is-visible {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Dark Mode Theme */
+    body.dark-theme {
+      background-color: #0E1012;
+      color: #EDEDED;
+    }
+
+    body.dark-theme .studio-toolbar {
+      background: rgba(17, 19, 23, 0.94);
+      border-bottom-color: #272B30;
+    }
+
+    body.dark-theme .studio-title,
+    body.dark-theme .control-group {
+      color: #EDEDED;
+    }
+
+    body.dark-theme .jump-btn,
+    body.dark-theme .theme-toggle-btn {
+      background: #1B1E23;
+      border-color: #31373F;
+      color: #EDEDED;
+    }
+
+    body.dark-theme .jump-btn:hover,
+    body.dark-theme .jump-btn.is-active {
+      background: var(--nomu-red);
+      border-color: var(--nomu-red);
+    }
+
+    body.dark-theme .intro-banner,
+    body.dark-theme .font-card {
+      background: #14171A;
+      border-color: #272B30;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    body.dark-theme .card-header {
+      background: #1A1E23;
+      border-bottom-color: #272B30;
+    }
+
+    body.dark-theme .font-name,
+    body.dark-theme .about-display-headline,
+    body.dark-theme .narrative-lead,
+    body.dark-theme .stat-number {
+      color: #FFFFFF;
+    }
+
+    body.dark-theme .intro-banner p,
+    body.dark-theme .narrative-secondary {
+      color: #A0A5AD;
+    }
+
+    body.dark-theme .font-category-badge {
+      background: #252A32;
+      color: #C0C6CF;
+    }
+
+    body.dark-theme .btn-copy-css {
+      background: #1F242B;
+      border-color: #353C47;
+      color: #FFFFFF;
+    }
+
+    body.dark-theme .preview-stats-grid {
+      background: #181C21;
+      border-color: #272B30;
+    }
+
+    body.dark-theme .stat-cell {
+      border-right-color: #272B30;
+    }
+
+    body.dark-theme .stat-label {
+      color: #8C939F;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sticky Studio Controls -->
+  <header class="studio-toolbar">
+    <div class="toolbar-container">
+      <div class="brand-cluster">
+        <a href="/" class="brand-home-link" title="Return to NOMU Main Site">
+          <span class="brand-logo-pill">NOMU</span>
+        </a>
+        <span class="studio-title">Typography Studio</span>
+        <a href="/" class="return-site-btn">← Back to NOMU Site</a>
+      </div>
+
+      <div class="controls-cluster">
+        <div class="control-group">
+          <label for="headline-size-slider">Headline Size:</label>
+          <input type="range" id="headline-size-slider" min="32" max="64" value="44" />
+          <span id="headline-size-val">44px</span>
+        </div>
+
+        <div class="control-group">
+          <label for="letter-spacing-slider">Tracking:</label>
+          <input type="range" id="letter-spacing-slider" min="-5" max="5" value="-2" />
+          <span id="letter-spacing-val">-0.02em</span>
+        </div>
+
+        <button type="button" class="theme-toggle-btn" id="theme-toggle" onclick="toggleDarkTheme()">
+          <span>🌙</span>
+          <span id="theme-mode-text">Dark Canvas</span>
+        </button>
+      </div>
+
+      <!-- Quick Jump Navigator -->
+      <nav class="quick-jump-nav" aria-label="Quick jump to candidate fonts">
+        <a href="#font-jakarta" class="jump-btn is-active">1. Plus Jakarta Sans</a>
+        <a href="#font-outfit" class="jump-btn">2. Outfit</a>
+        <a href="#font-space-grotesk" class="jump-btn">3. Space Grotesk</a>
+        <a href="#font-instrument-serif" class="jump-btn">4. Instrument Serif</a>
+        <a href="#font-urbanist" class="jump-btn">5. Urbanist</a>
+        <a href="#font-manrope" class="jump-btn">6. Manrope</a>
+        <a href="#font-bricolage" class="jump-btn">7. Bricolage Grotesque</a>
+        <a href="#font-fraunces" class="jump-btn">8. Fraunces Editorial</a>
+        <a href="#font-syne" class="jump-btn">9. Original (Syne)</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="studio-main">
+
+    <!-- Intro Banner -->
+    <div class="intro-banner">
+      <div>
+        <h1>About Us Typography Direction</h1>
+        <p>
+          Compare each candidate font using the exact words, colors, and layout from NOMU's About Us section and ticker ribbon. 
+          Use the sliders in the top toolbar to adjust headline scale and letter tracking in real time.
+        </p>
+      </div>
+      <div class="badge-status">
+        Live Staging Active: Plus Jakarta Sans
+      </div>
+    </div>
+
+    <!-- FONT 1: Plus Jakarta Sans (Recommended) -->
+    <section class="font-card is-active-on-site" id="font-jakarta">
+      <div class="card-header">
+        <div class="card-title-group">
+          <span class="card-index">01</span>
+          <h2 class="font-name">Plus Jakarta Sans</h2>
+          <span class="font-category-badge">Editorial Grotesque · Weight 800</span>
+          <span class="active-badge">CURRENTLY APPLIED</span>
+        </div>
+        <div class="action-group">
+          <button class="btn-copy-css" onclick="copyCss('--font-display: \'Plus Jakarta Sans\', sans-serif;')">
+            Copy CSS
+          </button>
+          <button class="btn-apply-font" onclick="applyFontToSite('Plus Jakarta Sans', '\'Plus Jakarta Sans\', sans-serif', 'font-jakarta')">
+            Apply to Website
+          </button>
+        </div>
+      </div>
+
+      <div class="preview-stage">
+        <!-- Ticker Simulation -->
+        <div class="preview-ticker" style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800;">
+          <span>MADE IN INDIA,</span><span class="ticker-accent">JOIN THE RITUAL</span>
+          <span class="ticker-dot">•</span>
+          <span>MADE IN INDIA,</span><span class="ticker-accent">JOIN THE RITUAL</span>
+          <span class="ticker-dot">•</span>
+          <span>MADE IN INDIA,</span><span class="ticker-accent">JOIN THE RITUAL</span>
+        </div>
+
+        <!-- About Us Component -->
+        <div class="about-preview-grid">
+          <div class="about-left-col">
+            <span class="about-eyebrow">ABOUT US</span>
+            <div class="about-display-headline" style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800;">
+              NOT JUST WATER.<br />
+              <span class="highlight-red">NOT JUST A</span>
+              FLAVOURED DRINK.
+            </div>
+          </div>
+
+          <div class="about-right-col">
+            <p class="narrative-lead">
+              <strong>NOMU</strong> is a modern herb-infused water brand bringing together traditional ingredients and contemporary lifestyles in every bottle.
+            </p>
+            <p class="narrative-secondary">
+              We craft refreshing blends like Vetiver, Chamomile, Lemongrass and Grapefruit to offer clean, functional hydration without added nonsense. Replaces sugar, chemicals, and caffeine with clean, herb-infused hydration that delivers real flavor and function.
+            </p>
+            <p class="narrative-secondary">
+              At Nomu, we’re redefining water as a daily wellness ritual — natural, flavorful, and mindfully restorative.
+            </p>
+
+            <div class="preview-stats-grid">
+              <div class="stat-cell">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Natural<br />Infusions</div>
+              </div>
+              <div class="stat-cell">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Calories<br />Per Bottle</div>
+              </div>
+              <div class="stat-cell">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Preservatives</div>
+              </div>
+              <div class="stat-cell">
+                <div class="stat-number">4</div>
+                <div class="stat-label">Signature<br />Flavours</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FONT 2: Outfit -->
+    <section class="font-card" id="font-outfit">
+      <div class="card-header">
+        <div class="card-title-group">
+          <span class="card-index">02</span>
+          <h2 class="font-name">Outfit</h2>
+          <span class="font-category-badge">Modern Geometric Luxury · Weight 800</span>
+        </div>
+        <div class="action-group">
+          <button class="btn-copy-css" onclick="copyCss('--font-display: \'Outfit\', sans-serif;')">
+            Copy CSS
+          </button>
+          <button class="btn-apply-font" onclick="applyFontToSite('Outfit', '\'Outfit\', sans-serif', 'font-outfit')">
+            Apply to Website
+          </button>
+        </div>
+      </div>
+
+      <div class="preview-stage">
+        <div class="preview-ticker" style="font-family: 'Outfit', sans-serif; font-weight: 800;">
+          <span>MADE IN INDIA,</span><span class="ticker-accent">JOIN THE RITUAL</span>
+          <span class="ticker-dot">•</span>
+          <span>MADE IN INDIA,</span><span class="ticker-accent">JOIN THE RITUAL</span>
+          <span class="ticker-dot">•</span>
+          <span>MADE IN INDIA,</span><span class="ticker-accent">JOIN THE RITUAL</span>
+        </div>
+
+        <div class="about-preview-grid">
+          <div class="about-left-col">
+            <span class="about-eyebrow">ABOUT US</span>
+            <div class="about-display-headline" style="font-family: 'Outfit', sans-serif; font-weight: 800;">
+              NOT JUST WATER.<br />
+              <span class="highlight-red">NOT JUST A</span>
+              FLAVOURED DRINK.
+            </div>
+          </div>
+
+          <div class="about-right-col">
+            <p class="narrative-lead">
+              <strong>NOMU</strong> is a modern herb-infused water brand bringing together traditional ingredients and contemporary lifestyles in every bottle.
+            </p>
+            <p class="narrative-secondary">
+              We craft refreshing blends like Vetiver, Chamomile, Lemongrass and Grapefruit to offer clean, functional hydration without added nonsense. Replaces sugar, chemicals, and caffeine with clean, herb-infused hydration that delivers real flavor and function.
+            </p>
+            <p class="narrative-secondary">
+              At Nomu, we’re redefining water as a daily wellness ritual — natural, flavorful, and mindfully restorative.
+            </p>
+
+            <div class="preview-stats-grid">
+              <div class="stat-cell">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Natural<br />Infusions</div>
+              </div>
+              <div class="stat-cell">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Calories<br />Per Bottle</div>
+              </div>
+              <div class="stat-cell">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Preservatives</div>
+              </div>
+              <div class="stat-cell">
+                <div class="stat-number">4</div>
+                <div class="stat-label">Signature<br />Flavours</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FONT 3: Space Grotesk -->
+    <section class="font-card" id="font-space-grotesk">
+      <div class="card-header">
+        <div class="card-title-group">
+          <span class="card-index">03</span>
+          <h2 class="font-name">Space Grotesk</h2>
+          <span class="font-category-badge">Contemporary Architectural Grotesque · Weight 700</span>
+        </div>
+        <div class="action-group">
+          <button class="btn-copy-css" onclick="copyCss('--font-display: \'Space Grotesk\', sans-serif;')">
+            Copy CSS
+          </button>
+          <button class="btn-apply-font" onclick="applyFontToSite('Space Grotesk', '\'Space Grotesk\', sans-serif', 'font-space-grotesk')">
+            Apply to Website
+          </button>
+        </div>
+      </div>
+
+      <div class="preview-stage">
+        <div class="preview-ticker" style="font-family: 'Space Grotesk', sans-serif; font-weight: 700;">
+          <span>MADE IN INDIA,</span><span class="ticker-accent">JOIN THE RITUAL</span>
+          <span class="ticker-dot">•</span>
+          <span>MADE IN INDIA,</span><span class="ticker-accent">JOIN THE RITUAL</span>
+          <span class="ticker-dot">•</span>
+          <span>MADE IN INDIA,</span><span class="ticker-accent">JOIN THE RITUAL</span>
+        </div>
+
+        <div class="about-preview-grid">
+          <div class="about-left-col">
+            <span class="about-eyebrow">ABOUT US</span>
+            <div class="about-display-headline" style="font-family: 'Space Grotesk', sans-serif; font-weight: 700;">
+              NOT JUST WATER.<br />
+              <span class="highlight-red">NOT JUST A</span>
+              FLAVOURED DRINK.
+            </div>
+          </div>
+
+          <div class="about-right-col">
+            <p class="narrative-lead">
+              <strong>NOMU</strong> is a modern herb-infused water brand bringing together traditional ingredients and contemporary lifestyles in every bottle.
+            </p>
+            <p class="narrative-secondary">
+              We craft refreshing blends like Vetiver, Chamomile, Lemongrass and Grapefruit to offer clean, functional hydration without added nonsense. Replaces sugar, chemicals, and caffeine with clean, herb-infused hydration that delivers real flavor and function.
+            </p>
+            <p class="narrative-secondary">
+              At Nomu, we’re redefining water as a daily wellness ritual — natural, flavorful, and mindfully restorative.
+            </p>
+
+            <div class="preview-stats-grid">
+              <div class="stat-cell">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Natural<br />Infusions</div>
+              </div>
+              <div class="stat-cell">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Calories<br />Per Bottle</div>
+              </div>
+              <div class="stat-cell">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Preservatives</div>
+              </div>
+              <div class="stat-cell">
+                <div class="stat-number">4</div>
+                <div class="stat-label">Signature<br />Flavours</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FONT 4: Instrument Serif -->
+    <section class="font-card" id="font-instrument-serif">
+      <div class="card-header">
+        <div class="card-title-group">
+          <span class="card-index">04</span>
+          <h2 class="font-name">Instrument Serif</h2>
+          <span class="font-category-badge">Editorial Botanical Apothecary Serif · High Contrast</span>
+        </div>
+        <div class="action-group">
+          <button class="btn-copy-css" onclick="copyCss('--font-display: \'Instrument Serif\', serif;')">
+            Copy CSS
+          </button>
+          <button class="btn-apply-font" onclick="applyFontToSite('Instrument Serif', '\'Instrument Serif\', serif', 'font-instrument-serif')">
+            Apply to Website
+          </button>
+        </div>
+      </div>
+
+      <div class="preview-stage">
+        <div class="preview-ticker" style="font-family: 'Instrument Serif', serif; font-size: 1.05rem;">
+          <span>MADE IN INDIA,</span><span class="ticker-accent">JOIN THE RITUAL</span>
+          <span class="ticker-dot">•</span>
+          <span>MADE IN INDIA,</span><span class="ticker-accent">JOIN THE RITUAL</span>
+          <span class="ticker-dot">•</span>
+          <span>MADE IN INDIA,</span><span class="ticker-accent">JOIN THE RITUAL</span>
+        </div>
+
+        <div class="about-preview-grid">
+          <div class="about-left-col">
+            <span class="about-eyebrow">ABOUT US</span>
+            <div class="about-display-headline" style="font-family: 'Instrument Serif', serif; font-weight: 400; text-transform: uppercase;">
+              NOT JUST WATER.<br />
+              <span class="highlight-red" style="font-style: italic;">NOT JUST A</span>
+              FLAVOURED DRINK.
+            </div>
+          </div>
+
+          <div class="about-right-col">
+            <p class="narrative-lead">
+              <strong>NOMU</strong> is a modern herb-infused water brand bringing together traditional ingredients and contemporary lifestyles in every bottle.
+            </p>
+            <p class="narrative-secondary">
+              We craft refreshing blends like Vetiver, Chamomile, Lemongrass and Grapefruit to offer clean, functional hydration without added nonsense. Replaces sugar, chemicals, and caffeine with clean, herb-infused hydration that delivers real flavor and function.
+            </p>
+            <p class="narrative-secondary">
+              At Nomu, we’re redefining water as a daily wellness ritual — natural, flavorful, and mindfully restorative.
+            </p>
+
+            <div class="preview-stats-grid">
+              <div class="stat-cell">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Natural<br />Infusions</div>
+              </div>
+              <div class="stat-cell">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Calories<br />Per Bottle</div>
+              </div>
+              <div class="stat-cell">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Preservatives</div>
+              </div>
+              <div class="stat-cell">
+                <div class="stat-number">4</div>
+                <div class="stat-label">Signature<br />Flavours</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FONT 5: Urbanist -->
+    <section class="font-card" id="font-urbanist">
+      <div class="card-header">
+        <div class="card-title-group">
+          <span class="card-index">05</span>
+          <h2 class="font-name">Urbanist</h2>
+          <span class="font-category-badge">Refined Neo-Grotesque · Weight 800</span>
+        </div>
+        <div class="action-group">
+          <button class="btn-copy-css" onclick="copyCss('--font-display: \'Urbanist\', sans-serif;')">
+            Copy CSS
+          </button>
+          <button class="btn-apply-font" onclick="applyFontToSite('Urbanist', '\'Urbanist\', sans-serif', 'font-urbanist')">
+            Apply to Website
+          </button>
+        </div>
+      </div>
+
+      <div class="preview-stage">
+        <div class="preview-ticker" style="font-family: 'Urbanist', sans-serif; font-weight: 800;">
+          <span>MADE IN INDIA,</span><span class="ticker-accent">JOIN THE RITUAL</span>
+          <span class="ticker-dot">•</span>
+          <span>MADE IN INDIA,</span><span class="ticker-accent">JOIN THE RITUAL</span>
+          <span class="ticker-dot">•</span>
+          <span>MADE IN INDIA,</span><span class="ticker-accent">JOIN THE RITUAL</span>
+        </div>
+
+        <div class="about-preview-grid">
+          <div class="about-left-col">
+            <span class="about-eyebrow">ABOUT US</span>
+            <div class="about-display-headline" style="font-family: 'Urbanist', sans-serif; font-weight: 800;">
+              NOT JUST WATER.<br />
+              <span class="highlight-red">NOT JUST A</span>
+              FLAVOURED DRINK.
+            </div>
+          </div>
+
+          <div class="about-right-col">
+            <p class="narrative-lead">
+              <strong>NOMU</strong> is a modern herb-infused water brand bringing together traditional ingredients and contemporary lifestyles in every bottle.
+            </p>
+            <p class="narrative-secondary">
+              We craft refreshing blends like Vetiver, Chamomile, Lemongrass and Grapefruit to offer clean, functional hydration without added nonsense. Replaces sugar, chemicals, and caffeine with clean, herb-infused hydration that delivers real flavor and function.
+            </p>
+            <p class="narrative-secondary">
+              At Nomu, we’re redefining water as a daily wellness ritual — natural, flavorful, and mindfully restorative.
+            </p>
+
+            <div class="preview-stats-grid">
+              <div class="stat-cell">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Natural<br />Infusions</div>
+              </div>
+              <div class="stat-cell">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Calories<br />Per Bottle</div>
+              </div>
+              <div class="stat-cell">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Preservatives</div>
+              </div>
+              <div class="stat-cell">
+                <div class="stat-number">4</div>
+                <div class="stat-label">Signature<br />Flavours</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FONT 6: Manrope -->
+    <section class="font-card" id="font-manrope">
+      <div class="card-header">
+        <div class="card-title-group">
+          <span class="card-index">06</span>
+          <h2 class="font-name">Manrope</h2>
+          <span class="font-category-badge">Modern Geometric Sans · Weight 800</span>
+        </div>
+        <div class="action-group">
+          <button class="btn-copy-css" onclick="copyCss('--font-display: \'Manrope\', sans-serif;')">
+            Copy CSS
+          </button>
+          <button class="btn-apply-font" onclick="applyFontToSite('Manrope', '\'Manrope\', sans-serif', 'font-manrope')">
+            Apply to Website
+          </button>
+        </div>
+      </div>
+
+      <div class="preview-stage">
+        <div class="preview-ticker" style="font-family: 'Manrope', sans-serif; font-weight: 800;">
+          <span>MADE IN INDIA,</span><span class="ticker-accent">JOIN THE RITUAL</span>
+          <span class="ticker-dot">•</span>
+          <span>MADE IN INDIA,</span><span class="ticker-accent">JOIN THE RITUAL</span>
+          <span class="ticker-dot">•</span>
+          <span>MADE IN INDIA,</span><span class="ticker-accent">JOIN THE RITUAL</span>
+        </div>
+
+        <div class="about-preview-grid">
+          <div class="about-left-col">
+            <span class="about-eyebrow">ABOUT US</span>
+            <div class="about-display-headline" style="font-family: 'Manrope', sans-serif; font-weight: 800;">
+              NOT JUST WATER.<br />
+              <span class="highlight-red">NOT JUST A</span>
+              FLAVOURED DRINK.
+            </div>
+          </div>
+
+          <div class="about-right-col">
+            <p class="narrative-lead">
+              <strong>NOMU</strong> is a modern herb-infused water brand bringing together traditional ingredients and contemporary lifestyles in every bottle.
+            </p>
+            <p class="narrative-secondary">
+              We craft refreshing blends like Vetiver, Chamomile, Lemongrass and Grapefruit to offer clean, functional hydration without added nonsense. Replaces sugar, chemicals, and caffeine with clean, herb-infused hydration that delivers real flavor and function.
+            </p>
+            <p class="narrative-secondary">
+              At Nomu, we’re redefining water as a daily wellness ritual — natural, flavorful, and mindfully restorative.
+            </p>
+
+            <div class="preview-stats-grid">
+              <div class="stat-cell">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Natural<br />Infusions</div>
+              </div>
+              <div class="stat-cell">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Calories<br />Per Bottle</div>
+              </div>
+              <div class="stat-cell">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Preservatives</div>
+              </div>
+              <div class="stat-cell">
+                <div class="stat-number">4</div>
+                <div class="stat-label">Signature<br />Flavours</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FONT 7: Bricolage Grotesque -->
+    <section class="font-card" id="font-bricolage">
+      <div class="card-header">
+        <div class="card-title-group">
+          <span class="card-index">07</span>
+          <h2 class="font-name">Bricolage Grotesque</h2>
+          <span class="font-category-badge">Expressive Neo-Grotesque Display · Weight 800</span>
+        </div>
+        <div class="action-group">
+          <button class="btn-copy-css" onclick="copyCss('--font-display: \'Bricolage Grotesque\', sans-serif;')">
+            Copy CSS
+          </button>
+          <button class="btn-apply-font" onclick="applyFontToSite('Bricolage Grotesque', '\'Bricolage Grotesque\', sans-serif', 'font-bricolage')">
+            Apply to Website
+          </button>
+        </div>
+      </div>
+
+      <div class="preview-stage">
+        <div class="preview-ticker" style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800;">
+          <span>MADE IN INDIA,</span><span class="ticker-accent">JOIN THE RITUAL</span>
+          <span class="ticker-dot">•</span>
+          <span>MADE IN INDIA,</span><span class="ticker-accent">JOIN THE RITUAL</span>
+          <span class="ticker-dot">•</span>
+          <span>MADE IN INDIA,</span><span class="ticker-accent">JOIN THE RITUAL</span>
+        </div>
+
+        <div class="about-preview-grid">
+          <div class="about-left-col">
+            <span class="about-eyebrow">ABOUT US</span>
+            <div class="about-display-headline" style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800;">
+              NOT JUST WATER.<br />
+              <span class="highlight-red">NOT JUST A</span>
+              FLAVOURED DRINK.
+            </div>
+          </div>
+
+          <div class="about-right-col">
+            <p class="narrative-lead">
+              <strong>NOMU</strong> is a modern herb-infused water brand bringing together traditional ingredients and contemporary lifestyles in every bottle.
+            </p>
+            <p class="narrative-secondary">
+              We craft refreshing blends like Vetiver, Chamomile, Lemongrass and Grapefruit to offer clean, functional hydration without added nonsense. Replaces sugar, chemicals, and caffeine with clean, herb-infused hydration that delivers real flavor and function.
+            </p>
+            <p class="narrative-secondary">
+              At Nomu, we’re redefining water as a daily wellness ritual — natural, flavorful, and mindfully restorative.
+            </p>
+
+            <div class="preview-stats-grid">
+              <div class="stat-cell">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Natural<br />Infusions</div>
+              </div>
+              <div class="stat-cell">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Calories<br />Per Bottle</div>
+              </div>
+              <div class="stat-cell">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Preservatives</div>
+              </div>
+              <div class="stat-cell">
+                <div class="stat-number">4</div>
+                <div class="stat-label">Signature<br />Flavours</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FONT 8: Fraunces -->
+    <section class="font-card" id="font-fraunces">
+      <div class="card-header">
+        <div class="card-title-group">
+          <span class="card-index">08</span>
+          <h2 class="font-name">Fraunces</h2>
+          <span class="font-category-badge">Warm Editorial Heritage Serif · Weight 700</span>
+        </div>
+        <div class="action-group">
+          <button class="btn-copy-css" onclick="copyCss('--font-display: \'Fraunces\', serif;')">
+            Copy CSS
+          </button>
+          <button class="btn-apply-font" onclick="applyFontToSite('Fraunces', '\'Fraunces\', serif', 'font-fraunces')">
+            Apply to Website
+          </button>
+        </div>
+      </div>
+
+      <div class="preview-stage">
+        <div class="preview-ticker" style="font-family: 'Fraunces', serif; font-weight: 700;">
+          <span>MADE IN INDIA,</span><span class="ticker-accent">JOIN THE RITUAL</span>
+          <span class="ticker-dot">•</span>
+          <span>MADE IN INDIA,</span><span class="ticker-accent">JOIN THE RITUAL</span>
+          <span class="ticker-dot">•</span>
+          <span>MADE IN INDIA,</span><span class="ticker-accent">JOIN THE RITUAL</span>
+        </div>
+
+        <div class="about-preview-grid">
+          <div class="about-left-col">
+            <span class="about-eyebrow">ABOUT US</span>
+            <div class="about-display-headline" style="font-family: 'Fraunces', serif; font-weight: 700;">
+              NOT JUST WATER.<br />
+              <span class="highlight-red">NOT JUST A</span>
+              FLAVOURED DRINK.
+            </div>
+          </div>
+
+          <div class="about-right-col">
+            <p class="narrative-lead">
+              <strong>NOMU</strong> is a modern herb-infused water brand bringing together traditional ingredients and contemporary lifestyles in every bottle.
+            </p>
+            <p class="narrative-secondary">
+              We craft refreshing blends like Vetiver, Chamomile, Lemongrass and Grapefruit to offer clean, functional hydration without added nonsense. Replaces sugar, chemicals, and caffeine with clean, herb-infused hydration that delivers real flavor and function.
+            </p>
+            <p class="narrative-secondary">
+              At Nomu, we’re redefining water as a daily wellness ritual — natural, flavorful, and mindfully restorative.
+            </p>
+
+            <div class="preview-stats-grid">
+              <div class="stat-cell">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Natural<br />Infusions</div>
+              </div>
+              <div class="stat-cell">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Calories<br />Per Bottle</div>
+              </div>
+              <div class="stat-cell">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Preservatives</div>
+              </div>
+              <div class="stat-cell">
+                <div class="stat-number">4</div>
+                <div class="stat-label">Signature<br />Flavours</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FONT 9: Syne (Original Before Replacement) -->
+    <section class="font-card" id="font-syne">
+      <div class="card-header">
+        <div class="card-title-group">
+          <span class="card-index">09</span>
+          <h2 class="font-name">Syne (Previous Original)</h2>
+          <span class="font-category-badge">Wide Techno-Display · Weight 800</span>
+          <span class="font-category-badge" style="background: #FEE2E2; color: #991B1B;">REPLACED</span>
+        </div>
+        <div class="action-group">
+          <button class="btn-copy-css" onclick="copyCss('--font-display: \'Syne\', sans-serif;')">
+            Copy CSS
+          </button>
+          <button class="btn-apply-font" onclick="applyFontToSite('Syne', '\'Syne\', sans-serif', 'font-syne')">
+            Apply to Website
+          </button>
+        </div>
+      </div>
+
+      <div class="preview-stage">
+        <div class="preview-ticker" style="font-family: 'Syne', sans-serif; font-weight: 800;">
+          <span>MADE IN INDIA,</span><span class="ticker-accent">JOIN THE RITUAL</span>
+          <span class="ticker-dot">•</span>
+          <span>MADE IN INDIA,</span><span class="ticker-accent">JOIN THE RITUAL</span>
+          <span class="ticker-dot">•</span>
+          <span>MADE IN INDIA,</span><span class="ticker-accent">JOIN THE RITUAL</span>
+        </div>
+
+        <div class="about-preview-grid">
+          <div class="about-left-col">
+            <span class="about-eyebrow">ABOUT US</span>
+            <div class="about-display-headline" style="font-family: 'Syne', sans-serif; font-weight: 800;">
+              NOT JUST WATER.<br />
+              <span class="highlight-red">NOT JUST A</span>
+              FLAVOURED DRINK.
+            </div>
+          </div>
+
+          <div class="about-right-col">
+            <p class="narrative-lead">
+              <strong>NOMU</strong> is a modern herb-infused water brand bringing together traditional ingredients and contemporary lifestyles in every bottle.
+            </p>
+            <p class="narrative-secondary">
+              We craft refreshing blends like Vetiver, Chamomile, Lemongrass and Grapefruit to offer clean, functional hydration without added nonsense. Replaces sugar, chemicals, and caffeine with clean, herb-infused hydration that delivers real flavor and function.
+            </p>
+            <p class="narrative-secondary">
+              At Nomu, we’re redefining water as a daily wellness ritual — natural, flavorful, and mindfully restorative.
+            </p>
+
+            <div class="preview-stats-grid">
+              <div class="stat-cell">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Natural<br />Infusions</div>
+              </div>
+              <div class="stat-cell">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Calories<br />Per Bottle</div>
+              </div>
+              <div class="stat-cell">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Preservatives</div>
+              </div>
+              <div class="stat-cell">
+                <div class="stat-number">4</div>
+                <div class="stat-label">Signature<br />Flavours</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="toast-popup" id="toast">CSS copied to clipboard!</div>
+
+  <script>
+    const sizeSlider = document.getElementById('headline-size-slider');
+    const sizeVal = document.getElementById('headline-size-val');
+    const trackingSlider = document.getElementById('letter-spacing-slider');
+    const trackingVal = document.getElementById('letter-spacing-val');
+    const toast = document.getElementById('toast');
+
+    sizeSlider.addEventListener('input', (e) => {
+      const val = e.target.value + 'px';
+      document.documentElement.style.setProperty('--global-headline-size', val);
+      sizeVal.textContent = val;
+    });
+
+    trackingSlider.addEventListener('input', (e) => {
+      const val = (e.target.value / 100) + 'em';
+      document.documentElement.style.setProperty('--global-letter-spacing', val);
+      trackingVal.textContent = val;
+    });
+
+    function toggleDarkTheme() {
+      document.body.classList.toggle('dark-theme');
+      const isDark = document.body.classList.contains('dark-theme');
+      document.getElementById('theme-mode-text').textContent = isDark ? 'Light Canvas' : 'Dark Canvas';
+    }
+
+
+    function applyFontToSite(fontName, fontCss, cardId) {
+      try {
+        localStorage.setItem('nomu_selected_font', fontCss);
+        document.querySelectorAll('.font-card').forEach(c => {
+          c.classList.remove('is-active-on-site');
+          const badge = c.querySelector('.active-badge');
+          if (badge) badge.remove();
+        });
+        const activeCard = document.getElementById(cardId);
+        if (activeCard) {
+          activeCard.classList.add('is-active-on-site');
+          const titleGroup = activeCard.querySelector('.card-title-group');
+          if (titleGroup) {
+            const newBadge = document.createElement('span');
+            newBadge.className = 'active-badge';
+            newBadge.textContent = 'APPLIED TO WEBSITE';
+            titleGroup.appendChild(newBadge);
+          }
+        }
+        toast.innerHTML = 'Applied <strong>' + fontName + '</strong> to NOMU website! <a href="/" style="color:#FFF;text-decoration:underline;margin-left:8px;font-weight:700;">View Live Website →</a>';
+        toast.classList.add('is-visible');
+        setTimeout(() => toast.classList.remove('is-visible'), 5000);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // Sync on page load if font was previously applied
+    window.addEventListener('DOMContentLoaded', () => {
+      try {
+        const saved = localStorage.getItem('nomu_selected_font');
+        if (saved) {
+          document.querySelectorAll('.font-card').forEach(c => {
+            const btn = c.querySelector('.btn-apply-font');
+            if (btn && btn.getAttribute('onclick').includes(saved)) {
+              c.classList.add('is-active-on-site');
+              const titleGroup = c.querySelector('.card-title-group');
+              if (titleGroup && !titleGroup.querySelector('.active-badge')) {
+                const b = document.createElement('span');
+                b.className = 'active-badge';
+                b.textContent = 'APPLIED TO WEBSITE';
+                titleGroup.appendChild(b);
+              }
+            }
+          });
+        }
+      } catch {}
+    });
+
+    function copyCss(cssRule) {
+      navigator.clipboard.writeText(cssRule).then(() => {
+        toast.textContent = 'Copied: ' + cssRule;
+        toast.classList.add('is-visible');
+        setTimeout(() => toast.classList.remove('is-visible'), 2400);
+      });
+    }
+
+    // Highlight jump button on scroll
+    const sections = document.querySelectorAll('.font-card');
+    const navLinks = document.querySelectorAll('.jump-btn');
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach((sec) => {
+        const top = sec.offsetTop - 140;
+        if (window.scrollY >= top) {
+          current = sec.getAttribute('id');
+        }
+      });
+
+      navLinks.forEach((link) => {
+        link.classList.remove('is-active');
+        if (link.getAttribute('href') === '#' + current) {
+          link.classList.add('is-active');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

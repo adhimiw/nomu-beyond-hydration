@@ -136,6 +136,13 @@ export const App: React.FC = () => {
   useEffect(() => {
     loadRemoteData();
 
+    try {
+      const savedFont = localStorage.getItem('nomu_selected_font');
+      if (savedFont) {
+        document.documentElement.style.setProperty('--font-display', savedFont);
+      }
+    } catch {}
+
     const checkHash = () => {
       if (window.location.hash === '#admin') {
         setIsAdminOpen(true);
@@ -276,6 +283,17 @@ export const App: React.FC = () => {
 
         <ContactSection whatsappPhone={cms.whatsapp_phone} />
       </main>
+
+      {/* Floating Typography Studio Link */}
+      <a
+        href="/fonts"
+        className="floating-typography-pill"
+        aria-label="Open Typography Studio"
+        title="Compare all headline fonts in Typography Studio"
+      >
+        <span className="floating-pill-icon">Aa</span>
+        <span className="floating-pill-label">Typography Studio</span>
+      </a>
 
       <Footer siteLogo={cms.site_logo} />
 

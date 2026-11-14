@@ -13,6 +13,16 @@ export const AboutSection: React.FC = () => {
               <span className="text-nomu-red">NOT JUST A</span><br />
               FLAVOURED DRINK.
             </p>
+            <div className="about-studio-cta">
+              <a
+                href="/fonts"
+                className="about-studio-pill-btn"
+                title="Open Typography Studio to compare all headline fonts"
+              >
+                <span>Typography Studio</span>
+                <span className="studio-pill-arrow">↗</span>
+              </a>
+            </div>
           </div>
 
           {/* Right Column: Narrative & 4 Claim Cards */}
