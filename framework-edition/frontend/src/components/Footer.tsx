@@ -49,7 +49,6 @@ export const Footer: React.FC<FooterProps> = ({ siteLogo = '/img/nomu/nomu_symbo
             <li><a href="#shop">Shop on WhatsApp</a></li>
             <li><a href="#reviews">Reviews</a></li>
             <li><a href="#contact">Contact</a></li>
-            <li><a href="/fonts">Typography Studio</a></li>
           </ul>
         </div>
 

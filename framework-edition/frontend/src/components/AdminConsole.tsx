@@ -113,6 +113,80 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
   const [cmsSaveMsg, setCmsSaveMsg] = useState<string>('');
   const [isUploading, setIsUploading] = useState<string | null>(null);
 
+  // Font Engine & Interactive Preview State
+  const [fontPreviewMode, setFontPreviewMode] = useState<'headline' | 'ticker' | 'product' | 'custom'>('headline');
+  const [customSampleText, setCustomSampleText] = useState<string>('NOT JUST WATER. NOT JUST A FLAVOURED DRINK.');
+  const [fontPreviewSize, setFontPreviewSize] = useState<'sm' | 'md' | 'lg' | 'xl'>('lg');
+  const [fontPreviewWeight, setFontPreviewWeight] = useState<number>(800);
+  const [fontSaveStatus, setFontSaveStatus] = useState<string>('');
+
+  // Dynamically load font stylesheet inside Admin Console for immediate real-time preview
+  useEffect(() => {
+    if (cmsData.font_stylesheet_url) {
+      let link = document.getElementById('nomu-admin-dynamic-font') as HTMLLinkElement | null;
+      if (!link) {
+        link = document.createElement('link');
+        link.id = 'nomu-admin-dynamic-font';
+        link.rel = 'stylesheet';
+        document.head.appendChild(link);
+      }
+      if (link.href !== cmsData.font_stylesheet_url) {
+        link.href = cmsData.font_stylesheet_url;
+      }
+    }
+  }, [cmsData.font_stylesheet_url]);
+
+  const handlePreviewInStorefront = () => {
+    if (cmsData.font_stylesheet_url) {
+      let link = document.getElementById('nomu-dynamic-font-link') as HTMLLinkElement | null;
+      if (!link) {
+        link = document.createElement('link');
+        link.id = 'nomu-dynamic-font-link';
+        link.rel = 'stylesheet';
+        document.head.appendChild(link);
+      }
+      link.href = cmsData.font_stylesheet_url;
+    }
+    let family = cmsData.font_family || "'Bricolage Grotesque', sans-serif";
+    if (!family.includes('sans-serif') && !family.includes('serif') && !family.includes('monospace')) {
+      family = `'${family.replace(/['"]/g, '')}', sans-serif`;
+    }
+    document.documentElement.style.setProperty('--font-display', family);
+    try {
+      localStorage.setItem('nomu_selected_font', family);
+    } catch (e) {}
+    setIframeKey(Date.now());
+    setActiveTab('preview');
+  };
+
+  const handleSaveFontToBackend = async () => {
+    try {
+      setFontSaveStatus('Saving...');
+      const res = await fetch(`${apiBaseUrl}/font`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${adminToken}`
+        },
+        body: JSON.stringify({
+          font_family: cmsData.font_family,
+          font_stylesheet_url: cmsData.font_stylesheet_url,
+          font_preset: cmsData.font_preset
+        })
+      });
+      if (res.ok) {
+        setFontSaveStatus('Saved to DB!');
+        setTimeout(() => setFontSaveStatus(''), 3000);
+      } else {
+        setFontSaveStatus('Save Failed');
+        setTimeout(() => setFontSaveStatus(''), 3000);
+      }
+    } catch (e) {
+      setFontSaveStatus('Save Error');
+      setTimeout(() => setFontSaveStatus(''), 3000);
+    }
+  };
+
   // File Upload Handler
   const handleFileUpload = async (fieldKey: keyof CmsData, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
@@ -841,20 +915,45 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
               </div>
             </div>
 
-            {/* Block 1b: Storefront Typography & Custom Font Engine */}
+            {/* Block 1b: Storefront Typography & Custom Font Engine with Dedicated Preview */}
             <div style={{ background: '#1A1918', border: '1px solid #2C2926', borderRadius: '10px', padding: '1.5rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.75rem' }}>
-                <h4 style={{ fontSize: '1rem', fontWeight: 700, color: '#D5360C', margin: 0 }}>
-                  1b. Storefront Typography &amp; Custom Font Engine
-                </h4>
-                <a
-                  href="/fonts"
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{ fontSize: '0.75rem', color: '#E2E8F0', textDecoration: 'none', background: '#2C2926', padding: '0.35rem 0.75rem', borderRadius: '6px', border: '1px solid #444' }}
-                >
-                  Open Typography Studio ↗
-                </a>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+                <div>
+                  <h4 style={{ fontSize: '1rem', fontWeight: 700, color: '#D5360C', margin: 0 }}>
+                    1b. Storefront Typography &amp; Custom Font Engine
+                  </h4>
+                  <p style={{ margin: '0.25rem 0 0', fontSize: '0.78rem', color: '#888' }}>
+                    Configure the global display font, test with the interactive preview engine, and publish live to database.
+                  </p>
+                </div>
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    onClick={handlePreviewInStorefront}
+                    className="btn btn-secondary"
+                    style={{ fontSize: '0.75rem', padding: '0.4rem 0.85rem' }}
+                    title="Preview this font across desktop, tablet, and mobile storefront viewports"
+                  >
+                    👁️ Preview on Full Storefront
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSaveFontToBackend}
+                    className="btn btn-burnt-orange"
+                    style={{ fontSize: '0.75rem', padding: '0.4rem 0.85rem' }}
+                  >
+                    {fontSaveStatus || '💾 Save Font to Backend'}
+                  </button>
+                  <a
+                    href="/fonts"
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ fontSize: '0.75rem', color: '#AAA', textDecoration: 'none', background: '#222', padding: '0.4rem 0.75rem', borderRadius: '6px', border: '1px solid #333' }}
+                    title="Open standalone font showcase studio"
+                  >
+                    Studio ↗
+                  </a>
+                </div>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem' }}>
@@ -918,13 +1017,132 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
                 </div>
               </div>
 
-              {/* Live Preview Sample */}
-              <div style={{ marginTop: '1rem', padding: '1rem', background: '#121110', border: '1px solid #282522', borderRadius: '8px' }}>
-                <span style={{ fontSize: '0.7rem', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '0.5rem' }}>
-                  Live Typography Sample:
-                </span>
-                <div style={{ fontFamily: cmsData.font_family || "'Bricolage Grotesque', sans-serif", fontSize: '1.4rem', fontWeight: 800, color: '#FFF', lineHeight: 1.2 }}>
-                  NOT JUST WATER. <span style={{ color: 'var(--nomu-red)' }}>NOT JUST A</span> FLAVOURED DRINK.
+              {/* Dedicated Interactive Font Preview Engine */}
+              <div style={{ marginTop: '1.25rem', padding: '1.25rem', background: '#0F0E0D', border: '1px solid #282522', borderRadius: '8px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: '0.72rem', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em', marginRight: '0.4rem', fontWeight: 700 }}>
+                      PREVIEW SAMPLE:
+                    </span>
+                    {(['headline', 'ticker', 'product', 'custom'] as const).map((mode) => (
+                      <button
+                        key={mode}
+                        type="button"
+                        onClick={() => setFontPreviewMode(mode)}
+                        style={{
+                          fontSize: '0.72rem',
+                          padding: '0.25rem 0.6rem',
+                          borderRadius: '4px',
+                          border: fontPreviewMode === mode ? '1px solid var(--nomu-red, #D8262C)' : '1px solid #333',
+                          background: fontPreviewMode === mode ? 'rgba(216, 38, 44, 0.2)' : '#1A1918',
+                          color: fontPreviewMode === mode ? '#FFF' : '#AAA',
+                          cursor: 'pointer',
+                          fontWeight: fontPreviewMode === mode ? 700 : 400,
+                          textTransform: 'capitalize'
+                        }}
+                      >
+                        {mode}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                      <span style={{ fontSize: '0.72rem', color: '#888' }}>SIZE:</span>
+                      {(['sm', 'md', 'lg', 'xl'] as const).map((sz) => (
+                        <button
+                          key={sz}
+                          type="button"
+                          onClick={() => setFontPreviewSize(sz)}
+                          style={{
+                            fontSize: '0.7rem',
+                            padding: '0.2rem 0.5rem',
+                            borderRadius: '4px',
+                            border: fontPreviewSize === sz ? '1px solid #666' : '1px solid #2C2926',
+                            background: fontPreviewSize === sz ? '#333' : '#1A1918',
+                            color: fontPreviewSize === sz ? '#FFF' : '#777',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          {sz.toUpperCase()}
+                        </button>
+                      ))}
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                      <span style={{ fontSize: '0.72rem', color: '#888' }}>WEIGHT:</span>
+                      {([400, 700, 800] as const).map((w) => (
+                        <button
+                          key={w}
+                          type="button"
+                          onClick={() => setFontPreviewWeight(w)}
+                          style={{
+                            fontSize: '0.7rem',
+                            padding: '0.2rem 0.5rem',
+                            borderRadius: '4px',
+                            border: fontPreviewWeight === w ? '1px solid #666' : '1px solid #2C2926',
+                            background: fontPreviewWeight === w ? '#333' : '#1A1918',
+                            color: fontPreviewWeight === w ? '#FFF' : '#777',
+                            cursor: 'pointer',
+                            fontWeight: w
+                          }}
+                        >
+                          {w === 400 ? 'Regular' : w === 700 ? 'Bold' : 'Black'}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {fontPreviewMode === 'custom' && (
+                  <div style={{ marginBottom: '1rem' }}>
+                    <input
+                      type="text"
+                      className="form-input"
+                      style={{ background: '#1A1918', border: '1px solid #333', color: '#FFF', fontSize: '0.85rem' }}
+                      value={customSampleText}
+                      onChange={(e) => setCustomSampleText(e.target.value)}
+                      placeholder="Type custom text to preview..."
+                    />
+                  </div>
+                )}
+
+                {/* Rendered Preview Box */}
+                <div
+                  style={{
+                    fontFamily: cmsData.font_family || "'Bricolage Grotesque', sans-serif",
+                    fontSize: fontPreviewSize === 'sm' ? '1rem' : fontPreviewSize === 'md' ? '1.4rem' : fontPreviewSize === 'lg' ? '1.85rem' : '2.4rem',
+                    fontWeight: fontPreviewWeight,
+                    color: '#FFF',
+                    lineHeight: 1.25,
+                    padding: '1.25rem',
+                    background: '#141312',
+                    borderRadius: '6px',
+                    border: '1px solid #222',
+                    minHeight: '80px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    wordBreak: 'break-word'
+                  }}
+                >
+                  {fontPreviewMode === 'headline' && (
+                    <div>
+                      NOT JUST WATER. <span style={{ color: 'var(--nomu-red, #D8262C)' }}>NOT JUST A</span> FLAVOURED DRINK.
+                    </div>
+                  )}
+                  {fontPreviewMode === 'ticker' && (
+                    <div style={{ textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      MADE IN INDIA, <span style={{ color: 'var(--nomu-red, #D8262C)' }}>JOIN THE RITUAL</span> • 100% RECYCLED GLASS • NO CHEMICALS •
+                    </div>
+                  )}
+                  {fontPreviewMode === 'product' && (
+                    <div>
+                      VETIVER (KHUS) · <span style={{ color: '#888', fontWeight: 400 }}>ANCIENT SOUTH INDIAN BOTANICAL DISTILLATE</span>
+                    </div>
+                  )}
+                  {fontPreviewMode === 'custom' && (
+                    <div>{customSampleText || 'Type text above to preview'}</div>
+                  )}
                 </div>
               </div>
             </div>

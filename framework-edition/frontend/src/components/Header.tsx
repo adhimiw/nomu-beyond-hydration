@@ -40,7 +40,6 @@ export const Header: React.FC<HeaderProps> = ({
             <li><a href="#shop" className="nav-link">BUILD RITUAL</a></li>
             <li><a href="#reviews" className="nav-link">REVIEWS</a></li>
             <li><a href="#contact" className="nav-link">CONTACT</a></li>
-            <li><a href="/fonts" className="nav-link font-nav-link" title="Compare Typography Options">FONTS</a></li>
           </ul>
         </nav>
 
