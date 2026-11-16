@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Instrument+Sans:wght@400;500;600;700&family=Noto+Sans+JP:wght@500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=Noto+Sans+JP:wght@500;700&display=swap');
 
 :root {
   /* Mandated Brand Core Palette (Updated: Crimson Red #D01C1D from Flavour Shop Reference) */
@@ -47,9 +47,9 @@
   --text-dark: #111317;
   --text-dark-muted: #334155;
 
-  /* Typography Families: Plus Jakarta Sans (Display Headings) + Instrument Sans (Body/UI) */
+  /* Typography Families: Bricolage Grotesque (Primary Display Headings) + Instrument Sans (Body/UI) */
   --font-sans: 'Instrument Sans', sans-serif;
-  --font-display: 'Plus Jakarta Sans', sans-serif;
+  --font-display: 'Bricolage Grotesque', sans-serif;
   --font-serif-jp: 'Noto Sans JP', sans-serif;
 
   /* Layout Spacing */

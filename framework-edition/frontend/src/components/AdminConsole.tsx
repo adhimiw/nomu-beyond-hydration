@@ -1,6 +1,59 @@
 import React, { useState, useEffect } from 'react';
 import { OrderRecord, ReviewRecord, SystemTelemetry, SystemAuditLog, CmsData } from '../types';
 
+const FONT_PRESETS: Record<string, { name: string; family: string; url: string }> = {
+  bricolage: {
+    name: 'Bricolage Grotesque (Primary Display)',
+    family: "'Bricolage Grotesque', sans-serif",
+    url: 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap'
+  },
+  jakarta: {
+    name: 'Plus Jakarta Sans (Editorial Grotesque)',
+    family: "'Plus Jakarta Sans', sans-serif",
+    url: 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&display=swap'
+  },
+  outfit: {
+    name: 'Outfit (Modern Geometric Luxury)',
+    family: "'Outfit', sans-serif",
+    url: 'https://fonts.googleapis.com/css2?family=Outfit:wght@700;800&display=swap'
+  },
+  'space-grotesk': {
+    name: 'Space Grotesk (Architectural Grotesque)',
+    family: "'Space Grotesk', sans-serif",
+    url: 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&display=swap'
+  },
+  'instrument-serif': {
+    name: 'Instrument Serif (Botanical Heritage Serif)',
+    family: "'Instrument Serif', serif",
+    url: 'https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap'
+  },
+  urbanist: {
+    name: 'Urbanist (Refined Neo-Grotesque)',
+    family: "'Urbanist', sans-serif",
+    url: 'https://fonts.googleapis.com/css2?family=Urbanist:wght@700;800&display=swap'
+  },
+  manrope: {
+    name: 'Manrope (High Legibility Geometric Sans)',
+    family: "'Manrope', sans-serif",
+    url: 'https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&display=swap'
+  },
+  fraunces: {
+    name: 'Fraunces (Warm Editorial Serif)',
+    family: "'Fraunces', serif",
+    url: 'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,800&display=swap'
+  },
+  syne: {
+    name: 'Syne (Legacy Display)',
+    family: "'Syne', sans-serif",
+    url: 'https://fonts.googleapis.com/css2?family=Syne:wght@700;800&display=swap'
+  },
+  custom: {
+    name: 'Custom Font (Client / External URL)',
+    family: '',
+    url: ''
+  }
+};
+
 interface AdminConsoleProps {
   apiBaseUrl?: string;
   onClose: () => void;
@@ -785,6 +838,94 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
                   value={cmsData.hero_sub || ''}
                   onChange={(e) => setCmsData({ ...cmsData, hero_sub: e.target.value })}
                 />
+              </div>
+            </div>
+
+            {/* Block 1b: Storefront Typography & Custom Font Engine */}
+            <div style={{ background: '#1A1918', border: '1px solid #2C2926', borderRadius: '10px', padding: '1.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+                <h4 style={{ fontSize: '1rem', fontWeight: 700, color: '#D5360C', margin: 0 }}>
+                  1b. Storefront Typography &amp; Custom Font Engine
+                </h4>
+                <a
+                  href="/fonts"
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{ fontSize: '0.75rem', color: '#E2E8F0', textDecoration: 'none', background: '#2C2926', padding: '0.35rem 0.75rem', borderRadius: '6px', border: '1px solid #444' }}
+                >
+                  Open Typography Studio ↗
+                </a>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem' }}>
+                <div className="form-group">
+                  <label className="form-label" style={{ color: '#AAA' }}>Headline Font Preset</label>
+                  <select
+                    className="form-input"
+                    style={{ background: '#121110', border: '1px solid #333', color: '#FFF' }}
+                    value={cmsData.font_preset || 'bricolage'}
+                    onChange={(e) => {
+                      const presetKey = e.target.value;
+                      const preset = FONT_PRESETS[presetKey];
+                      if (preset && presetKey !== 'custom') {
+                        setCmsData({
+                          ...cmsData,
+                          font_preset: presetKey,
+                          font_family: preset.family,
+                          font_stylesheet_url: preset.url
+                        });
+                      } else {
+                        setCmsData({
+                          ...cmsData,
+                          font_preset: 'custom'
+                        });
+                      }
+                    }}
+                  >
+                    {Object.entries(FONT_PRESETS).map(([k, p]) => (
+                      <option key={k} value={k}>{p.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label" style={{ color: '#AAA' }}>CSS Font-Family Declaration</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    style={{ background: '#121110', border: '1px solid #333', color: '#FFF' }}
+                    value={cmsData.font_family || "'Bricolage Grotesque', sans-serif"}
+                    onChange={(e) => setCmsData({ ...cmsData, font_family: e.target.value, font_preset: 'custom' })}
+                    placeholder="'CustomFont', sans-serif"
+                  />
+                </div>
+
+                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                  <label className="form-label" style={{ color: '#AAA' }}>
+                    Custom Font Stylesheet / CDN URL (Google Fonts, Adobe Typekit, or uploaded WOFF2/CSS)
+                  </label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    style={{ background: '#121110', border: '1px solid #333', color: '#FFF' }}
+                    value={cmsData.font_stylesheet_url || ''}
+                    onChange={(e) => setCmsData({ ...cmsData, font_stylesheet_url: e.target.value, font_preset: 'custom' })}
+                    placeholder="https://fonts.googleapis.com/... or https://use.typekit.net/..."
+                  />
+                  <small style={{ color: '#777', marginTop: '0.35rem', display: 'block' }}>
+                    Leave blank if using a local/system font or an already-imported web font.
+                  </small>
+                </div>
+              </div>
+
+              {/* Live Preview Sample */}
+              <div style={{ marginTop: '1rem', padding: '1rem', background: '#121110', border: '1px solid #282522', borderRadius: '8px' }}>
+                <span style={{ fontSize: '0.7rem', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '0.5rem' }}>
+                  Live Typography Sample:
+                </span>
+                <div style={{ fontFamily: cmsData.font_family || "'Bricolage Grotesque', sans-serif", fontSize: '1.4rem', fontWeight: 800, color: '#FFF', lineHeight: 1.2 }}>
+                  NOT JUST WATER. <span style={{ color: 'var(--nomu-red)' }}>NOT JUST A</span> FLAVOURED DRINK.
+                </div>
               </div>
             </div>
 

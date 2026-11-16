@@ -130,6 +130,8 @@ export interface CmsData {
   hero_sub?: string;
   ticker_text?: string;
   font_family?: string;
+  font_stylesheet_url?: string;
+  font_preset?: string;
   whatsapp_phone?: string;
   site_logo?: string;
   banner_text?: string;

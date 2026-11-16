@@ -45,9 +45,9 @@
   --text-dark: #111317;
   --text-dark-muted: #334155;
 
-  /* Typography Families: Plus Jakarta Sans (Display Headings) + Instrument Sans (Body/UI) */
+  /* Typography Families: Bricolage Grotesque (Primary Display Headings) + Instrument Sans (Body/UI) */
   --font-sans: 'Instrument Sans', sans-serif;
-  --font-display: 'Plus Jakarta Sans', sans-serif;
+  --font-display: 'Bricolage Grotesque', sans-serif;
   --font-serif-jp: 'Noto Sans JP', -apple-system, 'Hiragino Sans', 'Yu Gothic', 'Noto Sans CJK JP', sans-serif;
 
   /* Layout Spacing */
@@ -1407,7 +1407,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 }
 
 .tab-product-title {
-  font-family: var(--font-display, 'Plus Jakarta Sans', sans-serif);
+  font-family: var(--font-display, 'Bricolage Grotesque', sans-serif);
   font-size: clamp(0.95rem, 1.1vw, 1.125rem);
   font-weight: 800;
   color: var(--soft-black, #111111);
@@ -1647,7 +1647,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 }
 
 .carousel-display-title {
-  font-family: var(--font-display, 'Plus Jakarta Sans', sans-serif);
+  font-family: var(--font-display, 'Bricolage Grotesque', sans-serif);
   font-size: clamp(2rem, 3.2vw, 3.25rem);
   font-weight: 800;
   color: #FFFFFF;
@@ -1657,7 +1657,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 }
 
 .carousel-positioning-quote {
-  font-family: var(--font-display, 'Plus Jakarta Sans', sans-serif);
+  font-family: var(--font-display, 'Bricolage Grotesque', sans-serif);
   font-style: italic;
   font-size: clamp(1rem, 1.25vw, 1.2rem);
   color: var(--warm-ivory, #E6D5BD);
@@ -1805,7 +1805,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 }
 
 .carousel-fraction-counter {
-  font-family: var(--font-display, 'Plus Jakarta Sans', sans-serif);
+  font-family: var(--font-display, 'Bricolage Grotesque', sans-serif);
   font-size: 0.8rem;
   font-weight: 800;
   color: var(--warm-ivory, #E6D5BD);

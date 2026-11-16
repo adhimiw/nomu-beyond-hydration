@@ -652,18 +652,17 @@
         </p>
       </div>
       <div class="badge-status">
-        Live Staging Active: Plus Jakarta Sans
+        Live Backend Primary: Bricolage Grotesque
       </div>
     </div>
 
     <!-- FONT 1: Plus Jakarta Sans (Recommended) -->
-    <section class="font-card is-active-on-site" id="font-jakarta">
+    <section class="font-card" id="font-jakarta">
       <div class="card-header">
         <div class="card-title-group">
           <span class="card-index">01</span>
           <h2 class="font-name">Plus Jakarta Sans</h2>
           <span class="font-category-badge">Editorial Grotesque · Weight 800</span>
-          <span class="active-badge">CURRENTLY APPLIED</span>
         </div>
         <div class="action-group">
           <button class="btn-copy-css" onclick="copyCss('--font-display: \'Plus Jakarta Sans\', sans-serif;')">
@@ -1086,12 +1085,13 @@
     </section>
 
     <!-- FONT 7: Bricolage Grotesque -->
-    <section class="font-card" id="font-bricolage">
+    <section class="font-card is-active-on-site" id="font-bricolage">
       <div class="card-header">
         <div class="card-title-group">
           <span class="card-index">07</span>
           <h2 class="font-name">Bricolage Grotesque</h2>
           <span class="font-category-badge">Expressive Neo-Grotesque Display · Weight 800</span>
+          <span class="active-badge">PRIMARY DISPLAY APPLIED</span>
         </div>
         <div class="action-group">
           <button class="btn-copy-css" onclick="copyCss('--font-display: \'Bricolage Grotesque\', sans-serif;')">
@@ -1294,6 +1294,90 @@
                 <div class="stat-label">Signature<br />Flavours</div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- SECTION 10: Custom Font Playground & Backend Engine -->
+    <section class="font-card" id="font-custom" style="border: 2px dashed var(--nomu-red); margin-top: 1rem;">
+      <div class="card-header" style="background: #FFF9F9;">
+        <div class="card-title-group">
+          <span class="card-index" style="background: var(--nomu-red);">10</span>
+          <h2 class="font-name">Custom Font Playground</h2>
+          <span class="font-category-badge" style="background: #FEE2E2; color: #991B1B; font-weight: 700;">FUTURE BACKEND EXTENSIBILITY</span>
+        </div>
+      </div>
+
+      <div class="preview-stage">
+        <p style="font-size: 0.92rem; color: #4A453E; margin-bottom: 1.5rem; line-height: 1.6;">
+          <strong>Dynamic Backend Extensibility:</strong> Test any custom web font from Google Fonts, Adobe Typekit, Fontshare, or self-hosted CDN. Once applied, your font configuration is immediately saved to the backend database and rendered across the entire website.
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem;">
+          <div>
+            <label for="custom-font-family-input" style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.4rem; color: var(--soft-black);">
+              Font Family Name (e.g. Cabinet Grotesk, Clash Display)
+            </label>
+            <input
+              type="text"
+              id="custom-font-family-input"
+              style="width: 100%; padding: 0.65rem 0.85rem; border: 1px solid #DED7CB; border-radius: 8px; font-size: 0.9rem;"
+              placeholder="'Cabinet Grotesk', sans-serif"
+              value="'Cabinet Grotesk', sans-serif"
+            />
+          </div>
+          <div>
+            <label for="custom-font-url-input" style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.4rem; color: var(--soft-black);">
+              Webfont Stylesheet / CDN Link URL (Optional)
+            </label>
+            <input
+              type="text"
+              id="custom-font-url-input"
+              style="width: 100%; padding: 0.65rem 0.85rem; border: 1px solid #DED7CB; border-radius: 8px; font-size: 0.9rem;"
+              placeholder="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800&display=swap"
+              value="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800&display=swap"
+            />
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; margin-bottom: 2rem; flex-wrap: wrap;">
+          <button type="button" class="btn-copy-css" onclick="previewCustomFont()" style="padding: 0.6rem 1.25rem; font-weight: 700;">
+            Preview Custom Font Below
+          </button>
+          <button type="button" class="btn-apply-font" onclick="saveCustomFontToBackend()" style="padding: 0.6rem 1.25rem; font-weight: 700; background: var(--nomu-red);">
+            Apply &amp; Save Custom Font to Backend
+          </button>
+        </div>
+
+        <!-- Ticker Simulation -->
+        <div class="preview-ticker" id="custom-preview-ticker" style="font-family: 'Bricolage Grotesque', sans-serif;">
+          <span>MADE IN INDIA,</span><span class="ticker-accent">JOIN THE RITUAL</span>
+          <span class="ticker-dot">•</span>
+          <span>MADE IN INDIA,</span><span class="ticker-accent">JOIN THE RITUAL</span>
+          <span class="ticker-dot">•</span>
+          <span>MADE IN INDIA,</span><span class="ticker-accent">JOIN THE RITUAL</span>
+        </div>
+
+        <!-- About Us Component -->
+        <div class="about-preview-grid">
+          <div class="about-left-col">
+            <span class="about-eyebrow">ABOUT US</span>
+            <div class="about-display-headline" id="custom-preview-headline" style="font-family: 'Bricolage Grotesque', sans-serif;">
+              NOT JUST WATER.<br />
+              <span class="highlight-red">NOT JUST A</span>
+              FLAVOURED DRINK.
+            </div>
+          </div>
+
+          <div class="about-right-col">
+            <p class="narrative-lead">
+              <strong>NOMU</strong> is a modern herb-infused water brand bringing together traditional ingredients and contemporary lifestyles in every bottle.
+            </p>
+            <p class="narrative-secondary">
+              We craft refreshing blends like Vetiver, Chamomile, Lemongrass and Grapefruit to offer clean, functional hydration without added nonsense.
+            </p>
           </div>
         </div>
       </div>

@@ -11,6 +11,9 @@ header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: SAMEORIGIN');
 header('Referrer-Policy: strict-origin-when-cross-origin');
 header('Content-Type: application/json; charset=UTF-8');
+header('Cache-Control: no-cache, no-store, must-revalidate');
+header('Pragma: no-cache');
+header('Expires: 0');
 
 // CORS configuration (allow same-origin or localhost dev)
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
@@ -43,26 +46,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 const ADMIN_SECRET_TOKEN = 'nomu_admin_sec_token_98400_botanical_2026';
 const DB_PATH = __DIR__ . '/nomu_database.sqlite';
 
-// Initialize SQLite PDO Database Connection
+// Database Connection Manager: MySQL (Hostinger production) with SQLite fallback
+$pdo = null;
+$dbHost = getenv('DB_HOST') ?: '127.0.0.1';
+$dbPort = getenv('DB_PORT') ?: '3306';
+$dbName = getenv('DB_NAME') ?: 'u244089748_nomustanging';
+$dbUser = getenv('DB_USER') ?: 'u244089748_nomustanging';
+$dbPass = getenv('DB_PASS') ?: 'Nomu2026';
+
+// 1. Attempt MySQL connection
 try {
-    $pdo = new PDO('sqlite:' . DB_PATH, null, null, [
+    $dsn = "mysql:host={$dbHost};port={$dbPort};dbname={$dbName};charset=utf8mb4";
+    $pdo = new PDO($dsn, $dbUser, $dbPass, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        PDO::ATTR_TIMEOUT => 5
+        PDO::ATTR_TIMEOUT => 2
     ]);
-    $pdo->exec('PRAGMA journal_mode = WAL;');
-} catch (PDOException $e) {
-    http_response_code(500);
-    echo json_encode(['error' => 'Database connection failed', 'details' => $e->getMessage()]);
-    exit;
+} catch (\Throwable $e) {
+    // 2. Fall back to local SQLite WAL database if MySQL is unavailable
+    try {
+        $pdo = new PDO('sqlite:' . DB_PATH, null, null, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_TIMEOUT => 5
+        ]);
+        $pdo->exec('PRAGMA journal_mode = WAL;');
+    } catch (\Throwable $e2) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Database connection failed', 'details' => $e2->getMessage()]);
+        exit;
+    }
 }
 
 // --------------------------------------------------------------------------
 // Schema Auto-Migration & Seed Initialization
 // --------------------------------------------------------------------------
+$driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+$autoInc = ($driver === 'mysql') ? 'INT AUTO_INCREMENT PRIMARY KEY' : 'INTEGER PRIMARY KEY AUTOINCREMENT';
+$engine = ($driver === 'mysql') ? 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4' : '';
+
 $pdo->exec("
     CREATE TABLE IF NOT EXISTS orders (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id {$autoInc},
         order_ref VARCHAR(32) UNIQUE NOT NULL,
         customer_name VARCHAR(120) NOT NULL,
         customer_phone VARCHAR(20) NOT NULL,
@@ -76,10 +101,10 @@ $pdo->exec("
         ip_address VARCHAR(45),
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
+    ) {$engine};
 
     CREATE TABLE IF NOT EXISTS reviews (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id {$autoInc},
         customer_name VARCHAR(100) NOT NULL,
         customer_email VARCHAR(150) NOT NULL,
         flavor_key VARCHAR(50) NOT NULL,
@@ -87,33 +112,34 @@ $pdo->exec("
         headline VARCHAR(200) NOT NULL,
         review_text TEXT NOT NULL,
         status VARCHAR(20) DEFAULT 'pending',
+        is_visible TINYINT(1) DEFAULT 1,
         moderated_at DATETIME,
         moderated_by VARCHAR(100),
         ip_address VARCHAR(45),
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
+    ) {$engine};
 
     CREATE TABLE IF NOT EXISTS cms_contents (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id {$autoInc},
         field_key VARCHAR(80) UNIQUE NOT NULL,
         field_value TEXT,
         field_group VARCHAR(50) DEFAULT 'general',
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
+    ) {$engine};
 
     CREATE TABLE IF NOT EXISTS system_logs (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id {$autoInc},
         level VARCHAR(20) DEFAULT 'INFO',
         action VARCHAR(60) NOT NULL,
         message TEXT NOT NULL,
         context_json TEXT,
         ip_address VARCHAR(45),
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
+    ) {$engine};
 
     CREATE TABLE IF NOT EXISTS media_assets (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id {$autoInc},
         section_key VARCHAR(60) NOT NULL,
         asset_type VARCHAR(20) NOT NULL,
         title VARCHAR(120) NOT NULL,
@@ -122,20 +148,29 @@ $pdo->exec("
         is_active INTEGER DEFAULT 1,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
+    ) {$engine};
 ");
+
+try {
+    $pdo->exec("ALTER TABLE reviews ADD COLUMN is_visible TINYINT(1) DEFAULT 1");
+} catch (\Throwable $e) {}
 
 // Database Seeder Function
 function seedDatabase(PDO $pdo, bool $force = false): array {
     $seeded = ['cms' => 0, 'media' => 0, 'reviews' => 0];
+    $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+    $insertIgnore = ($driver === 'mysql') ? 'INSERT IGNORE INTO' : 'INSERT OR IGNORE INTO';
 
     // 1. Seed CMS content & media references
     $cmsDefaults = [
-        ['hero_headline', 'FOUR HERBS. ZERO NONSENSE.', 'hero'],
-        ['hero_sub', 'Ancient South Indian botanical distillates crafted in small batches across Chennai.', 'hero'],
-        ['ticker_text', '100% RECYCLED GLASS · NO CHEMICALS · SMALL-BATCH DISTILLED · CHENNAI EXPRESS', 'general'],
-        ['font_family', 'editorial-serif', 'design'],
-        ['whatsapp_phone', '919840000000', 'contact'],
+        ['hero_headline', 'BEYOND HYDRATION', 'hero'],
+        ['hero_sub', 'Ancient South Indian botanical distillates crafted in small batches across India.', 'hero'],
+        ['ticker_text', 'Made in India, join the ritual', 'general'],
+        ['font_family', "'Bricolage Grotesque', sans-serif", 'design'],
+        ['font_stylesheet_url', 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap', 'design'],
+        ['font_preset', 'bricolage', 'design'],
+        ['whatsapp_phone', '919345214712', 'contact'],
+        ['site_logo', '/img/nomu/nomu_symbol_master.png', 'brand'],
         ['hero_video_url', '/video/nomu_showcase.mp4', 'media'],
         ['hero_poster_url', '/img/nomu/nomu_film_poster.jpg', 'media'],
         ['vetiver_bottle_img', '/img/bottles/vetiver_isolated.png', 'media'],
@@ -148,7 +183,7 @@ function seedDatabase(PDO $pdo, bool $force = false): array {
         ['lemongrass_ingredient_img', '/img/ingredients/lemongrass_harvest.jpg', 'media']
     ];
 
-    $insCms = $pdo->prepare("INSERT OR IGNORE INTO cms_contents (field_key, field_value, field_group) VALUES (?, ?, ?)");
+    $insCms = $pdo->prepare("{$insertIgnore} cms_contents (field_key, field_value, field_group) VALUES (?, ?, ?)");
     foreach ($cmsDefaults as $c) {
         $insCms->execute($c);
         if ($insCms->rowCount() > 0) $seeded['cms']++;
@@ -167,13 +202,15 @@ function seedDatabase(PDO $pdo, bool $force = false): array {
         ['showcase', 'image', 'Chamomile Blossoms & Lavender Harvest', '/img/ingredients/chamomile_lavender_harvest.jpg', 'Fresh Egyptian and German chamomile blossoms', 1],
         ['showcase', 'image', 'Blend III — Grapefruit Bottle Packshot', '/img/bottles/grapefruit_isolated.png', 'NOMU Grapefruit isolated bottle packshot', 1],
         ['showcase', 'image', 'Ruby Red Grapefruit Peel Harvest', '/img/ingredients/grapefruit_harvest.jpg', 'Sun-drenched citrus peel and essential oil distillation', 1],
-        ['showcase', 'image', 'Blend IV — Lemongrass Bottle Packshot', '/img/bottles/lemongrass_isolated.png', 'NOMU Nilgiri Lemongrass isolated bottle packshot', 1],
-        ['showcase', 'image', 'Nilgiri Lemongrass Harvest', '/img/ingredients/lemongrass_harvest.jpg', 'Fresh high-altitude Nilgiri lemongrass stalks', 1],
-        ['brand', 'image', 'NOMU Clean Monogram Logo', '/img/nomu/nomu_logo_clean.png', 'NOMU Japanese Kanji & botanical seal mark', 1],
+        ['showcase', 'image', 'Blend IV — Lemongrass Bottle Packshot', '/img/bottles/lemongrass_isolated.png', 'NOMU Lemongrass isolated bottle packshot', 1],
+        ['showcase', 'image', 'Lemongrass Harvest', '/img/ingredients/lemongrass_harvest.jpg', 'Fresh high-altitude lemongrass stalks', 1],
+        ['brand', 'image', 'NOMU Master Brand Symbol', '/img/nomu/nomu_symbol_master.png', 'NOMU primary botanical brand symbol logo', 1],
         ['brand', 'image', 'NOMU Wordmark Transparent', '/img/nomu/nomu_wordmark_transparent.png', 'NOMU architectural wordmark logo', 1]
     ];
 
-    $insMedia = $pdo->prepare("INSERT OR IGNORE INTO media_assets (section_key, asset_type, title, url, alt_text, is_active) VALUES (?, ?, ?, ?, ?, ?)");
+    $pdo->exec("DELETE FROM media_assets WHERE url LIKE '%nomu_logo_clean.png%'");
+
+    $insMedia = $pdo->prepare("{$insertIgnore} media_assets (section_key, asset_type, title, url, alt_text, is_active) VALUES (?, ?, ?, ?, ?, ?)");
     foreach ($mediaDefaults as $m) {
         $insMedia->execute($m);
         if ($insMedia->rowCount() > 0) $seeded['media']++;
@@ -181,15 +218,15 @@ function seedDatabase(PDO $pdo, bool $force = false): array {
 
     // 3. Seed Authentic Community Reviews
     $reviewsDefaults = [
-        ['Dr. Radhika Menon', 'radhika.m@apollohospitals.com', 'vetiver', 5, 'Gentle, non-acidic hydration for long clinical shifts', 'I keep a bottle of Vetiver chilled during long OT rotations. Unlike sparkling flavored water that triggers acid reflux, NOMU is silky smooth, subtly earthy, and leaves no sugar crash.', 'approved', date('Y-m-d H:i:s'), 'System Seeder', '127.0.0.1'],
-        ['Vikramaditya S.', 'vikram.s@thehindu.co.in', 'chamomile', 5, 'Replaced my evening chamomile tea with cold distilled NOMU', 'The floral notes are authentic, not synthetic essence. It has become my wind-down ritual at 9 PM after newsroom deadlines. Clean, relaxing, and exceptional glass packaging.', 'approved', date('Y-m-d H:i:s'), 'System Seeder', '127.0.0.1'],
-        ['Ananya Deshmukh', 'ananya.deshmukh@studioarch.in', 'grapefruit', 5, 'Vibrant ruby peel aroma with zero calories', 'The citrus peel distillation captures pure essential limonene aromatics. It feels luxurious, perfectly tart, and makes drinking 2 liters of daily water a genuine pleasure.', 'approved', date('Y-m-d H:i:s'), 'System Seeder', '127.0.0.1'],
-        ['Karthik R.', 'karthik.r@zoho.com', 'lemongrass', 5, 'Crisp Nilgiri lemongrass with a refreshing mineral finish', 'Ordered the 12-pack discovery box on WhatsApp. Delivered same day in Besant Nagar. Lemongrass is crisp, uplifting, and pairs remarkably well with light South Indian meals.', 'approved', date('Y-m-d H:i:s'), 'System Seeder', '127.0.0.1']
+        ['Dr. Radhika Menon', 'radhika.m@apollohospitals.com', 'vetiver', 5, 'Gentle, non-acidic hydration for long clinical shifts', 'I keep a bottle of Vetiver chilled during long OT rotations. Unlike sparkling flavored water that triggers acid reflux, NOMU is silky smooth, subtly earthy, and leaves no sugar crash.', 'approved', 1, date('Y-m-d H:i:s'), 'System Seeder', '127.0.0.1'],
+        ['Vikramaditya S.', 'vikram.s@thehindu.co.in', 'chamomile', 5, 'Replaced my evening chamomile tea with cold distilled NOMU', 'The floral notes are authentic, not synthetic essence. It has become my wind-down ritual at 9 PM after newsroom deadlines. Clean, relaxing, and exceptional glass packaging.', 'approved', 1, date('Y-m-d H:i:s'), 'System Seeder', '127.0.0.1'],
+        ['Ananya Deshmukh', 'ananya.deshmukh@studioarch.in', 'grapefruit', 5, 'Vibrant ruby peel aroma with zero calories', 'The citrus peel distillation captures pure essential limonene aromatics. It feels luxurious, perfectly tart, and makes drinking 2 liters of daily water a genuine pleasure.', 'approved', 1, date('Y-m-d H:i:s'), 'System Seeder', '127.0.0.1'],
+        ['Karthik R.', 'karthik.r@zoho.com', 'lemongrass', 5, 'Crisp lemongrass with a refreshing mineral finish', 'Ordered the 12-pack discovery box on WhatsApp. Delivered same day in Besant Nagar. Lemongrass is crisp, uplifting, and pairs remarkably well with light South Indian meals.', 'approved', 1, date('Y-m-d H:i:s'), 'System Seeder', '127.0.0.1']
     ];
 
     $chkRev = $pdo->query("SELECT COUNT(*) FROM reviews")->fetchColumn();
     if ($chkRev == 0 || $force) {
-        $insRev = $pdo->prepare("INSERT INTO reviews (customer_name, customer_email, flavor_key, rating, headline, review_text, status, moderated_at, moderated_by, ip_address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $insRev = $pdo->prepare("INSERT INTO reviews (customer_name, customer_email, flavor_key, rating, headline, review_text, status, is_visible, moderated_at, moderated_by, ip_address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         foreach ($reviewsDefaults as $r) {
             $insRev->execute($r);
             $seeded['reviews']++;
@@ -256,10 +293,21 @@ function sanitizeMediaUrl(string $url): string {
 $method = $_SERVER['REQUEST_METHOD'];
 $pathInfo = $_SERVER['PATH_INFO'] ?? '';
 if (empty($pathInfo)) {
-    $uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
-    $pathInfo = preg_replace('#^/api#', '', $uri);
+    $pathInfo = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
 }
+$pathInfo = preg_replace('#^/api#', '', $pathInfo);
 $pathInfo = '/' . trim($pathInfo, '/');
+
+// 0. PUBLIC: GET /health or /status
+if ($method === 'GET' && ($pathInfo === '/health' || $pathInfo === '/status')) {
+    echo json_encode([
+        'status' => 'healthy',
+        'service' => 'NOMU Botanical Distillates Engine',
+        'driver' => $pdo->getAttribute(PDO::ATTR_DRIVER_NAME),
+        'server_time' => date('c')
+    ]);
+    exit;
+}
 
 // 1. PUBLIC: GET /content
 if ($method === 'GET' && ($pathInfo === '/content' || $pathInfo === '/')) {
@@ -272,14 +320,75 @@ if ($method === 'GET' && ($pathInfo === '/content' || $pathInfo === '/')) {
     exit;
 }
 
-// 2. PUBLIC: GET /reviews (approved only)
+// 1b. PUBLIC: GET /font (retrieve active storefront typography settings)
+if ($method === 'GET' && ($pathInfo === '/font' || $pathInfo === '/api/font')) {
+    $stmt = $pdo->prepare("SELECT field_key, field_value FROM cms_contents WHERE field_key IN ('font_family', 'font_stylesheet_url', 'font_preset')");
+    $stmt->execute();
+    $fontConfig = [
+        'font_family' => "'Bricolage Grotesque', sans-serif",
+        'font_stylesheet_url' => 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap',
+        'font_preset' => 'bricolage'
+    ];
+    while ($row = $stmt->fetch()) {
+        $fontConfig[$row['field_key']] = $row['field_value'];
+    }
+    echo json_encode(['status' => 'success', 'font' => $fontConfig]);
+    exit;
+}
+
+// 1c. POST /font (update storefront typography from Studio or Admin)
+if ($method === 'POST' && ($pathInfo === '/font' || $pathInfo === '/api/font')) {
+    $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
+    if (!is_array($input)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid data payload']);
+        exit;
+    }
+
+    $fontFamily = trim((string)($input['font_family'] ?? ''));
+    if (empty($fontFamily)) {
+        http_response_code(422);
+        echo json_encode(['error' => 'font_family is required']);
+        exit;
+    }
+
+    $fontStylesheet = trim((string)($input['font_stylesheet_url'] ?? ''));
+    $fontPreset = trim((string)($input['font_preset'] ?? 'custom'));
+
+    $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+    $upsertSql = ($driver === 'mysql')
+        ? "INSERT INTO cms_contents (field_key, field_value, field_group) VALUES (?, ?, 'design') ON DUPLICATE KEY UPDATE field_value = VALUES(field_value), updated_at = CURRENT_TIMESTAMP"
+        : "INSERT INTO cms_contents (field_key, field_value, field_group) VALUES (?, ?, 'design') ON CONFLICT(field_key) DO UPDATE SET field_value = excluded.field_value, updated_at = CURRENT_TIMESTAMP";
+
+    $upd = $pdo->prepare($upsertSql);
+    $upd->execute(['font_family', $fontFamily]);
+    if ($fontStylesheet !== '') {
+        $upd->execute(['font_stylesheet_url', $fontStylesheet]);
+    }
+    $upd->execute(['font_preset', $fontPreset]);
+
+    nomuLog($pdo, 'NOTICE', 'FONT_UPDATED', "Storefront font updated to {$fontFamily} (preset: {$fontPreset})");
+
+    echo json_encode([
+        'status' => 'success',
+        'message' => 'Font updated successfully',
+        'font' => [
+            'font_family' => $fontFamily,
+            'font_stylesheet_url' => $fontStylesheet,
+            'font_preset' => $fontPreset
+        ]
+    ]);
+    exit;
+}
+
+// 2. PUBLIC: GET /reviews (approved and visible only)
 if ($method === 'GET' && $pathInfo === '/reviews') {
     $flavor = $_GET['flavor'] ?? 'all';
     if ($flavor !== 'all') {
-        $stmt = $pdo->prepare("SELECT id, customer_name, flavor_key, rating, headline, review_text, created_at FROM reviews WHERE status = 'approved' AND flavor_key = ? ORDER BY id DESC LIMIT 30");
+        $stmt = $pdo->prepare("SELECT id, customer_name, flavor_key, rating, headline, review_text, is_visible, created_at FROM reviews WHERE status = 'approved' AND (is_visible = 1 OR is_visible IS NULL) AND flavor_key = ? ORDER BY id DESC LIMIT 30");
         $stmt->execute([$flavor]);
     } else {
-        $stmt = $pdo->query("SELECT id, customer_name, flavor_key, rating, headline, review_text, created_at FROM reviews WHERE status = 'approved' ORDER BY id DESC LIMIT 30");
+        $stmt = $pdo->query("SELECT id, customer_name, flavor_key, rating, headline, review_text, is_visible, created_at FROM reviews WHERE status = 'approved' AND (is_visible = 1 OR is_visible IS NULL) ORDER BY id DESC LIMIT 30");
     }
     $reviews = $stmt->fetchAll();
     echo json_encode(['status' => 'success', 'reviews' => $reviews]);
@@ -449,6 +558,16 @@ if ($method === 'GET' && $pathInfo === '/media') {
     exit;
 }
 
+// Serve Admin Console Static Entrypoint
+if ($pathInfo === '/admin' || $pathInfo === '/admin/' || $pathInfo === '/admin/index.html') {
+    $adminHtmlPath = __DIR__ . '/admin/index.html';
+    if (file_exists($adminHtmlPath)) {
+        header('Content-Type: text/html; charset=UTF-8');
+        readfile($adminHtmlPath);
+        exit;
+    }
+}
+
 // --------------------------------------------------------------------------
 // ADMIN ENDPOINTS (Require Authorization)
 // --------------------------------------------------------------------------
@@ -574,6 +693,27 @@ if (str_starts_with($pathInfo, '/admin')) {
             exit;
         }
 
+        if ($action === 'toggle_visibility') {
+            $stmt = $pdo->prepare("SELECT is_visible FROM reviews WHERE id = ?");
+            $stmt->execute([$reviewId]);
+            $current = $stmt->fetchColumn();
+            $newVisible = ($current === 1 || $current === '1' || $current === null) ? 0 : 1;
+            $pdo->prepare("UPDATE reviews SET is_visible = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?")->execute([$newVisible, $reviewId]);
+            $msg = $newVisible === 1 ? 'Review is now visible on site' : 'Review is now hidden from site';
+            nomuLog($pdo, 'NOTICE', 'REVIEW_VISIBILITY_TOGGLED', "Review ID {$reviewId} visible={$newVisible}");
+            echo json_encode(['status' => 'success', 'message' => $msg, 'is_visible' => $newVisible]);
+            exit;
+        }
+
+        if ($action === 'show' || $action === 'hide') {
+            $newVisible = ($action === 'show') ? 1 : 0;
+            $pdo->prepare("UPDATE reviews SET is_visible = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?")->execute([$newVisible, $reviewId]);
+            $msg = $newVisible === 1 ? 'Review is now visible on site' : 'Review is now hidden from site';
+            nomuLog($pdo, 'NOTICE', 'REVIEW_VISIBILITY_SET', "Review ID {$reviewId} visible={$newVisible}");
+            echo json_encode(['status' => 'success', 'message' => $msg, 'is_visible' => $newVisible]);
+            exit;
+        }
+
         if (!in_array($action, ['approve', 'reject'], true)) {
             http_response_code(400);
             echo json_encode(['error' => 'Invalid moderation action']);
@@ -581,8 +721,9 @@ if (str_starts_with($pathInfo, '/admin')) {
         }
 
         $newStatus = $action === 'approve' ? 'approved' : 'rejected';
-        $stmt = $pdo->prepare("UPDATE reviews SET status = ?, moderated_at = CURRENT_TIMESTAMP, moderated_by = 'admin', updated_at = CURRENT_TIMESTAMP WHERE id = ?");
-        $stmt->execute([$newStatus, $reviewId]);
+        $newVisibility = $action === 'approve' ? 1 : 0;
+        $stmt = $pdo->prepare("UPDATE reviews SET status = ?, is_visible = ?, moderated_at = CURRENT_TIMESTAMP, moderated_by = 'admin', updated_at = CURRENT_TIMESTAMP WHERE id = ?");
+        $stmt->execute([$newStatus, $newVisibility, $reviewId]);
 
         nomuLog($pdo, 'NOTICE', 'REVIEW_MODERATED', "Review ID {$reviewId} marked as {$newStatus}");
 
@@ -599,8 +740,9 @@ if (str_starts_with($pathInfo, '/admin')) {
             exit;
         }
 
-        $textKeys = ['hero_headline', 'hero_sub', 'ticker_text', 'font_family', 'whatsapp_phone', 'banner_text'];
+        $textKeys = ['hero_headline', 'hero_sub', 'ticker_text', 'font_family', 'font_stylesheet_url', 'font_preset', 'whatsapp_phone', 'banner_text'];
         $mediaKeys = [
+            'site_logo',
             'hero_video_url', 'hero_poster_url',
             'vetiver_bottle_img', 'vetiver_splash_img', 'vetiver_packshot_img',
             'chamomile_bottle_img', 'chamomile_splash_img', 'chamomile_packshot_img',
@@ -609,12 +751,23 @@ if (str_starts_with($pathInfo, '/admin')) {
             'about_image_url', 'manifesto_image_url'
         ];
 
-        $upd = $pdo->prepare("INSERT INTO cms_contents (field_key, field_value) VALUES (?, ?) ON CONFLICT(field_key) DO UPDATE SET field_value = excluded.field_value, updated_at = CURRENT_TIMESTAMP");
+        $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+        $upsertSql = ($driver === 'mysql')
+            ? "INSERT INTO cms_contents (field_key, field_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE field_value = VALUES(field_value), updated_at = CURRENT_TIMESTAMP"
+            : "INSERT INTO cms_contents (field_key, field_value) VALUES (?, ?) ON CONFLICT(field_key) DO UPDATE SET field_value = excluded.field_value, updated_at = CURRENT_TIMESTAMP";
+        $upd = $pdo->prepare($upsertSql);
 
         $count = 0;
         foreach ($input as $k => $v) {
-            if (in_array($k, $textKeys, true)) {
-                $sanitized = htmlspecialchars(trim((string)$v), ENT_QUOTES, 'UTF-8');
+            if ($k === 'font_stylesheet_url') {
+                $sanitized = filter_var(trim((string)$v), FILTER_SANITIZE_URL);
+                $upd->execute([$k, $sanitized]);
+                $count++;
+            } elseif (in_array($k, $textKeys, true)) {
+                $sanitized = trim((string)$v);
+                if ($k !== 'font_family') {
+                    $sanitized = htmlspecialchars($sanitized, ENT_QUOTES, 'UTF-8');
+                }
                 $upd->execute([$k, $sanitized]);
                 $count++;
             } elseif (in_array($k, $mediaKeys, true)) {
@@ -743,6 +896,8 @@ if (str_starts_with($pathInfo, '/admin')) {
                 'opcache_active' => function_exists('opcache_get_status') && is_array(@opcache_get_status())
             ],
             'database' => [
+                'driver' => $pdo->getAttribute(PDO::ATTR_DRIVER_NAME),
+                'engine' => ($pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'mysql') ? 'MySQL Enterprise' : 'SQLite 3 (WAL)',
                 'total_orders' => $totalOrders,
                 'pending_orders' => $pendingOrders,
                 'total_reviews' => $totalReviews,

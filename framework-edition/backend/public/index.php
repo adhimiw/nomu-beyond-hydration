@@ -166,7 +166,9 @@ function seedDatabase(PDO $pdo, bool $force = false): array {
         ['hero_headline', 'BEYOND HYDRATION', 'hero'],
         ['hero_sub', 'Ancient South Indian botanical distillates crafted in small batches across India.', 'hero'],
         ['ticker_text', 'Made in India, join the ritual', 'general'],
-        ['font_family', 'editorial-serif', 'design'],
+        ['font_family', "'Bricolage Grotesque', sans-serif", 'design'],
+        ['font_stylesheet_url', 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap', 'design'],
+        ['font_preset', 'bricolage', 'design'],
         ['whatsapp_phone', '919345214712', 'contact'],
         ['site_logo', '/img/nomu/nomu_symbol_master.png', 'brand'],
         ['hero_video_url', '/video/nomu_showcase.mp4', 'media'],
@@ -315,6 +317,67 @@ if ($method === 'GET' && ($pathInfo === '/content' || $pathInfo === '/')) {
         $result[$row['field_key']] = $row['field_value'];
     }
     echo json_encode($result);
+    exit;
+}
+
+// 1b. PUBLIC: GET /font (retrieve active storefront typography settings)
+if ($method === 'GET' && ($pathInfo === '/font' || $pathInfo === '/api/font')) {
+    $stmt = $pdo->prepare("SELECT field_key, field_value FROM cms_contents WHERE field_key IN ('font_family', 'font_stylesheet_url', 'font_preset')");
+    $stmt->execute();
+    $fontConfig = [
+        'font_family' => "'Bricolage Grotesque', sans-serif",
+        'font_stylesheet_url' => 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap',
+        'font_preset' => 'bricolage'
+    ];
+    while ($row = $stmt->fetch()) {
+        $fontConfig[$row['field_key']] = $row['field_value'];
+    }
+    echo json_encode(['status' => 'success', 'font' => $fontConfig]);
+    exit;
+}
+
+// 1c. POST /font (update storefront typography from Studio or Admin)
+if ($method === 'POST' && ($pathInfo === '/font' || $pathInfo === '/api/font')) {
+    $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
+    if (!is_array($input)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid data payload']);
+        exit;
+    }
+
+    $fontFamily = trim((string)($input['font_family'] ?? ''));
+    if (empty($fontFamily)) {
+        http_response_code(422);
+        echo json_encode(['error' => 'font_family is required']);
+        exit;
+    }
+
+    $fontStylesheet = trim((string)($input['font_stylesheet_url'] ?? ''));
+    $fontPreset = trim((string)($input['font_preset'] ?? 'custom'));
+
+    $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+    $upsertSql = ($driver === 'mysql')
+        ? "INSERT INTO cms_contents (field_key, field_value, field_group) VALUES (?, ?, 'design') ON DUPLICATE KEY UPDATE field_value = VALUES(field_value), updated_at = CURRENT_TIMESTAMP"
+        : "INSERT INTO cms_contents (field_key, field_value, field_group) VALUES (?, ?, 'design') ON CONFLICT(field_key) DO UPDATE SET field_value = excluded.field_value, updated_at = CURRENT_TIMESTAMP";
+
+    $upd = $pdo->prepare($upsertSql);
+    $upd->execute(['font_family', $fontFamily]);
+    if ($fontStylesheet !== '') {
+        $upd->execute(['font_stylesheet_url', $fontStylesheet]);
+    }
+    $upd->execute(['font_preset', $fontPreset]);
+
+    nomuLog($pdo, 'NOTICE', 'FONT_UPDATED', "Storefront font updated to {$fontFamily} (preset: {$fontPreset})");
+
+    echo json_encode([
+        'status' => 'success',
+        'message' => 'Font updated successfully',
+        'font' => [
+            'font_family' => $fontFamily,
+            'font_stylesheet_url' => $fontStylesheet,
+            'font_preset' => $fontPreset
+        ]
+    ]);
     exit;
 }
 
@@ -677,7 +740,7 @@ if (str_starts_with($pathInfo, '/admin')) {
             exit;
         }
 
-        $textKeys = ['hero_headline', 'hero_sub', 'ticker_text', 'font_family', 'whatsapp_phone', 'banner_text'];
+        $textKeys = ['hero_headline', 'hero_sub', 'ticker_text', 'font_family', 'font_stylesheet_url', 'font_preset', 'whatsapp_phone', 'banner_text'];
         $mediaKeys = [
             'site_logo',
             'hero_video_url', 'hero_poster_url',
@@ -696,8 +759,15 @@ if (str_starts_with($pathInfo, '/admin')) {
 
         $count = 0;
         foreach ($input as $k => $v) {
-            if (in_array($k, $textKeys, true)) {
-                $sanitized = htmlspecialchars(trim((string)$v), ENT_QUOTES, 'UTF-8');
+            if ($k === 'font_stylesheet_url') {
+                $sanitized = filter_var(trim((string)$v), FILTER_SANITIZE_URL);
+                $upd->execute([$k, $sanitized]);
+                $count++;
+            } elseif (in_array($k, $textKeys, true)) {
+                $sanitized = trim((string)$v);
+                if ($k !== 'font_family') {
+                    $sanitized = htmlspecialchars($sanitized, ENT_QUOTES, 'UTF-8');
+                }
                 $upd->execute([$k, $sanitized]);
                 $count++;
             } elseif (in_array($k, $mediaKeys, true)) {

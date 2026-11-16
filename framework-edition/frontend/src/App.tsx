@@ -108,6 +108,30 @@ export const App: React.FC = () => {
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
+  // Helper to dynamically apply and inject web fonts from backend configuration
+  const applyFontFromConfig = (fontFamily?: string, stylesheetUrl?: string) => {
+    if (!fontFamily) return;
+
+    if (stylesheetUrl && stylesheetUrl.startsWith('http')) {
+      let link = document.getElementById('nomu-dynamic-font-link') as HTMLLinkElement | null;
+      if (!link) {
+        link = document.createElement('link');
+        link.id = 'nomu-dynamic-font-link';
+        link.rel = 'stylesheet';
+        document.head.appendChild(link);
+      }
+      if (link.href !== stylesheetUrl) {
+        link.href = stylesheetUrl;
+      }
+    }
+
+    let family = fontFamily.trim();
+    if (!family.includes('sans-serif') && !family.includes('serif') && !family.includes('monospace')) {
+      family = `'${family.replace(/['"]/g, '')}', sans-serif`;
+    }
+    document.documentElement.style.setProperty('--font-display', family);
+  };
+
   // Fetch approved reviews and CMS on load (cache-busted to bypass CDN edge caching)
   const loadRemoteData = async () => {
     try {
@@ -115,6 +139,9 @@ export const App: React.FC = () => {
       if (cmsRes.ok) {
         const cmsData = await cmsRes.json();
         setCms(cmsData);
+        if (cmsData.font_family) {
+          applyFontFromConfig(cmsData.font_family, cmsData.font_stylesheet_url);
+        }
       }
     } catch (e) {}
 
