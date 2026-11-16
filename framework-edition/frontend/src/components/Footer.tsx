@@ -56,7 +56,7 @@ export const Footer: React.FC<FooterProps> = ({ siteLogo = '/img/nomu/nomu_symbo
           <h4 className="footer-heading">Small-Batch Dispatch</h4>
           <p className="footer-address">
             Crafted fresh in India.<br />
-            Express local deliveries.<br />
+            Delivery within 10 days to your location.<br />
             Concierge: +91 93452 14712
           </p>
           <span className="footer-copyright">© 2026 NOMU BEVERAGES PRIVATE LIMITED. All rights reserved.</span>

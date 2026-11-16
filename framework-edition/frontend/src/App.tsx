@@ -55,7 +55,7 @@ const INITIAL_REVIEWS: ReviewRecord[] = [
     flavor_key: 'lemongrass',
     rating: 5,
     headline: 'Crisp lemongrass with a refreshing mineral finish',
-    review_text: 'Ordered the 12-pack discovery box on WhatsApp. Delivered same day in Besant Nagar. Lemongrass is crisp, uplifting, and pairs remarkably well with light South Indian meals.',
+    review_text: 'Ordered the 12-pack discovery box on WhatsApp. Arrived promptly at our doorstep in Besant Nagar. Lemongrass is crisp, uplifting, and pairs remarkably well with light South Indian meals.',
     created_at: '1 week ago',
     is_visible: 1
   }

@@ -31,7 +31,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ whatsappPhone = 
               <div>
                 <h3 className="contact-channel-title">Direct WhatsApp Line</h3>
                 <p className="contact-channel-body">
-                  Direct chat for immediate orders, custom ritual mix boxes, and express delivery inquiries across Chennai.
+                  Direct chat for immediate orders, custom ritual mix boxes, and delivery inquiries (delivered within 10 days to your location).
                 </p>
               </div>
               <a

@@ -195,6 +195,6 @@ export const PACK_TIERS: Record<string, PackTier> = {
     price: 480,
     bottlesCount: 12,
     description: '12x 500ml Glass Bottles · Sustained daily wellness ritual',
-    badge: 'FREE EXPRESS SHIPPING'
+    badge: 'DELIVERY WITHIN 10 DAYS'
   }
 };

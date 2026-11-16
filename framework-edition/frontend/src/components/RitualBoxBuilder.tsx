@@ -127,7 +127,7 @@ export const RitualBoxBuilder: React.FC<RitualBoxBuilderProps> = ({
               >
                 <span className="pack-choice-title">12-PACK PANTRY BOX · ₹480</span>
                 <span className="pack-choice-desc">12x 500ml Glass Bottles · Sustained daily ritual</span>
-                <span className="pack-choice-badge">FREE EXPRESS SHIPPING</span>
+                <span className="pack-choice-badge">DELIVERY WITHIN 10 DAYS</span>
               </button>
             </div>
 
@@ -247,7 +247,7 @@ export const RitualBoxBuilder: React.FC<RitualBoxBuilderProps> = ({
                     >
                       <polyline points="20 6 9 17 4 12" />
                     </svg>
-                    Free Express Chennai Delivery
+                    Delivered within 10 days to your location
                   </span>
                 </div>
               </div>

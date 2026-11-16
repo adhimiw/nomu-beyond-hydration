@@ -145,7 +145,7 @@ ${notesLine}
 ${itemsText}-----------------------------
 *Total Bottles:* ${totalBottles} Bottles
 *Order Amount:* ₹${grandTotal}
-*Dispatch:* Express Chennai (Same-Day / 24h)
+*Delivery:* Within 10 Days to Your Location
 
 Please confirm my order and share payment link / UPI instructions. Thank you!`;
 
@@ -294,7 +294,7 @@ Please confirm my order and share payment link / UPI instructions. Thank you!`;
             <div className="modal-total-labels">
               <span>Order Total:</span>
               <small style={{ color: '#2E7D32', fontWeight: 600, display: 'block', fontSize: '0.72rem' }}>
-                ✓ Free Express Delivery (Chennai)
+                ✓ Delivered within 10 days to your location
               </small>
             </div>
             <strong>₹{grandTotal}</strong>
@@ -386,7 +386,7 @@ Please confirm my order and share payment link / UPI instructions. Thank you!`;
               </svg>
             </button>
             <p className="modal-guarantee">
-              Same-day delivery across Chennai • Zero payment gateway surcharges • Direct concierge dispatch
+              Delivered within 10 days to your location • Fresh small-batch dispatch • Direct concierge updates
             </p>
           </div>
         </form>

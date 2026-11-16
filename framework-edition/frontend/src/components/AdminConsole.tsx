@@ -90,7 +90,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
   const [cmsData, setCmsData] = useState<CmsData>({
     hero_headline: 'BEYOND HYDRATION',
     hero_sub: 'Ancient South Indian botanical distillates crafted in small batches across India.',
-    ticker_text: '100% RECYCLED GLASS · NO CHEMICALS · SMALL-BATCH DISTILLED · CHENNAI EXPRESS',
+    ticker_text: '100% RECYCLED GLASS · NO CHEMICALS · SMALL-BATCH DISTILLED · DELIVERED IN 10 DAYS',
     font_family: 'editorial-serif',
     whatsapp_phone: '919345214712',
     site_logo: '/img/nomu/nomu_symbol_master.png',

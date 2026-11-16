@@ -785,7 +785,7 @@ ${notesLine}
 ${itemsWaText}-----------------------------
 *Total Bottles:* ${totalBottles} Bottles
 *Order Amount:* ₹${grandTotal}
-*Dispatch:* Express Chennai (Same-Day / 24h)
+*Delivery:* Within 10 Days to Your Location
 
 Please confirm my order and share UPI / payment link. Thank you!`;
 
