@@ -216,7 +216,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 id="hero-video-player"
                 width={640}
                 height={360}
-                preload="none"
+                preload="metadata"
                 autoPlay
                 loop
                 muted

@@ -239,7 +239,8 @@
     }
     </script>
 
-    <!-- 1. High-priority LCP image preload for immediate mobile paint -->
+    <!-- 1. High-priority LCP image and logo preloads for immediate mobile paint -->
+    <link rel="preload" as="image" href="/img/nomu/nomu_symbol_master.png" fetchpriority="high" />
     <link rel="preload" as="image" href="/img/bottles/vetiver_isolated.webp" type="image/webp" fetchpriority="high" />
     <link rel="preload" as="image" href="/img/nomu/nomu_film_poster.webp" type="image/webp" fetchpriority="high" />
 
