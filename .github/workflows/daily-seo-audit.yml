@@ -1,0 +1,31 @@
+name: Daily SEO, AEO & GEO Health Audit
+
+on:
+  schedule:
+    # Runs everyday at 03:30 UTC (09:00 AM IST)
+    - cron: '30 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  seo-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Execute Live SEO Audit
+        run: |
+          python3 scripts/daily_seo_audit.py > daily_seo_audit_report.md
+          cat daily_seo_audit_report.md
+
+      - name: Archive Daily Audit Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-seo-report
+          path: daily_seo_audit_report.md
+          retention-days: 30
