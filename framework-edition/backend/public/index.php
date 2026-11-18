@@ -607,14 +607,23 @@ if (str_starts_with($pathInfo, '/admin')) {
 
         if ($export === 'csv') {
             header('Content-Type: text/csv; charset=UTF-8');
-            header('Content-Disposition: attachment; filename="nomu_orders_' . date('Y-m-d_His') . '.csv"');
+            header('Content-Disposition: attachment; filename="nomu_confirmed_orders_' . date('Y-m-d_His') . '.csv"');
             $out = fopen('php://output', 'w');
-            fputcsv($out, ['Order Ref', 'Date', 'Customer Name', 'Phone', 'Email', 'Bottles', 'Total Amount', 'Status', 'Address', 'Notes']);
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute($params);
+            fputcsv($out, ['Date', 'Customer Name', 'Phone', 'Email', 'Bottles', 'Total Amount', 'Status', 'Address', 'Notes']);
+            
+            // CSV Export is strictly restricted to confirmed orders per operations protocol
+            $csvSql = "SELECT * FROM orders WHERE status = 'confirmed'";
+            $csvParams = [];
+            if (!empty($search)) {
+                $csvSql .= " AND (customer_name LIKE :q OR customer_phone LIKE :q OR customer_email LIKE :q)";
+                $csvParams[':q'] = "%{$search}%";
+            }
+            $csvSql .= " ORDER BY id DESC";
+
+            $stmt = $pdo->prepare($csvSql);
+            $stmt->execute($csvParams);
             while ($r = $stmt->fetch()) {
                 fputcsv($out, [
-                    $r['order_ref'],
                     $r['created_at'],
                     $r['customer_name'],
                     $r['customer_phone'],

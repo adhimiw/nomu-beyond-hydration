@@ -661,6 +661,77 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   justify-content: center;
   height: clamp(480px, 58vh, 680px);
   width: 100%;
+  touch-action: pan-y;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.hero-bottle-pedestal:active {
+  cursor: grabbing;
+}
+
+.hero-mobile-nav-arrow {
+  display: none;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(18, 16, 14, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #FFFFFF;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  touch-action: manipulation;
+}
+
+.hero-mobile-nav-arrow:active {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-50%) scale(0.92);
+}
+
+.hero-mobile-prev {
+  left: 6px;
+}
+
+.hero-mobile-next {
+  right: 6px;
+}
+
+.hero-mobile-swipe-badge {
+  display: none;
+  margin-top: 0.75rem;
+  text-align: center;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.65);
+  font-weight: 600;
+  user-select: none;
+  -webkit-user-select: none;
+  animation: pulseSwipe 2.5s infinite ease-in-out;
+}
+
+@keyframes pulseSwipe {
+  0%, 100% { opacity: 0.45; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.02); }
+}
+
+@media (max-width: 992px) {
+  .hero-mobile-nav-arrow {
+    display: flex;
+  }
+  .hero-mobile-swipe-badge {
+    display: block;
+  }
 }
 
 .hero-bottle-packshot {

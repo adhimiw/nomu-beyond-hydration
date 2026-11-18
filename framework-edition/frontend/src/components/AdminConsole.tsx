@@ -409,7 +409,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
   };
 
   const handleExportCsv = () => {
-    window.open(`${apiBaseUrl}/admin/orders?export=csv&token=${encodeURIComponent(adminToken)}`, '_blank');
+    window.open(`${apiBaseUrl}/admin/orders?export=csv&status=confirmed&token=${encodeURIComponent(adminToken)}`, '_blank');
   };
 
   useEffect(() => {
@@ -662,8 +662,8 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
                 <button type="button" className="btn btn-secondary" onClick={fetchOrders}>Refresh</button>
               </div>
 
-              <button type="button" className="btn btn-burnt-orange" onClick={handleExportCsv}>
-                Export CSV
+              <button type="button" className="btn btn-burnt-orange" onClick={handleExportCsv} title="Export only confirmed orders to CSV">
+                Export Confirmed Orders (CSV)
               </button>
             </div>
 
@@ -671,7 +671,6 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
               <table className="data-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
                 <thead>
                   <tr style={{ background: '#161514', borderBottom: '1px solid #2C2926' }}>
-                    <th style={{ padding: '0.8rem 1rem' }}>Order Ref</th>
                     <th style={{ padding: '0.8rem 1rem' }}>Customer</th>
                     <th style={{ padding: '0.8rem 1rem' }}>Phone</th>
                     <th style={{ padding: '0.8rem 1rem' }}>Items</th>
@@ -683,11 +682,10 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
                 </thead>
                 <tbody>
                   {orders.length === 0 ? (
-                    <tr><td colSpan={8} style={{ padding: '2rem', textAlign: 'center', color: '#888' }}>No orders found.</td></tr>
+                    <tr><td colSpan={7} style={{ padding: '2rem', textAlign: 'center', color: '#888' }}>No orders found.</td></tr>
                   ) : (
                     orders.map((o) => (
                       <tr key={o.id} style={{ borderBottom: '1px solid #2C2926' }}>
-                        <td style={{ padding: '0.8rem 1rem', fontWeight: 700 }}>{o.order_ref}</td>
                         <td style={{ padding: '0.8rem 1rem' }}>
                           <div>{o.customer_name}</div>
                           <small style={{ color: '#888' }}>{o.customer_email}</small>

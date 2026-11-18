@@ -65,6 +65,55 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     handleSelect(FLAVOR_KEYS[nextIdx]);
   };
 
+  const handlePrev = () => {
+    const prevIdx = (activeIndex - 1 + FLAVOR_KEYS.length) % FLAVOR_KEYS.length;
+    handleSelect(FLAVOR_KEYS[prevIdx]);
+  };
+
+  // Mobile Touch & Move Gestures for Bottle Stage
+  const [dragOffset, setDragOffset] = useState<number>(0);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const touchStartXRef = useRef<number>(0);
+  const touchStartYRef = useRef<number>(0);
+  const currentDragRef = useRef<number>(0);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    pauseTimer();
+    touchStartXRef.current = e.touches[0].clientX;
+    touchStartYRef.current = e.touches[0].clientY;
+    currentDragRef.current = 0;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    const clientX = e.touches[0].clientX;
+    const clientY = e.touches[0].clientY;
+    const deltaX = clientX - touchStartXRef.current;
+    const deltaY = clientY - touchStartYRef.current;
+
+    // Favor horizontal swipe intent over vertical page scrolling
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 8) {
+      setIsDragging(true);
+      const clamped = Math.max(-90, Math.min(90, deltaX));
+      currentDragRef.current = clamped;
+      setDragOffset(clamped);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    const offset = currentDragRef.current;
+    setIsDragging(false);
+    currentDragRef.current = 0;
+    setDragOffset(0);
+    resumeTimer();
+
+    // Responsive swipe threshold
+    if (offset < -35) {
+      handleNext();
+    } else if (offset > 35) {
+      handlePrev();
+    }
+  };
+
   // IntersectionObserver guarantees auto-rotation strictly halts when user scrolls past hero
   useEffect(() => {
     const el = heroRef.current;
@@ -204,9 +253,36 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             </div>
           </div>
 
-          {/* Right Column: Standing Isolated Bottle Packshot & Pagination Dots */}
+          {/* Right Column: Standing Isolated Bottle Packshot & Pagination Dots (Touch & Move Enabled) */}
           <div className="hero-col-right hero-col-bottle">
-            <div className="hero-bottle-pedestal">
+            <div
+              className="hero-bottle-pedestal"
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+              onTouchCancel={handleTouchEnd}
+              style={{
+                transform: isDragging ? `translateX(${dragOffset}px) rotate(${dragOffset * 0.04}deg)` : undefined,
+                transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                touchAction: 'pan-y'
+              }}
+              title="Swipe or drag horizontally to change flavour"
+            >
+              {/* Mobile Quick Touch Nav Arrows */}
+              <button
+                type="button"
+                className="hero-mobile-nav-arrow hero-mobile-prev"
+                aria-label="Previous flavour"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handlePrev();
+                }}
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <polyline points="15 18 9 12 15 6" />
+                </svg>
+              </button>
+
               <img
                 src={activeFlavor.bottleImage}
                 alt={`NOMU ${activeFlavor.name} Botanical Water Bottle`}
@@ -216,9 +292,25 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 height={720}
                 fetchPriority="high"
                 decoding="async"
+                draggable={false}
               />
               <div className="hero-contact-shadow" aria-hidden="true" />
+
+              <button
+                type="button"
+                className="hero-mobile-nav-arrow hero-mobile-next"
+                aria-label="Next flavour"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleNext();
+                }}
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </button>
             </div>
+
             {/* Pagination Dots with immediate tactile active response */}
             <div className="hero-pagination-dots" role="tablist" aria-label="Flavour Pagination">
               {FLAVOR_KEYS.map((k, i) => (
@@ -233,6 +325,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                   onClick={() => handleSelect(k)}
                 />
               ))}
+            </div>
+
+            {/* Mobile Touch & Move Affordance Badge */}
+            <div className="hero-mobile-swipe-badge" aria-hidden="true">
+              <span>‹ SWIPE TO EXPLORE FLAVOURS ›</span>
             </div>
           </div>
         </div>

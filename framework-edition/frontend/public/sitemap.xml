@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://drinkitnomu.com/</loc>
+    <lastmod>2026-11-19T00:00:00+05:30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://drinkitnomu.com/img/nomu/nomu_symbol_master.png</image:loc>
+      <image:title>NOMU Master Brand Symbol</image:title>
+      <image:caption>NOMU Botanical Water Distillates</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://drinkitnomu.com/img/nomu/nomu_film_poster.webp</image:loc>
+      <image:title>NOMU Film Poster</image:title>
+      <image:caption>Beyond Hydration - Pure Herb Infused Botanical Water</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://drinkitnomu.com/img/bottles/vetiver_isolated.webp</image:loc>
+      <image:title>NOMU Vetiver (Khus) Botanical Distillate</image:title>
+      <image:caption>Cold-steeped organic South Indian Vetiver roots</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://drinkitnomu.com/img/bottles/chamomile_isolated.webp</image:loc>
+      <image:title>NOMU Chamomile Botanical Distillate</image:title>
+      <image:caption>German Chamomile and lavender soothing hydration</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://drinkitnomu.com/img/bottles/grapefruit_isolated.webp</image:loc>
+      <image:title>NOMU Ruby Grapefruit Botanical Distillate</image:title>
+      <image:caption>Fresh Ruby Grapefruit peel botanical distillation</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://drinkitnomu.com/img/bottles/lemongrass_isolated.webp</image:loc>
+      <image:title>NOMU Lemongrass Botanical Distillate</image:title>
+      <image:caption>Crisp highland Lemongrass aromatic hydration</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://drinkitnomu.com/fonts</loc>
+    <lastmod>2026-11-19T00:00:00+05:30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+</urlset>
