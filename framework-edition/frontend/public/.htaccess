@@ -2,6 +2,10 @@
     RewriteEngine On
     RewriteBase /
 
+    # HTTPS Enforcement
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
     # 1. Route clean font URLs to typography showcase page
     RewriteRule ^fonts/?$ fonts-showcase.html [L]
     RewriteRule ^typography/?$ fonts-showcase.html [L]

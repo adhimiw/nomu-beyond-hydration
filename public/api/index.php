@@ -18,6 +18,8 @@ header('Expires: 0');
 // CORS configuration (allow same-origin or localhost dev)
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 $allowedOrigins = [
+    'https://drinkitnomu.com',
+    'https://www.drinkitnomu.com',
     'https://pink-frog-219558.hostingersite.com',
     'http://localhost:3000',
     'http://localhost:3001',
@@ -48,11 +50,14 @@ const DB_PATH = __DIR__ . '/nomu_database.sqlite';
 
 // Database Connection Manager: MySQL (Hostinger production) with SQLite fallback
 $pdo = null;
+$httpHost = $_SERVER['HTTP_HOST'] ?? '';
+$isProdDomain = (strpos($httpHost, 'drinkitnomu.com') !== false);
+
 $dbHost = getenv('DB_HOST') ?: '127.0.0.1';
 $dbPort = getenv('DB_PORT') ?: '3306';
-$dbName = getenv('DB_NAME') ?: 'u244089748_nomustanging';
-$dbUser = getenv('DB_USER') ?: 'u244089748_nomustanging';
-$dbPass = getenv('DB_PASS') ?: 'Nomu2026';
+$dbName = getenv('DB_NAME') ?: ($isProdDomain ? 'u244089748_nomuproi' : 'u244089748_nomustanging');
+$dbUser = getenv('DB_USER') ?: ($isProdDomain ? 'u244089748_nomupro1' : 'u244089748_nomustanging');
+$dbPass = getenv('DB_PASS') ?: ($isProdDomain ? 'Nomu@2026' : 'Nomu2026');
 
 // 1. Attempt MySQL connection
 try {
@@ -517,6 +522,7 @@ if ($method === 'POST' && ($pathInfo === '/admin/login' || $pathInfo === '/login
 
     $validTokens = [
         ADMIN_SECRET_TOKEN,
+        'nomuVCGL@2026',
         'nomu2026',
         'nomubeverages',
         'admin123'

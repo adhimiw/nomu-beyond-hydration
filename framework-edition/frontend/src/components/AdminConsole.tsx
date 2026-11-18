@@ -246,7 +246,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
         setLoginError(data.error || 'Invalid credentials. Enter password or token.');
       }
     } catch (err) {
-      if (loginPassword.trim() === 'nomu2026' || loginPassword.trim() === 'nomu_admin_sec_token_98400_botanical_2026') {
+      if (loginPassword.trim() === 'nomuVCGL@2026' || loginPassword.trim() === 'nomu2026' || loginPassword.trim() === 'nomu_admin_sec_token_98400_botanical_2026') {
         const token = 'nomu_admin_sec_token_98400_botanical_2026';
         sessionStorage.setItem('nomu_admin_token', token);
         setAdminToken(token);
@@ -492,7 +492,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
                 type="password"
                 value={loginPassword}
                 onChange={(e) => setLoginPassword(e.target.value)}
-                placeholder="Enter password or token"
+                placeholder="••••••••••••"
                 style={{
                   width: '100%',
                   padding: '0.75rem 1rem',
@@ -519,17 +519,6 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
                 {loginError}
               </div>
             )}
-
-            <div style={{
-              backgroundColor: 'rgba(255, 255, 255, 0.04)',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              borderRadius: '8px',
-              padding: '0.65rem 0.85rem',
-              fontSize: '0.75rem',
-              color: '#94A3B8'
-            }}>
-              <strong style={{ color: '#CBD5E1' }}>Quick Access:</strong> Username: <code style={{ color: '#E2E8F0' }}>admin</code> &middot; Password: <code style={{ color: '#E2E8F0' }}>nomu2026</code>
-            </div>
 
             <button
               type="submit"
