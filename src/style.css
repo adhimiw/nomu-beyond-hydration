@@ -1482,18 +1482,54 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 /* Action Row */
 .pillar-action-row {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  width: 100%;
 }
 
 .pillar-price-tag {
-  font-size: 0.8125rem;
+  font-size: clamp(0.75rem, 2.8vw, 0.8125rem);
   font-weight: 700;
-  letter-spacing: normal;
+  letter-spacing: 0.02em;
   text-transform: none;
   color: var(--warm-ivory);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.pillar-action-row .btn-ivory-pill {
+  width: 100%;
+  max-width: 380px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  font-size: clamp(0.72rem, 3.2vw, 0.82rem);
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  padding: 0.75rem 1rem;
+  border-radius: 9999px;
+  box-sizing: border-box;
+}
+
+@media (min-width: 640px) and (max-width: 992px) {
+  .pillar-action-row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .pillar-price-tag {
+    text-align: left;
+  }
+  .pillar-action-row .btn-ivory-pill {
+    width: auto;
+    max-width: none;
+  }
 }
 
 /* Responsive Accordion Stacking */

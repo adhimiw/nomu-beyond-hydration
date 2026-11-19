@@ -1515,10 +1515,10 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 /* 3. Stage Content 2-Column Grid */
 .carousel-stage-grid {
   display: grid;
-  grid-template-columns: minmax(320px, 420px) 1fr;
-  gap: clamp(2rem, 3.5vw, 4rem);
+  grid-template-columns: minmax(280px, 360px) 1fr;
+  gap: clamp(1.5rem, 2.5vw, 3rem);
   align-items: center;
-  padding: clamp(2.5rem, 3.5vw, 3.75rem) clamp(3.5rem, 4.5vw, 5rem);
+  padding: clamp(2rem, 3vw, 3.25rem) clamp(2.25rem, 3.5vw, 4rem);
   min-height: 520px;
   width: 100%;
   box-sizing: border-box;
@@ -1734,30 +1734,38 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1.5rem;
+  gap: clamp(0.75rem, 1.2vw, 1.25rem);
   margin-top: 0.5rem;
   padding-top: 0.85rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .carousel-price-statement {
-  font-size: 0.8125rem;
+  font-size: clamp(0.72rem, 0.78vw, 0.8125rem);
   font-weight: 700;
   color: var(--warm-ivory, #E6D5BD);
   letter-spacing: 0.02em;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .carousel-cta-btn {
-  padding: 0.75rem 1.6rem;
-  font-size: 0.8125rem;
+  padding: 0.7rem clamp(0.95rem, 1.2vw, 1.35rem);
+  font-size: clamp(0.74rem, 0.8vw, 0.8125rem);
   font-weight: 800;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
   border-radius: 9999px;
   background: #FFFFFF;
   color: var(--soft-black, #111111);
   border: none;
   cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
@@ -2223,18 +2231,54 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 /* Action Row */
 .pillar-action-row {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  width: 100%;
 }
 
 .pillar-price-tag {
-  font-size: 0.8125rem;
+  font-size: clamp(0.75rem, 2.8vw, 0.8125rem);
   font-weight: 700;
-  letter-spacing: normal;
+  letter-spacing: 0.02em;
   text-transform: none;
   color: var(--warm-ivory);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.pillar-action-row .btn-ivory-pill {
+  width: 100%;
+  max-width: 380px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  font-size: clamp(0.72rem, 3.2vw, 0.82rem);
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  padding: 0.75rem 1rem;
+  border-radius: 9999px;
+  box-sizing: border-box;
+}
+
+@media (min-width: 640px) and (max-width: 992px) {
+  .pillar-action-row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .pillar-price-tag {
+    text-align: left;
+  }
+  .pillar-action-row .btn-ivory-pill {
+    width: auto;
+    max-width: none;
+  }
 }
 
 /* Responsive Accordion Stacking */
