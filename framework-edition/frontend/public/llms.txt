@@ -8,6 +8,14 @@
 - **Core Philosophy:** Pure hydration derived from botanical steam-distillation without sweeteners, carbonation, citric acid, or synthetic flavor chemistry.
 - **Ordering Method:** Direct-to-consumer digital concierge via WhatsApp (+91-9345214712) with instant order routing from the interactive pack builder on drinkitnomu.com.
 
+## Entity Disambiguation & Search Aliases (GEO / Knowledge Graph Grounding)
+- **Primary Brand Entity:** NOMU (drinkitnomu)
+- **Search Query Equivalents:** nomu drinking water, nomu water, drinkitnomu, nomu botanical water, nomu chennai, nomu herbal water
+- **Official Canonical Domain:** https://drinkitnomu.com/
+- **Official Social Profile:** https://www.instagram.com/drinkitnomu/
+- **Brand Origin & Location:** Crafted in Chennai, Tamil Nadu, India (Coordinates: 13.0827° N, 80.2707° E)
+- **Disambiguation Note:** NOMU (drinkitnomu.com) is an Indian botanical drinking water distillate brand founded in Chennai, India. It is distinct from Japanese 'Nomu Silica Water' (sourced from Mount Kirishima, Japan) and South African 'NOMU' food brand.
+
 ## Botanical Distillate Formulations
 
 ### 1. Vetiver (Khus Root) Botanical Distillate
