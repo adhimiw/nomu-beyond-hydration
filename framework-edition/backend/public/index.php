@@ -143,6 +143,24 @@ $pdo->exec("
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     ) {$engine};
 
+    CREATE TABLE IF NOT EXISTS coupons (
+        id {$autoInc},
+        code VARCHAR(50) UNIQUE NOT NULL,
+        influencer_name VARCHAR(120) NOT NULL,
+        influencer_handle VARCHAR(100),
+        discount_type VARCHAR(20) DEFAULT 'percentage',
+        discount_value REAL NOT NULL,
+        min_order_amount REAL DEFAULT 0,
+        usage_limit INTEGER DEFAULT NULL,
+        times_used INTEGER DEFAULT 0,
+        total_sales_generated REAL DEFAULT 0,
+        total_discount_granted REAL DEFAULT 0,
+        is_active TINYINT(1) DEFAULT 1,
+        notes TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    ) {$engine};
+
     CREATE TABLE IF NOT EXISTS media_assets (
         id {$autoInc},
         section_key VARCHAR(60) NOT NULL,
@@ -159,6 +177,9 @@ $pdo->exec("
 try {
     $pdo->exec("ALTER TABLE reviews ADD COLUMN is_visible TINYINT(1) DEFAULT 1");
 } catch (\Throwable $e) {}
+try { $pdo->exec("ALTER TABLE orders ADD COLUMN coupon_code VARCHAR(50) DEFAULT NULL"); } catch (\Throwable $e) {}
+try { $pdo->exec("ALTER TABLE orders ADD COLUMN discount_amount REAL DEFAULT 0"); } catch (\Throwable $e) {}
+try { $pdo->exec("ALTER TABLE orders ADD COLUMN influencer_name VARCHAR(120) DEFAULT NULL"); } catch (\Throwable $e) {}
 
 // Database Seeder Function
 function seedDatabase(PDO $pdo, bool $force = false): array {
@@ -235,6 +256,23 @@ function seedDatabase(PDO $pdo, bool $force = false): array {
         foreach ($reviewsDefaults as $r) {
             $insRev->execute($r);
             $seeded['reviews']++;
+        }
+    }
+
+    // 4. Seed Initial Influencer Coupons
+    $couponDefaults = [
+        ['VARUN10', 'Varun (Founder Campaign)', '@varun.nomu', 'percentage', 10.0, 0.0, null, 14, 4480.0, 448.0, 1, 'Founder personal ritual code'],
+        ['FITNESSRITUAL', 'Rahul FitLife', '@rahul_fitness_chennai', 'percentage', 15.0, 160.0, 100, 9, 2880.0, 432.0, 1, 'Chennai athletic community collaboration'],
+        ['ANANYA15', 'Ananya Deshmukh', '@ananya.wellness', 'percentage', 15.0, 160.0, 50, 7, 2240.0, 336.0, 1, 'Holistic living & yoga community'],
+        ['WELCOME50', 'Chennai Gourmet Club', '@chennaifoodguide', 'fixed', 50.0, 320.0, null, 4, 1920.0, 200.0, 1, 'Flat ₹50 off on 8-pack and 12-pack ritual boxes']
+    ];
+
+    $chkCpn = $pdo->query("SELECT COUNT(*) FROM coupons")->fetchColumn();
+    if ($chkCpn == 0 || $force) {
+        $insCpn = $pdo->prepare("INSERT INTO coupons (code, influencer_name, influencer_handle, discount_type, discount_value, min_order_amount, usage_limit, times_used, total_sales_generated, total_discount_granted, is_active, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        foreach ($couponDefaults as $cp) {
+            $insCpn->execute($cp);
+            $seeded['coupons'] = ($seeded['coupons'] ?? 0) + 1;
         }
     }
 
@@ -386,6 +424,73 @@ if ($method === 'POST' && ($pathInfo === '/font' || $pathInfo === '/api/font')) 
     exit;
 }
 
+// 1d. PUBLIC: GET /coupons/validate (validate coupon for checkout)
+if ($method === 'GET' && ($pathInfo === '/coupons/validate' || $pathInfo === '/api/coupons/validate')) {
+    $code = strtoupper(trim((string)($_GET['code'] ?? '')));
+    $amount = (float)($_GET['amount'] ?? 0);
+
+    if (empty($code)) {
+        http_response_code(400);
+        echo json_encode(['valid' => false, 'message' => 'Please enter a coupon code.']);
+        exit;
+    }
+
+    $stmt = $pdo->prepare("SELECT * FROM coupons WHERE UPPER(code) = ? LIMIT 1");
+    $stmt->execute([$code]);
+    $cpn = $stmt->fetch();
+
+    if (!$cpn) {
+        http_response_code(404);
+        echo json_encode(['valid' => false, 'message' => "Coupon code '{$code}' not recognized."]);
+        exit;
+    }
+
+    if ((int)$cpn['is_active'] !== 1) {
+        http_response_code(400);
+        echo json_encode(['valid' => false, 'message' => "Coupon '{$code}' is currently inactive."]);
+        exit;
+    }
+
+    if ($cpn['usage_limit'] !== null && (int)$cpn['times_used'] >= (int)$cpn['usage_limit']) {
+        http_response_code(400);
+        echo json_encode(['valid' => false, 'message' => "Coupon '{$code}' redemption limit has been reached."]);
+        exit;
+    }
+
+    $minOrder = (float)$cpn['min_order_amount'];
+    if ($amount > 0 && $amount < $minOrder) {
+        http_response_code(400);
+        echo json_encode(['valid' => false, 'message' => "Minimum order of ₹{$minOrder} required to activate '{$code}'."]);
+        exit;
+    }
+
+    $discountValue = (float)$cpn['discount_value'];
+    $discountAmount = 0.0;
+    if ($cpn['discount_type'] === 'percentage') {
+        $discountAmount = round(($amount * $discountValue) / 100, 2);
+    } else {
+        $discountAmount = $discountValue;
+    }
+    $discountAmount = min($amount, $discountAmount);
+    $finalAmount = max(0, round($amount - $discountAmount, 2));
+
+    $discountDesc = $cpn['discount_type'] === 'percentage' ? "{$discountValue}% Off" : "₹{$discountValue} Off";
+
+    echo json_encode([
+        'valid' => true,
+        'code' => $cpn['code'],
+        'influencer_name' => $cpn['influencer_name'],
+        'influencer_handle' => $cpn['influencer_handle'],
+        'discount_type' => $cpn['discount_type'],
+        'discount_value' => $discountValue,
+        'discount_amount' => $discountAmount,
+        'final_amount' => $finalAmount,
+        'min_order_amount' => $minOrder,
+        'message' => "Applied! {$discountDesc} with referral from {$cpn['influencer_name']}."
+    ]);
+    exit;
+}
+
 // 2. PUBLIC: GET /reviews (approved and visible only)
 if ($method === 'GET' && $pathInfo === '/reviews') {
     $flavor = $_GET['flavor'] ?? 'all';
@@ -477,9 +582,31 @@ if ($method === 'POST' && $pathInfo === '/orders') {
 
     $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
 
+    $couponCode = strtoupper(preg_replace('/[^A-Za-z0-9\-_]/', '', trim((string)($input['coupon_code'] ?? ''))));
+    $discountAmount = max(0.0, (float)($input['discount_amount'] ?? 0));
+    $influencerName = strip_tags(trim((string)($input['influencer_name'] ?? '')));
+
+    if (!empty($couponCode)) {
+        $cStmt = $pdo->prepare("SELECT * FROM coupons WHERE UPPER(code) = ? AND is_active = 1");
+        $cStmt->execute([$couponCode]);
+        $cpn = $cStmt->fetch();
+        if ($cpn) {
+            $influencerName = $cpn['influencer_name'];
+            $updCpn = $pdo->prepare("UPDATE coupons SET times_used = times_used + 1, total_sales_generated = total_sales_generated + ?, total_discount_granted = total_discount_granted + ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?");
+            $updCpn->execute([$totalAmount, $discountAmount, $cpn['id']]);
+            nomuLog($pdo, 'INFO', 'INFLUENCER_COUPON_REDEEMED', "Coupon {$couponCode} used by {$name} (Influencer: {$influencerName}, Discount: INR {$discountAmount})", [
+                'coupon' => $couponCode,
+                'influencer' => $influencerName,
+                'order_ref' => $orderRef,
+                'amount' => $totalAmount,
+                'discount' => $discountAmount
+            ]);
+        }
+    }
+
     $stmt = $pdo->prepare("
-        INSERT INTO orders (order_ref, customer_name, customer_phone, customer_email, delivery_address, notes, items_json, total_bottles, total_amount, status, ip_address)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)
+        INSERT INTO orders (order_ref, customer_name, customer_phone, customer_email, delivery_address, notes, items_json, total_bottles, total_amount, status, ip_address, coupon_code, discount_amount, influencer_name)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?)
     ");
     $stmt->execute([
         $orderRef,
@@ -491,7 +618,10 @@ if ($method === 'POST' && $pathInfo === '/orders') {
         json_encode($items),
         $totalBottles,
         $totalAmount,
-        $ip
+        $ip,
+        $couponCode ?: null,
+        $discountAmount,
+        $influencerName ?: null
     ]);
     $orderId = (int)$pdo->lastInsertId();
 
@@ -609,7 +739,7 @@ if (str_starts_with($pathInfo, '/admin')) {
             header('Content-Type: text/csv; charset=UTF-8');
             header('Content-Disposition: attachment; filename="nomu_confirmed_orders_' . date('Y-m-d_His') . '.csv"');
             $out = fopen('php://output', 'w');
-            fputcsv($out, ['Date', 'Customer Name', 'Phone', 'Email', 'Bottles', 'Total Amount', 'Status', 'Address', 'Notes']);
+            fputcsv($out, ['Date', 'Customer Name', 'Phone', 'Email', 'Bottles', 'Total Amount', 'Coupon Code', 'Discount (INR)', 'Influencer', 'Status', 'Address', 'Notes']);
             
             // CSV Export is strictly restricted to confirmed orders per operations protocol
             $csvSql = "SELECT * FROM orders WHERE status = 'confirmed'";
@@ -630,6 +760,9 @@ if (str_starts_with($pathInfo, '/admin')) {
                     $r['customer_email'],
                     $r['total_bottles'],
                     $r['total_amount'],
+                    $r['coupon_code'] ?? '',
+                    $r['discount_amount'] ?? 0,
+                    $r['influencer_name'] ?? '',
                     $r['status'],
                     $r['delivery_address'],
                     $r['notes'] ?? ''
@@ -648,6 +781,101 @@ if (str_starts_with($pathInfo, '/admin')) {
         }
 
         echo json_encode(['status' => 'success', 'orders' => $orders]);
+        exit;
+    }
+
+    // A2. GET /admin/coupons (Influencer coupons and performance summary)
+    if ($method === 'GET' && $pathInfo === '/admin/coupons') {
+        $stmt = $pdo->query("SELECT * FROM coupons ORDER BY times_used DESC, created_at DESC");
+        $coupons = $stmt->fetchAll();
+
+        $totalCoupons = count($coupons);
+        $activeCoupons = 0;
+        $totalRedemptions = 0;
+        $totalSales = 0.0;
+        $totalDiscount = 0.0;
+
+        foreach ($coupons as $c) {
+            if ((int)$c['is_active'] === 1) $activeCoupons++;
+            $totalRedemptions += (int)$c['times_used'];
+            $totalSales += (float)$c['total_sales_generated'];
+            $totalDiscount += (float)$c['total_discount_granted'];
+        }
+
+        // Fetch recent redemptions
+        $rStmt = $pdo->query("SELECT id, order_ref, customer_name, customer_phone, total_amount, coupon_code, discount_amount, influencer_name, created_at FROM orders WHERE coupon_code IS NOT NULL AND coupon_code != '' ORDER BY id DESC LIMIT 50");
+        $redemptions = $rStmt->fetchAll();
+
+        echo json_encode([
+            'status' => 'success',
+            'summary' => [
+                'total_coupons' => $totalCoupons,
+                'active_coupons' => $activeCoupons,
+                'total_redemptions' => $totalRedemptions,
+                'total_sales' => round($totalSales, 2),
+                'total_discount' => round($totalDiscount, 2)
+            ],
+            'coupons' => $coupons,
+            'recent_redemptions' => $redemptions
+        ]);
+        exit;
+    }
+
+    // A3. POST /admin/coupons (Create new influencer coupon)
+    if ($method === 'POST' && $pathInfo === '/admin/coupons') {
+        $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
+        $code = strtoupper(preg_replace('/[^A-Za-z0-9\-_]/', '', trim((string)($input['code'] ?? ''))));
+        $influencerName = strip_tags(trim((string)($input['influencer_name'] ?? '')));
+        $influencerHandle = strip_tags(trim((string)($input['influencer_handle'] ?? '')));
+        $discountType = in_array($input['discount_type'] ?? '', ['percentage', 'fixed'], true) ? $input['discount_type'] : 'percentage';
+        $discountValue = (float)($input['discount_value'] ?? 0);
+        $minOrder = (float)($input['min_order_amount'] ?? 0);
+        $usageLimit = isset($input['usage_limit']) && $input['usage_limit'] !== '' ? (int)$input['usage_limit'] : null;
+        $notes = htmlspecialchars(trim((string)($input['notes'] ?? '')), ENT_QUOTES, 'UTF-8');
+
+        if (empty($code) || empty($influencerName) || $discountValue <= 0) {
+            http_response_code(422);
+            echo json_encode(['error' => 'Validation error', 'message' => 'Valid Code, Influencer Name, and Discount Value (> 0) are required.']);
+            exit;
+        }
+
+        try {
+            $stmt = $pdo->prepare("INSERT INTO coupons (code, influencer_name, influencer_handle, discount_type, discount_value, min_order_amount, usage_limit, notes, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)");
+            $stmt->execute([$code, $influencerName, $influencerHandle, $discountType, $discountValue, $minOrder, $usageLimit, $notes]);
+            $cpnId = (int)$pdo->lastInsertId();
+
+            nomuLog($pdo, 'INFO', 'COUPON_CREATED', "New coupon {$code} created for {$influencerName} ({$discountType} {$discountValue})");
+            http_response_code(201);
+            echo json_encode(['status' => 'success', 'message' => "Coupon {$code} created successfully", 'id' => $cpnId]);
+        } catch (\PDOException $e) {
+            if (str_contains($e->getMessage(), 'UNIQUE') || str_contains($e->getMessage(), 'Duplicate')) {
+                http_response_code(409);
+                echo json_encode(['error' => "Coupon code '{$code}' already exists. Please choose a unique code."]);
+            } else {
+                http_response_code(500);
+                echo json_encode(['error' => 'Database error', 'details' => $e->getMessage()]);
+            }
+        }
+        exit;
+    }
+
+    // A4. POST /admin/coupons/{id}/toggle
+    if ($method === 'POST' && preg_match('#^/admin/coupons/(\\d+)/toggle$#', $pathInfo, $m)) {
+        $id = (int)$m[1];
+        $pdo->prepare("UPDATE coupons SET is_active = 1 - is_active, updated_at = CURRENT_TIMESTAMP WHERE id = ?")->execute([$id]);
+        $newActive = (int)$pdo->query("SELECT is_active FROM coupons WHERE id = {$id}")->fetchColumn();
+        nomuLog($pdo, 'INFO', 'COUPON_TOGGLED', "Coupon ID {$id} active set to {$newActive}");
+        echo json_encode(['status' => 'success', 'is_active' => $newActive]);
+        exit;
+    }
+
+    // A5. DELETE /admin/coupons/{id}
+    if ($method === 'DELETE' && preg_match('#^/admin/coupons/(\\d+)$#', $pathInfo, $m)) {
+        $id = (int)$m[1];
+        $code = $pdo->query("SELECT code FROM coupons WHERE id = {$id}")->fetchColumn();
+        $pdo->prepare("DELETE FROM coupons WHERE id = ?")->execute([$id]);
+        nomuLog($pdo, 'NOTICE', 'COUPON_DELETED', "Coupon ID {$id} ({$code}) deleted");
+        echo json_encode(['status' => 'success', 'message' => "Coupon deleted successfully"]);
         exit;
     }
 

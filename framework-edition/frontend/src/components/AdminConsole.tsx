@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { OrderRecord, ReviewRecord, SystemTelemetry, SystemAuditLog, CmsData } from '../types';
+import { OrderRecord, ReviewRecord, SystemTelemetry, SystemAuditLog, CmsData, CouponRecord, CouponSummary } from '../types';
 
 const FONT_PRESETS: Record<string, { name: string; family: string; url: string }> = {
   bricolage: {
@@ -63,7 +63,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
   apiBaseUrl = '/api',
   onClose
 }) => {
-  const [activeTab, setActiveTab] = useState<'orders' | 'reviews' | 'cms' | 'preview' | 'telemetry'>('orders');
+  const [activeTab, setActiveTab] = useState<'orders' | 'reviews' | 'coupons' | 'cms' | 'preview' | 'telemetry'>('orders');
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     return !!sessionStorage.getItem('nomu_admin_token');
   });
@@ -76,6 +76,26 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [previewMode, setPreviewMode] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [iframeKey, setIframeKey] = useState<number>(Date.now());
+
+  // Coupons & Influencers State
+  const [coupons, setCoupons] = useState<CouponRecord[]>([]);
+  const [couponSummary, setCouponSummary] = useState<CouponSummary | null>(null);
+  const [recentRedemptions, setRecentRedemptions] = useState<any[]>([]);
+  const [isCouponModalOpen, setIsCouponModalOpen] = useState(false);
+  const [couponActionMsg, setCouponActionMsg] = useState('');
+  const [couponForm, setCouponForm] = useState({
+    code: '',
+    influencer_name: '',
+    influencer_handle: '',
+    discount_type: 'percentage' as 'percentage' | 'fixed',
+    discount_value: 10,
+    min_order_amount: 0,
+    usage_limit: '',
+    notes: ''
+  });
+  const [couponFormError, setCouponFormError] = useState('');
+  const [isSubmittingCoupon, setIsSubmittingCoupon] = useState(false);
+  const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
   // Orders State
   const [orders, setOrders] = useState<OrderRecord[]>([]);
@@ -412,9 +432,116 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
     window.open(`${apiBaseUrl}/admin/orders?export=csv&status=confirmed&token=${encodeURIComponent(adminToken)}`, '_blank');
   };
 
+  const fetchCoupons = async () => {
+    try {
+      const res = await fetch(`${apiBaseUrl}/admin/coupons`, {
+        headers: { 'Authorization': `Bearer ${adminToken}` }
+      });
+      const data = await res.json();
+      if (data && data.status === 'success') {
+        setCoupons(data.coupons || []);
+        setCouponSummary(data.summary || null);
+        setRecentRedemptions(data.recent_redemptions || []);
+      }
+    } catch (e) {}
+  };
+
+  const handleToggleCoupon = async (id: number) => {
+    try {
+      const res = await fetch(`${apiBaseUrl}/admin/coupons/${id}/toggle`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${adminToken}` }
+      });
+      if (res.ok) {
+        fetchCoupons();
+        setCouponActionMsg('Coupon status updated.');
+        setTimeout(() => setCouponActionMsg(''), 3000);
+      }
+    } catch (e) {}
+  };
+
+  const handleDeleteCoupon = async (id: number, code: string) => {
+    if (!window.confirm(`Are you sure you want to delete influencer coupon "${code}"?`)) return;
+    try {
+      const res = await fetch(`${apiBaseUrl}/admin/coupons/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${adminToken}` }
+      });
+      if (res.ok) {
+        fetchCoupons();
+        setCouponActionMsg(`Coupon ${code} deleted.`);
+        setTimeout(() => setCouponActionMsg(''), 3000);
+      }
+    } catch (e) {}
+  };
+
+  const handleCreateCoupon = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCouponFormError('');
+    if (!couponForm.code.trim() || !couponForm.influencer_name.trim()) {
+      setCouponFormError('Coupon code and Influencer name are required.');
+      return;
+    }
+    if (couponForm.discount_value <= 0) {
+      setCouponFormError('Discount value must be greater than 0.');
+      return;
+    }
+    setIsSubmittingCoupon(true);
+    try {
+      const payload = {
+        code: couponForm.code.trim().toUpperCase(),
+        influencer_name: couponForm.influencer_name.trim(),
+        influencer_handle: couponForm.influencer_handle.trim(),
+        discount_type: couponForm.discount_type,
+        discount_value: Number(couponForm.discount_value),
+        min_order_amount: Number(couponForm.min_order_amount) || 0,
+        usage_limit: couponForm.usage_limit ? Number(couponForm.usage_limit) : null,
+        notes: couponForm.notes.trim()
+      };
+      const res = await fetch(`${apiBaseUrl}/admin/coupons`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${adminToken}`
+        },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setIsCouponModalOpen(false);
+        setCouponForm({
+          code: '',
+          influencer_name: '',
+          influencer_handle: '',
+          discount_type: 'percentage',
+          discount_value: 10,
+          min_order_amount: 0,
+          usage_limit: '',
+          notes: ''
+        });
+        setCouponActionMsg(`Coupon ${payload.code} created successfully!`);
+        setTimeout(() => setCouponActionMsg(''), 4000);
+        fetchCoupons();
+      } else {
+        setCouponFormError(data.error || data.message || 'Failed to create coupon');
+      }
+    } catch (err) {
+      setCouponFormError('Network error creating coupon');
+    } finally {
+      setIsSubmittingCoupon(false);
+    }
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedCode(text);
+    setTimeout(() => setCopiedCode(null), 2000);
+  };
+
   useEffect(() => {
     if (activeTab === 'orders') fetchOrders();
     if (activeTab === 'reviews') fetchAdminReviews();
+    if (activeTab === 'coupons') fetchCoupons();
     if (activeTab === 'cms') fetchCmsData();
     if (activeTab === 'telemetry') { fetchTelemetry(); fetchLogs(); }
   }, [activeTab, orderStatusFilter, reviewStatusFilter, logLevelFilter]);
@@ -608,6 +735,13 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
         </button>
         <button
           type="button"
+          className={`tab-btn ${activeTab === 'coupons' ? 'is-active' : ''}`}
+          onClick={() => setActiveTab('coupons')}
+        >
+          🏷️ Influencers & Coupons ({coupons.length})
+        </button>
+        <button
+          type="button"
           className={`tab-btn ${activeTab === 'cms' ? 'is-active' : ''}`}
           onClick={() => setActiveTab('cms')}
         >
@@ -699,7 +833,20 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
                           {Array.isArray(o.items) ? o.items.map(it => `${it.quantity}x ${it.flavor}`).join(', ') : 'Ritual Box'}
                         </td>
                         <td style={{ padding: '0.8rem 1rem' }}>{o.total_bottles}</td>
-                        <td style={{ padding: '0.8rem 1rem', color: '#D5360C', fontWeight: 700 }}>₹{o.total_amount}</td>
+                        <td style={{ padding: '0.8rem 1rem', color: '#D5360C', fontWeight: 700 }}>
+                          <div>₹{o.total_amount}</div>
+                          {o.coupon_code && (
+                            <div style={{ fontSize: '0.7rem', color: '#10B981', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '3px', marginTop: '3px' }}>
+                              <span>🏷️ {o.coupon_code}</span>
+                              {o.discount_amount ? <span>(-₹{o.discount_amount})</span> : null}
+                            </div>
+                          )}
+                          {o.influencer_name && (
+                            <div style={{ fontSize: '0.68rem', color: '#9CA3AF', fontWeight: 400 }}>
+                              via {o.influencer_name}
+                            </div>
+                          )}
+                        </td>
                         <td style={{ padding: '0.8rem 1rem' }}>
                           <span style={{ padding: '0.2rem 0.5rem', borderRadius: '9999px', fontSize: '0.72rem', background: 'rgba(217, 119, 6, 0.2)', color: '#F59E0B' }}>
                             {o.status}
@@ -809,7 +956,441 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
           </div>
         )}
 
-        {/* Tab 3: CMS Content & Media Management */}
+        {/* Tab 3: Influencers & Coupons Management */}
+        {activeTab === 'coupons' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            {/* Header Toolbar */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#1A1918', border: '1px solid #2C2926', padding: '1.25rem 1.5rem', borderRadius: '10px', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 700, margin: '0 0 0.25rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span>🏷️</span> Influencer Partnerships & Coupon Engine
+                </h3>
+                <p style={{ fontSize: '0.8rem', color: '#888', margin: 0 }}>
+                  Manage creator attribution codes, track live customer redemptions, gross revenue generated, and discount math.
+                </p>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                {couponActionMsg && (
+                  <span style={{ color: '#4ADE80', fontSize: '0.8125rem', fontWeight: 600 }}>{couponActionMsg}</span>
+                )}
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={fetchCoupons}
+                  style={{ fontSize: '0.8125rem' }}
+                >
+                  Refresh
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-burnt-orange"
+                  onClick={() => setIsCouponModalOpen(true)}
+                  style={{ fontSize: '0.8125rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+                >
+                  <span>+</span> Create Influencer Coupon
+                </button>
+              </div>
+            </div>
+
+            {/* KPI Summary Cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: '1rem' }}>
+              <div style={{ background: '#1A1918', border: '1px solid #2C2926', borderRadius: '10px', padding: '1rem 1.25rem' }}>
+                <div style={{ fontSize: '0.75rem', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Coupons</div>
+                <div style={{ fontSize: '1.65rem', fontWeight: 800, marginTop: '0.35rem', color: '#FFF' }}>
+                  {couponSummary?.total_coupons ?? coupons.length}
+                </div>
+                <div style={{ fontSize: '0.72rem', color: '#666', marginTop: '0.2rem' }}>All registered codes</div>
+              </div>
+
+              <div style={{ background: '#1A1918', border: '1px solid #2C2926', borderRadius: '10px', padding: '1rem 1.25rem' }}>
+                <div style={{ fontSize: '0.75rem', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Active Campaigns</div>
+                <div style={{ fontSize: '1.65rem', fontWeight: 800, marginTop: '0.35rem', color: '#4ADE80' }}>
+                  {couponSummary?.active_coupons ?? coupons.filter(c => c.is_active === 1).length}
+                </div>
+                <div style={{ fontSize: '0.72rem', color: '#666', marginTop: '0.2rem' }}>Currently redeemable</div>
+              </div>
+
+              <div style={{ background: '#1A1918', border: '1px solid #2C2926', borderRadius: '10px', padding: '1rem 1.25rem' }}>
+                <div style={{ fontSize: '0.75rem', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Orders Driven</div>
+                <div style={{ fontSize: '1.65rem', fontWeight: 800, marginTop: '0.35rem', color: '#60A5FA' }}>
+                  {couponSummary?.total_redemptions ?? 0}
+                </div>
+                <div style={{ fontSize: '0.72rem', color: '#666', marginTop: '0.2rem' }}>Verified redemptions</div>
+              </div>
+
+              <div style={{ background: '#1A1918', border: '1px solid #2C2926', borderRadius: '10px', padding: '1rem 1.25rem' }}>
+                <div style={{ fontSize: '0.75rem', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Sales Revenue Generated</div>
+                <div style={{ fontSize: '1.65rem', fontWeight: 800, marginTop: '0.35rem', color: '#D5360C' }}>
+                  ₹{(couponSummary?.total_sales ?? 0).toLocaleString('en-IN')}
+                </div>
+                <div style={{ fontSize: '0.72rem', color: '#666', marginTop: '0.2rem' }}>Gross creator revenue</div>
+              </div>
+
+              <div style={{ background: '#1A1918', border: '1px solid #2C2926', borderRadius: '10px', padding: '1rem 1.25rem' }}>
+                <div style={{ fontSize: '0.75rem', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Customer Savings</div>
+                <div style={{ fontSize: '1.65rem', fontWeight: 800, marginTop: '0.35rem', color: '#F59E0B' }}>
+                  ₹{(couponSummary?.total_discount ?? 0).toLocaleString('en-IN')}
+                </div>
+                <div style={{ fontSize: '0.72rem', color: '#666', marginTop: '0.2rem' }}>Discounts granted</div>
+              </div>
+            </div>
+
+            {/* Influencer Performance Leaderboard */}
+            <div className="table-card" style={{ background: '#1A1918', borderRadius: '10px', border: '1px solid #2C2926', overflow: 'hidden' }}>
+              <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid #2C2926', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700 }}>Influencer Performance Leaderboard</h4>
+                <span style={{ fontSize: '0.75rem', color: '#888' }}>Ranked by creator engagement & sales</span>
+              </div>
+              <table className="data-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
+                <thead>
+                  <tr style={{ background: '#161514', borderBottom: '1px solid #2C2926' }}>
+                    <th style={{ padding: '0.8rem 1rem' }}>Influencer / Partner</th>
+                    <th style={{ padding: '0.8rem 1rem' }}>Promo Code</th>
+                    <th style={{ padding: '0.8rem 1rem' }}>Discount Offer</th>
+                    <th style={{ padding: '0.8rem 1rem' }}>Redemptions</th>
+                    <th style={{ padding: '0.8rem 1rem' }}>Gross Sales (INR)</th>
+                    <th style={{ padding: '0.8rem 1rem' }}>Discounts Given</th>
+                    <th style={{ padding: '0.8rem 1rem' }}>Status</th>
+                    <th style={{ padding: '0.8rem 1rem' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {coupons.length === 0 ? (
+                    <tr>
+                      <td colSpan={8} style={{ padding: '2rem', textAlign: 'center', color: '#888' }}>
+                        No influencer coupons created yet. Click "+ Create Influencer Coupon" to add your first creator code.
+                      </td>
+                    </tr>
+                  ) : (
+                    coupons.map((c) => (
+                      <tr key={c.id} style={{ borderBottom: '1px solid #2C2926' }}>
+                        <td style={{ padding: '0.8rem 1rem' }}>
+                          <div style={{ fontWeight: 700, color: '#FFF' }}>{c.influencer_name}</div>
+                          {c.influencer_handle && (
+                            <div style={{ fontSize: '0.75rem', color: '#60A5FA' }}>{c.influencer_handle}</div>
+                          )}
+                          {c.notes && (
+                            <div style={{ fontSize: '0.72rem', color: '#777', marginTop: '2px', maxWidth: '200px' }}>{c.notes}</div>
+                          )}
+                        </td>
+                        <td style={{ padding: '0.8rem 1rem' }}>
+                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', background: '#242220', border: '1px solid #333', padding: '0.25rem 0.55rem', borderRadius: '6px' }}>
+                            <code style={{ color: '#F59E0B', fontWeight: 800, fontSize: '0.85rem', letterSpacing: '0.04em' }}>{c.code}</code>
+                            <button
+                              type="button"
+                              onClick={() => copyToClipboard(c.code)}
+                              style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888', padding: '0 2px', fontSize: '0.75rem' }}
+                              title="Copy coupon code"
+                            >
+                              {copiedCode === c.code ? '✓' : '📋'}
+                            </button>
+                          </div>
+                        </td>
+                        <td style={{ padding: '0.8rem 1rem' }}>
+                          <div style={{ fontWeight: 600, color: '#FFF' }}>
+                            {c.discount_type === 'percentage' ? `${c.discount_value}% OFF` : `₹${c.discount_value} OFF`}
+                          </div>
+                          <div style={{ fontSize: '0.72rem', color: '#888' }}>
+                            {c.min_order_amount > 0 ? `Min Order ₹${c.min_order_amount}` : 'No minimum order'}
+                          </div>
+                        </td>
+                        <td style={{ padding: '0.8rem 1rem' }}>
+                          <span style={{ fontWeight: 700, color: '#FFF' }}>{c.times_used}</span>
+                          <span style={{ fontSize: '0.75rem', color: '#777' }}>
+                            {c.usage_limit ? ` / ${c.usage_limit}` : ' (Unlimited)'}
+                          </span>
+                        </td>
+                        <td style={{ padding: '0.8rem 1rem', color: '#D5360C', fontWeight: 700 }}>
+                          ₹{Number(c.total_sales_generated || 0).toLocaleString('en-IN')}
+                        </td>
+                        <td style={{ padding: '0.8rem 1rem', color: '#F59E0B', fontWeight: 600 }}>
+                          ₹{Number(c.total_discount_granted || 0).toLocaleString('en-IN')}
+                        </td>
+                        <td style={{ padding: '0.8rem 1rem' }}>
+                          <span style={{
+                            padding: '0.2rem 0.55rem',
+                            borderRadius: '9999px',
+                            fontSize: '0.72rem',
+                            fontWeight: 700,
+                            background: c.is_active === 1 ? 'rgba(74, 222, 128, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+                            color: c.is_active === 1 ? '#4ADE80' : '#EF4444'
+                          }}>
+                            {c.is_active === 1 ? 'ACTIVE' : 'PAUSED'}
+                          </span>
+                        </td>
+                        <td style={{ padding: '0.8rem 1rem' }}>
+                          <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                            <button
+                              type="button"
+                              className="btn btn-secondary"
+                              onClick={() => handleToggleCoupon(c.id)}
+                              style={{
+                                fontSize: '0.72rem',
+                                padding: '0.25rem 0.55rem',
+                                background: c.is_active === 1 ? '#2E2215' : '#152E1D',
+                                color: c.is_active === 1 ? '#F59E0B' : '#4ADE80'
+                              }}
+                              title={c.is_active === 1 ? 'Pause this coupon' : 'Activate this coupon'}
+                            >
+                              {c.is_active === 1 ? 'Pause' : 'Activate'}
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-secondary"
+                              onClick={() => handleDeleteCoupon(c.id, c.code)}
+                              style={{ fontSize: '0.72rem', padding: '0.25rem 0.55rem', color: '#EF4444' }}
+                              title="Delete this coupon"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Recent Redemptions Audit Log */}
+            <div className="table-card" style={{ background: '#1A1918', borderRadius: '10px', border: '1px solid #2C2926', overflow: 'hidden' }}>
+              <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid #2C2926', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700 }}>Recent Influencer Code Redemptions (Audit Trail)</h4>
+                <span style={{ fontSize: '0.75rem', color: '#888' }}>Live orders using creator codes</span>
+              </div>
+              <table className="data-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
+                <thead>
+                  <tr style={{ background: '#161514', borderBottom: '1px solid #2C2926' }}>
+                    <th style={{ padding: '0.8rem 1rem' }}>Order Ref</th>
+                    <th style={{ padding: '0.8rem 1rem' }}>Customer</th>
+                    <th style={{ padding: '0.8rem 1rem' }}>Coupon Applied</th>
+                    <th style={{ padding: '0.8rem 1rem' }}>Influencer Attributed</th>
+                    <th style={{ padding: '0.8rem 1rem' }}>Order Paid</th>
+                    <th style={{ padding: '0.8rem 1rem' }}>Discount Saved</th>
+                    <th style={{ padding: '0.8rem 1rem' }}>Date & Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recentRedemptions.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} style={{ padding: '1.5rem', textAlign: 'center', color: '#888' }}>
+                        No customer redemptions recorded yet. Redemptions appear here instantly when customers checkout with an influencer coupon.
+                      </td>
+                    </tr>
+                  ) : (
+                    recentRedemptions.map((r, idx) => (
+                      <tr key={idx} style={{ borderBottom: '1px solid #2C2926' }}>
+                        <td style={{ padding: '0.8rem 1rem', fontFamily: 'monospace', color: '#60A5FA' }}>
+                          {r.order_ref}
+                        </td>
+                        <td style={{ padding: '0.8rem 1rem' }}>
+                          <div>{r.customer_name}</div>
+                          {r.customer_phone && <small style={{ color: '#888' }}>{r.customer_phone}</small>}
+                        </td>
+                        <td style={{ padding: '0.8rem 1rem' }}>
+                          <span style={{ background: '#242220', border: '1px solid #333', padding: '0.2rem 0.5rem', borderRadius: '4px', color: '#F59E0B', fontWeight: 700, fontSize: '0.78rem' }}>
+                            🏷️ {r.coupon_code}
+                          </span>
+                        </td>
+                        <td style={{ padding: '0.8rem 1rem', color: '#FFF', fontWeight: 600 }}>
+                          {r.influencer_name || '—'}
+                        </td>
+                        <td style={{ padding: '0.8rem 1rem', color: '#D5360C', fontWeight: 700 }}>
+                          ₹{Number(r.total_amount).toLocaleString('en-IN')}
+                        </td>
+                        <td style={{ padding: '0.8rem 1rem', color: '#4ADE80', fontWeight: 600 }}>
+                          ₹{Number(r.discount_amount || 0).toLocaleString('en-IN')}
+                        </td>
+                        <td style={{ padding: '0.8rem 1rem', fontSize: '0.75rem', color: '#888' }}>
+                          {r.created_at}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Create Influencer Coupon Modal */}
+            {isCouponModalOpen && (
+              <div style={{
+                position: 'fixed',
+                inset: 0,
+                backgroundColor: 'rgba(0, 0, 0, 0.75)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 9999,
+                padding: '1rem'
+              }}>
+                <div style={{
+                  background: '#1A1918',
+                  border: '1px solid #2C2926',
+                  borderRadius: '12px',
+                  width: '100%',
+                  maxWidth: '520px',
+                  padding: '1.5rem',
+                  boxShadow: '0 20px 40px rgba(0, 0, 0, 0.5)'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid #2C2926', paddingBottom: '0.75rem' }}>
+                    <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#FFF' }}>
+                      Create Influencer Coupon
+                    </h3>
+                    <button
+                      type="button"
+                      onClick={() => setIsCouponModalOpen(false)}
+                      style={{ background: 'none', border: 'none', color: '#888', fontSize: '1.25rem', cursor: 'pointer' }}
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  {couponFormError && (
+                    <div style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid #EF4444', color: '#F87171', padding: '0.65rem', borderRadius: '6px', fontSize: '0.8rem', marginBottom: '1rem' }}>
+                      ⚠ {couponFormError}
+                    </div>
+                  )}
+
+                  <form onSubmit={handleCreateCoupon} style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#AAA', marginBottom: '0.35rem' }}>
+                          Coupon Code *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={couponForm.code}
+                          onChange={(e) => setCouponForm({ ...couponForm, code: e.target.value.toUpperCase() })}
+                          placeholder="e.g. PRIYA20"
+                          style={{ width: '100%', background: '#242220', border: '1px solid #333', color: '#FFF', padding: '0.55rem 0.75rem', borderRadius: '6px', fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase' }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#AAA', marginBottom: '0.35rem' }}>
+                          Discount Type
+                        </label>
+                        <select
+                          value={couponForm.discount_type}
+                          onChange={(e) => setCouponForm({ ...couponForm, discount_type: e.target.value as 'percentage' | 'fixed' })}
+                          style={{ width: '100%', background: '#242220', border: '1px solid #333', color: '#FFF', padding: '0.55rem 0.75rem', borderRadius: '6px', fontSize: '0.85rem' }}
+                        >
+                          <option value="percentage">Percentage (% OFF)</option>
+                          <option value="fixed">Fixed Amount (₹ OFF)</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#AAA', marginBottom: '0.35rem' }}>
+                          Discount Value *
+                        </label>
+                        <input
+                          type="number"
+                          required
+                          min="1"
+                          max={couponForm.discount_type === 'percentage' ? 100 : 10000}
+                          value={couponForm.discount_value}
+                          onChange={(e) => setCouponForm({ ...couponForm, discount_value: Number(e.target.value) })}
+                          placeholder={couponForm.discount_type === 'percentage' ? '15' : '50'}
+                          style={{ width: '100%', background: '#242220', border: '1px solid #333', color: '#FFF', padding: '0.55rem 0.75rem', borderRadius: '6px', fontSize: '0.85rem' }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#AAA', marginBottom: '0.35rem' }}>
+                          Min. Order Amount (₹)
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={couponForm.min_order_amount}
+                          onChange={(e) => setCouponForm({ ...couponForm, min_order_amount: Number(e.target.value) })}
+                          placeholder="0 for no minimum"
+                          style={{ width: '100%', background: '#242220', border: '1px solid #333', color: '#FFF', padding: '0.55rem 0.75rem', borderRadius: '6px', fontSize: '0.85rem' }}
+                        />
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#AAA', marginBottom: '0.35rem' }}>
+                          Influencer Name *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={couponForm.influencer_name}
+                          onChange={(e) => setCouponForm({ ...couponForm, influencer_name: e.target.value })}
+                          placeholder="e.g. Priya Raman"
+                          style={{ width: '100%', background: '#242220', border: '1px solid #333', color: '#FFF', padding: '0.55rem 0.75rem', borderRadius: '6px', fontSize: '0.85rem' }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#AAA', marginBottom: '0.35rem' }}>
+                          Social Handle / Channel
+                        </label>
+                        <input
+                          type="text"
+                          value={couponForm.influencer_handle}
+                          onChange={(e) => setCouponForm({ ...couponForm, influencer_handle: e.target.value })}
+                          placeholder="e.g. @priya_wellness"
+                          style={{ width: '100%', background: '#242220', border: '1px solid #333', color: '#FFF', padding: '0.55rem 0.75rem', borderRadius: '6px', fontSize: '0.85rem' }}
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#AAA', marginBottom: '0.35rem' }}>
+                        Usage Limit (Optional)
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        value={couponForm.usage_limit}
+                        onChange={(e) => setCouponForm({ ...couponForm, usage_limit: e.target.value })}
+                        placeholder="Leave blank for unlimited redemptions"
+                        style={{ width: '100%', background: '#242220', border: '1px solid #333', color: '#FFF', padding: '0.55rem 0.75rem', borderRadius: '6px', fontSize: '0.85rem' }}
+                      />
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#AAA', marginBottom: '0.35rem' }}>
+                        Campaign Notes / Target Audience
+                      </label>
+                      <input
+                        type="text"
+                        value={couponForm.notes}
+                        onChange={(e) => setCouponForm({ ...couponForm, notes: e.target.value })}
+                        placeholder="e.g. Fitness community launch collaboration"
+                        style={{ width: '100%', background: '#242220', border: '1px solid #333', color: '#FFF', padding: '0.55rem 0.75rem', borderRadius: '6px', fontSize: '0.85rem' }}
+                      />
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.75rem' }}>
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={() => setIsCouponModalOpen(false)}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        className="btn btn-burnt-orange"
+                        disabled={isSubmittingCoupon}
+                      >
+                        {isSubmittingCoupon ? 'Creating...' : 'Create Coupon Code'}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Tab 4: CMS Content & Media Management */}
         {activeTab === 'cms' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '1000px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#1A1918', border: '1px solid #2C2926', padding: '1rem 1.5rem', borderRadius: '10px' }}>

@@ -83,6 +83,9 @@ export interface OrderSubmissionPayload {
   items: OrderItemSummary[];
   total_bottles: number;
   total_amount: number;
+  coupon_code?: string;
+  discount_amount?: number;
+  influencer_name?: string;
   _hp_security_check?: string;
 }
 
@@ -98,6 +101,9 @@ export interface OrderRecord {
   total_bottles: number;
   total_amount: number;
   status: 'pending' | 'confirmed' | 'dispatched' | 'delivered' | 'cancelled';
+  coupon_code?: string;
+  discount_amount?: number;
+  influencer_name?: string;
   created_at: string;
   updated_at?: string;
 }
@@ -182,4 +188,44 @@ export interface SystemAuditLog {
   context_json?: string;
   ip_address: string;
   created_at: string;
+}
+
+
+export interface CouponSummary {
+  total_coupons: number;
+  active_coupons: number;
+  total_redemptions: number;
+  total_sales: number;
+  total_discount: number;
+}
+
+export interface CouponRecord {
+  id: number;
+  code: string;
+  influencer_name: string;
+  influencer_handle?: string;
+  discount_type: 'percentage' | 'fixed';
+  discount_value: number;
+  min_order_amount: number;
+  usage_limit?: number | null;
+  times_used: number;
+  total_sales_generated: number;
+  total_discount_granted: number;
+  is_active: number;
+  notes?: string;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface CouponValidationResponse {
+  valid: boolean;
+  code?: string;
+  influencer_name?: string;
+  influencer_handle?: string;
+  discount_type?: 'percentage' | 'fixed';
+  discount_value?: number;
+  discount_amount?: number;
+  final_amount?: number;
+  min_order_amount?: number;
+  message?: string;
 }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CartItem, FlavorKey, PackKey } from '../types';
+import { CartItem, FlavorKey, PackKey, CouponValidationResponse } from '../types';
 import { FLAVORS, FLAVOR_KEYS, PACK_TIERS } from '../data/flavors';
 
 interface OrderModalProps {
@@ -31,10 +31,72 @@ export const OrderModal: React.FC<OrderModalProps> = ({
   const [errorMsg, setErrorMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Influencer & Coupon State
+  const [couponInput, setCouponInput] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<CouponValidationResponse | null>(null);
+  const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
+  const [couponFeedback, setCouponFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
   if (!isOpen) return null;
 
   const totalBottles = cart.reduce((acc, it) => acc + it.quantity * it.bottlesPerPack, 0);
   const grandTotal = cart.reduce((acc, it) => acc + it.quantity * it.unitPrice, 0);
+
+  // Dynamic Coupon Discount Math
+  let discountAmount = 0;
+  let couponEligible = true;
+  let couponIneligibleReason = '';
+
+  if (appliedCoupon) {
+    if (appliedCoupon.min_order_amount && grandTotal < appliedCoupon.min_order_amount) {
+      couponEligible = false;
+      couponIneligibleReason = `Minimum order amount of ₹${appliedCoupon.min_order_amount} required for this coupon.`;
+    } else if (appliedCoupon.discount_type === 'percentage') {
+      discountAmount = Math.round((grandTotal * (appliedCoupon.discount_value || 0)) / 100);
+    } else {
+      discountAmount = Math.min(appliedCoupon.discount_value || 0, grandTotal);
+    }
+  }
+
+  const finalAmount = Math.max(0, grandTotal - (couponEligible ? discountAmount : 0));
+
+  const handleApplyCoupon = async () => {
+    const trimmed = couponInput.trim().toUpperCase();
+    if (!trimmed) {
+      setCouponFeedback({ type: 'error', message: 'Please enter a coupon code.' });
+      return;
+    }
+    if (cart.length === 0) {
+      setCouponFeedback({ type: 'error', message: 'Add items to your cart first.' });
+      return;
+    }
+    setIsValidatingCoupon(true);
+    setCouponFeedback(null);
+    try {
+      const res = await fetch(`${apiBaseUrl}/coupons/validate?code=${encodeURIComponent(trimmed)}&amount=${grandTotal}`);
+      const data: CouponValidationResponse = await res.json();
+      if (data.valid) {
+        setAppliedCoupon(data);
+        setCouponFeedback({
+          type: 'success',
+          message: `Coupon "${data.code}" applied! You save ₹${data.discount_amount} (${data.influencer_name ? 'Referral: ' + data.influencer_name : data.discount_type === 'percentage' ? data.discount_value + '% off' : '₹' + data.discount_value + ' off'})`
+        });
+      } else {
+        setAppliedCoupon(null);
+        setCouponFeedback({ type: 'error', message: data.message || 'Invalid or inactive coupon code.' });
+      }
+    } catch (err) {
+      setCouponFeedback({ type: 'error', message: 'Could not validate coupon. Please check connection.' });
+    } finally {
+      setIsValidatingCoupon(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponInput('');
+    setCouponFeedback(null);
+  };
 
   const handleAddPackFromModal = (fKey: FlavorKey, pKey: PackKey) => {
     if (onAddToCart) {
@@ -100,7 +162,10 @@ export const OrderModal: React.FC<OrderModalProps> = ({
       notes: notes.trim(),
       items: itemsSummary,
       total_bottles: totalBottles,
-      total_amount: grandTotal
+      total_amount: finalAmount,
+      coupon_code: appliedCoupon && couponEligible ? appliedCoupon.code : undefined,
+      discount_amount: appliedCoupon && couponEligible ? discountAmount : 0,
+      influencer_name: appliedCoupon && couponEligible ? (appliedCoupon.influencer_name || undefined) : undefined
     };
 
     // Await order capture in the backend database
@@ -131,6 +196,16 @@ export const OrderModal: React.FC<OrderModalProps> = ({
 
     const notesLine = notes.trim() ? `• Notes: ${notes.trim()}\n` : '';
 
+    let pricingSection = '';
+    if (appliedCoupon && couponEligible && discountAmount > 0) {
+      pricingSection = `*Subtotal:* ₹${grandTotal}
+*Coupon Applied:* ${appliedCoupon.code} (-₹${discountAmount})
+*Influencer Referral:* ${appliedCoupon.influencer_name || 'Nomu Partner'}
+*Final Amount Payable:* ₹${finalAmount}`;
+    } else {
+      pricingSection = `*Order Amount:* ₹${grandTotal}`;
+    }
+
     const waMessage =
 `*NOMU BOTANICAL RITUAL ORDER*
 Order Ref: ${orderRef}
@@ -144,7 +219,7 @@ ${notesLine}
 *Selected Ritual Box:*
 ${itemsText}-----------------------------
 *Total Bottles:* ${totalBottles} Bottles
-*Order Amount:* ₹${grandTotal}
+${pricingSection}
 *Delivery:* Within 10 Days to Your Location
 
 Please confirm my order and share payment link / UPI instructions. Thank you!`;
@@ -290,14 +365,96 @@ Please confirm my order and share payment link / UPI instructions. Thank you!`;
             </div>
           )}
 
+          {/* Influencer / Promo Coupon Box */}
+          {cart.length > 0 && (
+            <div className="modal-coupon-section">
+              <div className="modal-coupon-row">
+                <div className="modal-coupon-input-wrap">
+                  <span className="modal-coupon-tag-icon">🏷️</span>
+                  <input
+                    type="text"
+                    className="modal-coupon-input"
+                    placeholder="Influencer / Promo Code"
+                    value={couponInput}
+                    onChange={(e) => {
+                      setCouponInput(e.target.value.toUpperCase());
+                      if (couponFeedback) setCouponFeedback(null);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleApplyCoupon();
+                      }
+                    }}
+                    disabled={!!appliedCoupon || isValidatingCoupon}
+                  />
+                </div>
+                {appliedCoupon ? (
+                  <button
+                    type="button"
+                    className="btn-coupon-remove"
+                    onClick={handleRemoveCoupon}
+                    title="Remove coupon"
+                  >
+                    ✕ Remove
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    className="btn-coupon-apply"
+                    onClick={handleApplyCoupon}
+                    disabled={!couponInput.trim() || isValidatingCoupon}
+                  >
+                    {isValidatingCoupon ? 'Checking...' : 'Apply'}
+                  </button>
+                )}
+              </div>
+
+              {couponFeedback && (
+                <div className={`modal-coupon-feedback ${couponFeedback.type}`}>
+                  {couponFeedback.type === 'success' ? '✓ ' : '⚠ '}
+                  {couponFeedback.message}
+                </div>
+              )}
+
+              {appliedCoupon && !couponEligible && (
+                <div className="modal-coupon-feedback error">
+                  ⚠ {couponIneligibleReason}
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="modal-summary-total">
             <div className="modal-total-labels">
-              <span>Order Total:</span>
+              {appliedCoupon && couponEligible && discountAmount > 0 ? (
+                <>
+                  <span style={{ fontSize: '0.8rem', color: '#666', textDecoration: 'line-through' }}>
+                    Subtotal: ₹{grandTotal}
+                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: '#2E7D32', fontSize: '0.82rem', fontWeight: 600 }}>
+                    <span>🏷️ {appliedCoupon.code}</span>
+                    <span>(-₹{discountAmount})</span>
+                  </div>
+                  <span style={{ fontWeight: 700, fontSize: '0.92rem' }}>Final Amount Payable:</span>
+                </>
+              ) : (
+                <span>Order Total:</span>
+              )}
               <small style={{ color: '#2E7D32', fontWeight: 600, display: 'block', fontSize: '0.72rem' }}>
                 ✓ Delivered within 10 days to your location
               </small>
             </div>
-            <strong>₹{grandTotal}</strong>
+            <div style={{ textAlign: 'right' }}>
+              <strong style={{ fontSize: '1.2rem', color: appliedCoupon && couponEligible && discountAmount > 0 ? '#D01C1D' : 'inherit' }}>
+                ₹{finalAmount}
+              </strong>
+              {appliedCoupon && couponEligible && discountAmount > 0 && (
+                <div style={{ fontSize: '0.72rem', color: '#2E7D32', fontWeight: 600 }}>
+                  You save ₹{discountAmount}!
+                </div>
+              )}
+            </div>
           </div>
         </div>
 

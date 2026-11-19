@@ -4171,6 +4171,117 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   flex-shrink: 0;
 }
 
+/* Influencer / Promo Coupon Box */
+.modal-coupon-section {
+  margin: 0.65rem 0;
+  padding: 0.65rem 0.75rem;
+  background-color: #FAF8F5;
+  border-radius: 8px;
+  border: 1px dashed #D5CBBF;
+}
+
+.modal-coupon-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.modal-coupon-input-wrap {
+  position: relative;
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+}
+
+.modal-coupon-tag-icon {
+  position: absolute;
+  left: 0.65rem;
+  font-size: 0.85rem;
+  pointer-events: none;
+}
+
+.modal-coupon-input {
+  width: 100%;
+  padding: 0.45rem 0.65rem 0.45rem 2rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--soft-black);
+  background-color: #FFFFFF;
+  border: 1px solid #D5CBBF;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.modal-coupon-input:focus {
+  border-color: var(--nomu-red);
+  box-shadow: 0 0 0 2px rgba(208, 28, 29, 0.12);
+}
+
+.modal-coupon-input:disabled {
+  background-color: #F1ECE3;
+  color: #6B655D;
+  cursor: not-allowed;
+}
+
+.btn-coupon-apply {
+  padding: 0.45rem 0.9rem;
+  background-color: var(--soft-black);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+}
+
+.btn-coupon-apply:hover:not(:disabled) {
+  background-color: var(--burnt-orange);
+}
+
+.btn-coupon-apply:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-coupon-remove {
+  padding: 0.45rem 0.8rem;
+  background-color: transparent;
+  color: var(--nomu-red);
+  border: 1px solid rgba(208, 28, 29, 0.3);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-coupon-remove:hover {
+  background-color: #FBEBEB;
+  border-color: var(--nomu-red);
+}
+
+.modal-coupon-feedback {
+  margin-top: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.modal-coupon-feedback.success {
+  color: #2E7D32;
+}
+
+.modal-coupon-feedback.error {
+  color: #C62828;
+}
+
 .modal-summary-total {
   display: flex;
   align-items: center;
