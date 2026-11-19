@@ -97,9 +97,27 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
   const [isSubmittingCoupon, setIsSubmittingCoupon] = useState(false);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
+  // Edit Coupon State
+  const [editingCoupon, setEditingCoupon] = useState<CouponRecord | null>(null);
+  const [isEditCouponModalOpen, setIsEditCouponModalOpen] = useState(false);
+  const [editCouponForm, setEditCouponForm] = useState({
+    code: '',
+    influencer_name: '',
+    influencer_handle: '',
+    discount_type: 'percentage' as 'percentage' | 'fixed',
+    discount_value: 10,
+    min_order_amount: 0,
+    usage_limit: '',
+    notes: '',
+    is_active: 1
+  });
+  const [editCouponError, setEditCouponError] = useState('');
+  const [isUpdatingCoupon, setIsUpdatingCoupon] = useState(false);
+
   // Orders State
   const [orders, setOrders] = useState<OrderRecord[]>([]);
   const [orderStatusFilter, setOrderStatusFilter] = useState<string>('all');
+  const [orderCouponFilter, setOrderCouponFilter] = useState<string>('all');
   const [orderSearch, setOrderSearch] = useState<string>('');
 
   // Reviews State
@@ -294,6 +312,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
     try {
       const url = new URL(`${window.location.origin}${apiBaseUrl}/admin/orders`);
       if (orderStatusFilter !== 'all') url.searchParams.set('status', orderStatusFilter);
+      if (orderCouponFilter !== 'all') url.searchParams.set('coupon_code', orderCouponFilter);
       if (orderSearch) url.searchParams.set('search', orderSearch);
 
       const res = await fetch(url.toString(), {
@@ -532,6 +551,73 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
     }
   };
 
+  const handleOpenEditModal = (coupon: CouponRecord) => {
+    setEditingCoupon(coupon);
+    setEditCouponForm({
+      code: coupon.code,
+      influencer_name: coupon.influencer_name,
+      influencer_handle: coupon.influencer_handle || '',
+      discount_type: coupon.discount_type || 'percentage',
+      discount_value: coupon.discount_value,
+      min_order_amount: coupon.min_order_amount || 0,
+      usage_limit: coupon.usage_limit ? String(coupon.usage_limit) : '',
+      notes: coupon.notes || '',
+      is_active: coupon.is_active
+    });
+    setEditCouponError('');
+    setIsEditCouponModalOpen(true);
+  };
+
+  const handleUpdateCoupon = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingCoupon) return;
+    setEditCouponError('');
+    if (!editCouponForm.code.trim() || !editCouponForm.influencer_name.trim()) {
+      setEditCouponError('Coupon code and Influencer name are required.');
+      return;
+    }
+    if (editCouponForm.discount_value <= 0) {
+      setEditCouponError('Discount value must be greater than 0.');
+      return;
+    }
+    setIsUpdatingCoupon(true);
+    try {
+      const payload = {
+        code: editCouponForm.code.trim().toUpperCase(),
+        influencer_name: editCouponForm.influencer_name.trim(),
+        influencer_handle: editCouponForm.influencer_handle.trim(),
+        discount_type: editCouponForm.discount_type,
+        discount_value: Number(editCouponForm.discount_value),
+        min_order_amount: Number(editCouponForm.min_order_amount) || 0,
+        usage_limit: editCouponForm.usage_limit ? Number(editCouponForm.usage_limit) : null,
+        notes: editCouponForm.notes.trim(),
+        is_active: editCouponForm.is_active
+      };
+      const res = await fetch(`${apiBaseUrl}/admin/coupons/${editingCoupon.id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${adminToken}`
+        },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setIsEditCouponModalOpen(false);
+        setEditingCoupon(null);
+        setCouponActionMsg(`Coupon ${payload.code} updated successfully!`);
+        setTimeout(() => setCouponActionMsg(''), 4000);
+        fetchCoupons();
+      } else {
+        setEditCouponError(data.error || data.message || 'Failed to update coupon');
+      }
+    } catch (err) {
+      setEditCouponError('Network error updating coupon');
+    } finally {
+      setIsUpdatingCoupon(false);
+    }
+  };
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     setCopiedCode(text);
@@ -544,7 +630,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
     if (activeTab === 'coupons') fetchCoupons();
     if (activeTab === 'cms') fetchCmsData();
     if (activeTab === 'telemetry') { fetchTelemetry(); fetchLogs(); }
-  }, [activeTab, orderStatusFilter, reviewStatusFilter, logLevelFilter]);
+  }, [activeTab, orderStatusFilter, orderCouponFilter, reviewStatusFilter, logLevelFilter]);
 
   if (!isAuthenticated) {
     return (
@@ -792,6 +878,19 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
                   <option value="confirmed">Confirmed</option>
                   <option value="dispatched">Dispatched</option>
                   <option value="delivered">Delivered</option>
+                </select>
+                <select
+                  value={orderCouponFilter}
+                  onChange={(e) => setOrderCouponFilter(e.target.value)}
+                  className="select-input"
+                  style={{ background: '#1A1918', border: '1px solid #2C2926', color: '#FFF', padding: '0.5rem 0.85rem', borderRadius: '6px' }}
+                >
+                  <option value="all">All Campaigns & Orders</option>
+                  {coupons.map((c) => (
+                    <option key={c.id} value={c.code}>
+                      🏷️ {c.code} ({c.influencer_name})
+                    </option>
+                  ))}
                 </select>
                 <button type="button" className="btn btn-secondary" onClick={fetchOrders}>Refresh</button>
               </div>
@@ -1107,41 +1206,82 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
                           ₹{Number(c.total_discount_granted || 0).toLocaleString('en-IN')}
                         </td>
                         <td style={{ padding: '0.8rem 1rem' }}>
-                          <span style={{
-                            padding: '0.2rem 0.55rem',
-                            borderRadius: '9999px',
-                            fontSize: '0.72rem',
-                            fontWeight: 700,
-                            background: c.is_active === 1 ? 'rgba(74, 222, 128, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-                            color: c.is_active === 1 ? '#4ADE80' : '#EF4444'
-                          }}>
-                            {c.is_active === 1 ? 'ACTIVE' : 'PAUSED'}
-                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleToggleCoupon(c.id)}
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.45rem',
+                              padding: '0.3rem 0.65rem',
+                              borderRadius: '9999px',
+                              fontSize: '0.75rem',
+                              fontWeight: 800,
+                              cursor: 'pointer',
+                              border: c.is_active === 1 ? '1px solid rgba(74, 222, 128, 0.4)' : '1px solid rgba(239, 68, 68, 0.4)',
+                              background: c.is_active === 1 ? 'rgba(74, 222, 128, 0.12)' : 'rgba(239, 68, 68, 0.12)',
+                              color: c.is_active === 1 ? '#4ADE80' : '#F87171',
+                              transition: 'all 0.2s ease'
+                            }}
+                            title={c.is_active === 1 ? 'Click to switch OFF (Pause campaign)' : 'Click to switch ON (Activate campaign)'}
+                          >
+                            <span style={{
+                              width: '8px',
+                              height: '8px',
+                              borderRadius: '50%',
+                              background: c.is_active === 1 ? '#4ADE80' : '#EF4444',
+                              boxShadow: c.is_active === 1 ? '0 0 8px #4ADE80' : 'none'
+                            }} />
+                            <span>{c.is_active === 1 ? 'ON (Active)' : 'OFF (Paused)'}</span>
+                          </button>
                         </td>
                         <td style={{ padding: '0.8rem 1rem' }}>
                           <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
                             <button
                               type="button"
                               className="btn btn-secondary"
-                              onClick={() => handleToggleCoupon(c.id)}
+                              onClick={() => handleOpenEditModal(c)}
                               style={{
                                 fontSize: '0.72rem',
                                 padding: '0.25rem 0.55rem',
-                                background: c.is_active === 1 ? '#2E2215' : '#152E1D',
-                                color: c.is_active === 1 ? '#F59E0B' : '#4ADE80'
+                                background: '#1E293B',
+                                color: '#93C5FD',
+                                border: '1px solid rgba(147, 197, 253, 0.3)'
                               }}
-                              title={c.is_active === 1 ? 'Pause this coupon' : 'Activate this coupon'}
+                              title="Edit coupon settings & creator details"
                             >
-                              {c.is_active === 1 ? 'Pause' : 'Activate'}
+                              ✏️ Edit
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-secondary"
+                              onClick={() => {
+                                setOrderCouponFilter(c.code);
+                                setActiveTab('orders');
+                              }}
+                              style={{
+                                fontSize: '0.72rem',
+                                padding: '0.25rem 0.55rem',
+                                background: '#242220',
+                                color: '#D1D5DB'
+                              }}
+                              title="View all customer orders driven by this coupon"
+                            >
+                              Orders ↗
                             </button>
                             <button
                               type="button"
                               className="btn btn-secondary"
                               onClick={() => handleDeleteCoupon(c.id, c.code)}
-                              style={{ fontSize: '0.72rem', padding: '0.25rem 0.55rem', color: '#EF4444' }}
+                              style={{
+                                fontSize: '0.72rem',
+                                padding: '0.25rem 0.55rem',
+                                color: '#EF4444',
+                                border: '1px solid rgba(239, 68, 68, 0.3)'
+                              }}
                               title="Delete this coupon"
                             >
-                              Delete
+                              🗑️
                             </button>
                           </div>
                         </td>
@@ -1381,6 +1521,204 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
                         disabled={isSubmittingCoupon}
                       >
                         {isSubmittingCoupon ? 'Creating...' : 'Create Coupon Code'}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
+
+            {/* Edit Influencer Coupon Modal */}
+            {isEditCouponModalOpen && editingCoupon && (
+              <div style={{
+                position: 'fixed',
+                inset: 0,
+                backgroundColor: 'rgba(0, 0, 0, 0.78)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 9999,
+                padding: '1rem',
+                backdropFilter: 'blur(4px)'
+              }}>
+                <div style={{
+                  background: '#1A1918',
+                  border: '1px solid #333',
+                  borderRadius: '12px',
+                  width: '100%',
+                  maxWidth: '540px',
+                  padding: '1.5rem',
+                  boxShadow: '0 24px 48px rgba(0, 0, 0, 0.6)'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid #2C2926', paddingBottom: '0.75rem' }}>
+                    <div>
+                      <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 700, color: '#FFF', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                        <span>✏️</span> Edit Influencer Coupon
+                      </h3>
+                      <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.75rem', color: '#888' }}>
+                        Modify discount terms, minimum thresholds, limits, or creator details for <code>{editingCoupon.code}</code>.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => { setIsEditCouponModalOpen(false); setEditingCoupon(null); }}
+                      style={{ background: 'none', border: 'none', color: '#888', fontSize: '1.25rem', cursor: 'pointer' }}
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  {editCouponError && (
+                    <div style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid #EF4444', color: '#F87171', padding: '0.65rem', borderRadius: '6px', fontSize: '0.8rem', marginBottom: '1rem' }}>
+                      ⚠ {editCouponError}
+                    </div>
+                  )}
+
+                  <form onSubmit={handleUpdateCoupon} style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#AAA', marginBottom: '0.35rem' }}>
+                          Coupon Code *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={editCouponForm.code}
+                          onChange={(e) => setEditCouponForm({ ...editCouponForm, code: e.target.value.toUpperCase() })}
+                          placeholder="e.g. PRIYA20"
+                          style={{ width: '100%', background: '#242220', border: '1px solid #333', color: '#FFF', padding: '0.55rem 0.75rem', borderRadius: '6px', fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase' }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#AAA', marginBottom: '0.35rem' }}>
+                          Discount Type
+                        </label>
+                        <select
+                          value={editCouponForm.discount_type}
+                          onChange={(e) => setEditCouponForm({ ...editCouponForm, discount_type: e.target.value as 'percentage' | 'fixed' })}
+                          style={{ width: '100%', background: '#242220', border: '1px solid #333', color: '#FFF', padding: '0.55rem 0.75rem', borderRadius: '6px', fontSize: '0.85rem' }}
+                        >
+                          <option value="percentage">Percentage (% OFF)</option>
+                          <option value="fixed">Fixed Amount (₹ OFF)</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#AAA', marginBottom: '0.35rem' }}>
+                          Discount Value *
+                        </label>
+                        <input
+                          type="number"
+                          required
+                          min="1"
+                          max={editCouponForm.discount_type === 'percentage' ? 100 : 10000}
+                          value={editCouponForm.discount_value}
+                          onChange={(e) => setEditCouponForm({ ...editCouponForm, discount_value: Number(e.target.value) })}
+                          placeholder={editCouponForm.discount_type === 'percentage' ? '15' : '50'}
+                          style={{ width: '100%', background: '#242220', border: '1px solid #333', color: '#FFF', padding: '0.55rem 0.75rem', borderRadius: '6px', fontSize: '0.85rem' }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#AAA', marginBottom: '0.35rem' }}>
+                          Min. Order Amount (₹)
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={editCouponForm.min_order_amount}
+                          onChange={(e) => setEditCouponForm({ ...editCouponForm, min_order_amount: Number(e.target.value) })}
+                          placeholder="0 for no minimum"
+                          style={{ width: '100%', background: '#242220', border: '1px solid #333', color: '#FFF', padding: '0.55rem 0.75rem', borderRadius: '6px', fontSize: '0.85rem' }}
+                        />
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#AAA', marginBottom: '0.35rem' }}>
+                          Influencer Name *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={editCouponForm.influencer_name}
+                          onChange={(e) => setEditCouponForm({ ...editCouponForm, influencer_name: e.target.value })}
+                          placeholder="e.g. Priya Raman"
+                          style={{ width: '100%', background: '#242220', border: '1px solid #333', color: '#FFF', padding: '0.55rem 0.75rem', borderRadius: '6px', fontSize: '0.85rem' }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#AAA', marginBottom: '0.35rem' }}>
+                          Social Handle / Channel
+                        </label>
+                        <input
+                          type="text"
+                          value={editCouponForm.influencer_handle}
+                          onChange={(e) => setEditCouponForm({ ...editCouponForm, influencer_handle: e.target.value })}
+                          placeholder="e.g. @priya_wellness"
+                          style={{ width: '100%', background: '#242220', border: '1px solid #333', color: '#FFF', padding: '0.55rem 0.75rem', borderRadius: '6px', fontSize: '0.85rem' }}
+                        />
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#AAA', marginBottom: '0.35rem' }}>
+                          Usage Limit (Optional)
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          value={editCouponForm.usage_limit}
+                          onChange={(e) => setEditCouponForm({ ...editCouponForm, usage_limit: e.target.value })}
+                          placeholder="Blank for unlimited"
+                          style={{ width: '100%', background: '#242220', border: '1px solid #333', color: '#FFF', padding: '0.55rem 0.75rem', borderRadius: '6px', fontSize: '0.85rem' }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#AAA', marginBottom: '0.35rem' }}>
+                          Campaign Status (On / Off)
+                        </label>
+                        <select
+                          value={editCouponForm.is_active}
+                          onChange={(e) => setEditCouponForm({ ...editCouponForm, is_active: Number(e.target.value) })}
+                          style={{ width: '100%', background: '#242220', border: '1px solid #333', color: editCouponForm.is_active === 1 ? '#4ADE80' : '#EF4444', fontWeight: 700, padding: '0.55rem 0.75rem', borderRadius: '6px', fontSize: '0.85rem' }}
+                        >
+                          <option value={1} style={{ color: '#4ADE80' }}>🟢 ON (Active & Redeemable)</option>
+                          <option value={0} style={{ color: '#EF4444' }}>🔴 OFF (Paused / Inactive)</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#AAA', marginBottom: '0.35rem' }}>
+                        Campaign Notes / Partnership Terms
+                      </label>
+                      <input
+                        type="text"
+                        value={editCouponForm.notes}
+                        onChange={(e) => setEditCouponForm({ ...editCouponForm, notes: e.target.value })}
+                        placeholder="e.g. Instagram reel collaboration launching Nov 22"
+                        style={{ width: '100%', background: '#242220', border: '1px solid #333', color: '#FFF', padding: '0.55rem 0.75rem', borderRadius: '6px', fontSize: '0.85rem' }}
+                      />
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.75rem' }}>
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={() => { setIsEditCouponModalOpen(false); setEditingCoupon(null); }}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        className="btn btn-burnt-orange"
+                        disabled={isUpdatingCoupon}
+                      >
+                        {isUpdatingCoupon ? 'Saving Changes...' : 'Save & Update Coupon'}
                       </button>
                     </div>
                   </form>

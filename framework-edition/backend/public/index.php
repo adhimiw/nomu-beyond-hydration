@@ -728,6 +728,12 @@ if (str_starts_with($pathInfo, '/admin')) {
             $params[':status'] = $status;
         }
 
+        $couponCodeFilter = trim((string)($_GET['coupon_code'] ?? ''));
+        if (!empty($couponCodeFilter)) {
+            $sql .= " AND coupon_code = :coupon_code";
+            $params[':coupon_code'] = $couponCodeFilter;
+        }
+
         if (!empty($search)) {
             $sql .= " AND (order_ref LIKE :q OR customer_name LIKE :q OR customer_phone LIKE :q OR customer_email LIKE :q)";
             $params[':q'] = "%{$search}%";
@@ -855,6 +861,89 @@ if (str_starts_with($pathInfo, '/admin')) {
                 http_response_code(500);
                 echo json_encode(['error' => 'Database error', 'details' => $e->getMessage()]);
             }
+        }
+        exit;
+    }
+
+    // A3.5. GET /admin/coupons/{id} (Fetch single coupon for edit/inspect)
+    if ($method === 'GET' && preg_match('#^/admin/coupons/(\\d+)$#', $pathInfo, $m)) {
+        $id = (int)$m[1];
+        $stmt = $pdo->prepare("SELECT * FROM coupons WHERE id = ?");
+        $stmt->execute([$id]);
+        $coupon = $stmt->fetch();
+        if (!$coupon) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Coupon not found']);
+            exit;
+        }
+        echo json_encode(['status' => 'success', 'coupon' => $coupon]);
+        exit;
+    }
+
+    // A3.6. POST/PUT /admin/coupons/{id} (Update/Edit existing coupon)
+    if (($method === 'POST' || $method === 'PUT') && preg_match('#^/admin/coupons/(\\d+)$#', $pathInfo, $m)) {
+        $id = (int)$m[1];
+        $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
+        
+        $code = strtoupper(preg_replace('/[^A-Za-z0-9\-_]/', '', trim((string)($input['code'] ?? ''))));
+        $influencerName = strip_tags(trim((string)($input['influencer_name'] ?? '')));
+        $influencerHandle = strip_tags(trim((string)($input['influencer_handle'] ?? '')));
+        $discountType = in_array($input['discount_type'] ?? '', ['percentage', 'fixed'], true) ? $input['discount_type'] : 'percentage';
+        $discountValue = (float)($input['discount_value'] ?? 0);
+        $minOrder = (float)($input['min_order_amount'] ?? 0);
+        $usageLimit = isset($input['usage_limit']) && $input['usage_limit'] !== '' && $input['usage_limit'] !== null ? (int)$input['usage_limit'] : null;
+        $notes = htmlspecialchars(trim((string)($input['notes'] ?? '')), ENT_QUOTES, 'UTF-8');
+        $isActive = isset($input['is_active']) ? ((int)$input['is_active'] ? 1 : 0) : null;
+
+        if (empty($code) || empty($influencerName) || $discountValue <= 0) {
+            http_response_code(422);
+            echo json_encode(['error' => 'Validation error', 'message' => 'Valid Code, Influencer Name, and Discount Value (> 0) are required.']);
+            exit;
+        }
+
+        // Verify coupon exists
+        $chk = $pdo->prepare("SELECT id, code FROM coupons WHERE id = ?");
+        $chk->execute([$id]);
+        $existing = $chk->fetch();
+        if (!$existing) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Coupon not found']);
+            exit;
+        }
+
+        // Check if code was changed and is unique
+        $uChk = $pdo->prepare("SELECT id FROM coupons WHERE code = ? AND id != ?");
+        $uChk->execute([$code, $id]);
+        if ($uChk->fetch()) {
+            http_response_code(409);
+            echo json_encode(['error' => "Coupon code '{$code}' already exists for another campaign. Please choose a unique code."]);
+            exit;
+        }
+
+        try {
+            if ($isActive !== null) {
+                $updStmt = $pdo->prepare("
+                    UPDATE coupons 
+                    SET code = ?, influencer_name = ?, influencer_handle = ?, discount_type = ?, 
+                        discount_value = ?, min_order_amount = ?, usage_limit = ?, notes = ?, is_active = ?, updated_at = CURRENT_TIMESTAMP
+                    WHERE id = ?
+                ");
+                $updStmt->execute([$code, $influencerName, $influencerHandle, $discountType, $discountValue, $minOrder, $usageLimit, $notes, $isActive, $id]);
+            } else {
+                $updStmt = $pdo->prepare("
+                    UPDATE coupons 
+                    SET code = ?, influencer_name = ?, influencer_handle = ?, discount_type = ?, 
+                        discount_value = ?, min_order_amount = ?, usage_limit = ?, notes = ?, updated_at = CURRENT_TIMESTAMP
+                    WHERE id = ?
+                ");
+                $updStmt->execute([$code, $influencerName, $influencerHandle, $discountType, $discountValue, $minOrder, $usageLimit, $notes, $id]);
+            }
+
+            nomuLog($pdo, 'INFO', 'COUPON_UPDATED', "Coupon ID {$id} ({$code}) updated for {$influencerName} ({$discountType} {$discountValue})");
+            echo json_encode(['status' => 'success', 'message' => "Coupon {$code} updated successfully"]);
+        } catch (\PDOException $e) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Database error', 'details' => $e->getMessage()]);
         }
         exit;
     }
