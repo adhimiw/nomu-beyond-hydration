@@ -21,54 +21,44 @@ use Database\Seeders\DatabaseSeeder;
 $args = array_slice($argv, 1);
 $force = in_array('--force', $args, true);
 $status = in_array('--status', $args, true);
-$forceSqlite = in_array('--sqlite', $args, true);
 
-$dbPath = file_exists(__DIR__ . '/nomu_database.sqlite')
-    ? __DIR__ . '/nomu_database.sqlite'
-    : __DIR__ . '/public/nomu_database.sqlite';
-
-$pdo = null;
-$connectionType = 'sqlite';
-
-if (!$forceSqlite) {
-    $secrets = [];
-    $secretFile = dirname(__DIR__, 2) . '/.nomu_secrets.php';
-    if (is_file($secretFile) && is_readable($secretFile)) {
-        $loaded = require $secretFile;
-        if (is_array($loaded)) $secrets = $loaded;
-    }
-    $dbHost = (string)(getenv('DB_HOST') ?: ($secrets['db_host'] ?? ''));
-    $dbPort = (string)(getenv('DB_PORT') ?: ($secrets['db_port'] ?? '3306'));
-    $dbName = (string)(getenv('DB_NAME') ?: ($secrets['db_name'] ?? ''));
-    $dbUser = (string)(getenv('DB_USER') ?: ($secrets['db_user'] ?? ''));
-    $dbPass = (string)(getenv('DB_PASS') ?: ($secrets['db_pass'] ?? ''));
-
-    if ($dbHost !== '' && $dbName !== '' && $dbUser !== '') {
-        try {
-            $dsn = "mysql:host={$dbHost};port={$dbPort};dbname={$dbName};charset=utf8mb4";
-            $pdo = new PDO($dsn, $dbUser, $dbPass, [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                PDO::ATTR_TIMEOUT => 2
-            ]);
-            $connectionType = 'mysql';
-        } catch (\Throwable $e) {
-            $pdo = null;
+$secrets = [];
+$secretCandidatePaths = [
+    dirname(__DIR__, 2) . '/.nomu_secrets.php',
+    dirname(__DIR__, 1) . '/.nomu_secrets.php',
+];
+foreach ($secretCandidatePaths as $sp) {
+    if (is_file($sp) && is_readable($sp)) {
+        $loaded = require $sp;
+        if (is_array($loaded)) {
+            $secrets = $loaded;
+            break;
         }
     }
 }
 
-if (!$pdo) {
-    try {
-        $pdo = new PDO("sqlite:" . $dbPath, null, null, [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-        ]);
-        $connectionType = 'sqlite';
-    } catch (PDOException $e) {
-        echo "ERROR: Failed to connect to SQLite database at {$dbPath}: " . $e->getMessage() . "\n";
-        exit(1);
-    }
+$dbHost = (string)(getenv('DB_HOST') ?: ($secrets['db_host'] ?? ''));
+$dbPort = (string)(getenv('DB_PORT') ?: ($secrets['db_port'] ?? '3306'));
+$dbName = (string)(getenv('DB_NAME') ?: ($secrets['db_name'] ?? ''));
+$dbUser = (string)(getenv('DB_USER') ?: ($secrets['db_user'] ?? ''));
+$dbPass = (string)(getenv('DB_PASS') ?: ($secrets['db_pass'] ?? ''));
+
+if ($dbHost === '' || $dbName === '' || $dbUser === '') {
+    echo "ERROR: MySQL database credentials required. SQLite is disabled.\n";
+    exit(1);
+}
+
+try {
+    $dsn = "mysql:host={$dbHost};port={$dbPort};dbname={$dbName};charset=utf8mb4";
+    $pdo = new PDO($dsn, $dbUser, $dbPass, [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_TIMEOUT => 5
+    ]);
+    $connectionType = 'mysql';
+} catch (\Throwable $e) {
+    echo "ERROR: Failed to connect to MySQL database at {$dbHost}: " . $e->getMessage() . "\n";
+    exit(1);
 }
 
 if ($status) {

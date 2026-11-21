@@ -49,8 +49,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 // --------------------------------------------------------------------------
 // Configuration & External Secrets Loader (Zero Hardcoded Prod Credentials)
 // --------------------------------------------------------------------------
-define('DB_PATH', dirname(__DIR__) . '/database/nomu_database.sqlite');
-
 $secrets = [];
 $secretCandidatePaths = [
     dirname(__DIR__, 2) . '/.nomu_secrets.php',
@@ -77,62 +75,44 @@ if (getenv('ADMIN_PASSWORD_HASH')) {
 }
 $TOKEN_TTL_SECONDS = (int)(getenv('ADMIN_TOKEN_TTL') ?: ($secrets['token_ttl_seconds'] ?? 43200));
 
-// Database Connection Manager: MySQL (Hostinger production) with SQLite fallback for local dev
-$pdo = null;
+// --------------------------------------------------------------------------
+// Strict Enterprise Database Connection: MySQL (Hostinger Production & Pre-Staging)
+// --------------------------------------------------------------------------
 $httpHost = $_SERVER['HTTP_HOST'] ?? '';
 $isProdDomain = (strpos($httpHost, 'drinkitnomu.com') !== false);
 
+$pdo = null;
 $dbHost = (string)(getenv('DB_HOST') ?: ($secrets['db_host'] ?? ''));
 $dbPort = (string)(getenv('DB_PORT') ?: ($secrets['db_port'] ?? '3306'));
 $dbName = (string)(getenv('DB_NAME') ?: ($secrets['db_name'] ?? ''));
 $dbUser = (string)(getenv('DB_USER') ?: ($secrets['db_user'] ?? ''));
 $dbPass = (string)(getenv('DB_PASS') ?: ($secrets['db_pass'] ?? ''));
 
-// 1. Attempt MySQL connection when configured
 if ($dbHost !== '' && $dbName !== '' && $dbUser !== '') {
     try {
         $dsn = "mysql:host={$dbHost};port={$dbPort};dbname={$dbName};charset=utf8mb4";
         $pdo = new PDO($dsn, $dbUser, $dbPass, [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_TIMEOUT => 2
-        ]);
-    } catch (\Throwable $e) {
-        $pdo = null;
-    }
-}
-
-// 2. Fall back to local SQLite WAL database only for non-prod local/dev environments
-if (!$pdo) {
-    if ($isProdDomain) {
-        http_response_code(503);
-        echo json_encode(['error' => 'Service temporarily unavailable']);
-        exit;
-    }
-    try {
-        $pdo = new PDO('sqlite:' . DB_PATH, null, null, [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_TIMEOUT => 5
         ]);
-        $pdo->exec('PRAGMA journal_mode = WAL;');
-    } catch (\Throwable $e2) {
-        http_response_code(500);
-        echo json_encode(['error' => 'Database connection failed']);
+    } catch (\Throwable $e) {
+        http_response_code(503);
+        echo json_encode(['error' => 'Database connection failed', 'message' => 'Unable to connect to MySQL database service.']);
         exit;
     }
+} else {
+    http_response_code(500);
+    echo json_encode(['error' => 'Database misconfigured', 'message' => 'MySQL database credentials are required. SQLite is disabled in this environment.']);
+    exit;
 }
 
 // --------------------------------------------------------------------------
-// Schema Auto-Migration & Seed Initialization
+// Schema Auto-Migration & Seed Initialization (MySQL InnoDB)
 // --------------------------------------------------------------------------
-$driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
-$autoInc = ($driver === 'mysql') ? 'INT AUTO_INCREMENT PRIMARY KEY' : 'INTEGER PRIMARY KEY AUTOINCREMENT';
-$engine = ($driver === 'mysql') ? 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4' : '';
-
 $pdo->exec("
     CREATE TABLE IF NOT EXISTS orders (
-        id {$autoInc},
+        id INT AUTO_INCREMENT PRIMARY KEY,
         order_ref VARCHAR(32) UNIQUE NOT NULL,
         customer_name VARCHAR(120) NOT NULL,
         customer_phone VARCHAR(20) NOT NULL,
@@ -146,10 +126,10 @@ $pdo->exec("
         ip_address VARCHAR(45),
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    ) {$engine};
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
     CREATE TABLE IF NOT EXISTS reviews (
-        id {$autoInc},
+        id INT AUTO_INCREMENT PRIMARY KEY,
         customer_name VARCHAR(100) NOT NULL,
         customer_email VARCHAR(150) NOT NULL,
         flavor_key VARCHAR(50) NOT NULL,
@@ -163,28 +143,28 @@ $pdo->exec("
         ip_address VARCHAR(45),
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    ) {$engine};
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
     CREATE TABLE IF NOT EXISTS cms_contents (
-        id {$autoInc},
+        id INT AUTO_INCREMENT PRIMARY KEY,
         field_key VARCHAR(80) UNIQUE NOT NULL,
         field_value TEXT,
         field_group VARCHAR(50) DEFAULT 'general',
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    ) {$engine};
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
     CREATE TABLE IF NOT EXISTS system_logs (
-        id {$autoInc},
+        id INT AUTO_INCREMENT PRIMARY KEY,
         level VARCHAR(20) DEFAULT 'INFO',
         action VARCHAR(60) NOT NULL,
         message TEXT NOT NULL,
         context_json TEXT,
         ip_address VARCHAR(45),
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    ) {$engine};
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
     CREATE TABLE IF NOT EXISTS coupons (
-        id {$autoInc},
+        id INT AUTO_INCREMENT PRIMARY KEY,
         code VARCHAR(50) UNIQUE NOT NULL,
         influencer_name VARCHAR(120) NOT NULL,
         influencer_handle VARCHAR(100),
@@ -199,10 +179,10 @@ $pdo->exec("
         notes TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    ) {$engine};
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
     CREATE TABLE IF NOT EXISTS media_assets (
-        id {$autoInc},
+        id INT AUTO_INCREMENT PRIMARY KEY,
         section_key VARCHAR(60) NOT NULL,
         asset_type VARCHAR(20) NOT NULL,
         title VARCHAR(120) NOT NULL,
@@ -211,7 +191,7 @@ $pdo->exec("
         is_active INTEGER DEFAULT 1,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    ) {$engine};
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
     CREATE TABLE IF NOT EXISTS rate_limits (
         ip_hash VARCHAR(64) NOT NULL,
@@ -219,7 +199,7 @@ $pdo->exec("
         hits INTEGER DEFAULT 1,
         window_start INTEGER NOT NULL,
         PRIMARY KEY (ip_hash, bucket)
-    ) {$engine};
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ");
 
 try {
@@ -232,8 +212,7 @@ try { $pdo->exec("ALTER TABLE orders ADD COLUMN influencer_name VARCHAR(120) DEF
 // Database Seeder Function
 function seedDatabase(PDO $pdo, bool $force = false, bool $isProdDomain = false): array {
     $seeded = ['cms' => 0, 'media' => 0, 'reviews' => 0];
-    $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
-    $insertIgnore = ($driver === 'mysql') ? 'INSERT IGNORE INTO' : 'INSERT OR IGNORE INTO';
+    $insertIgnore = 'INSERT IGNORE INTO';
 
     // 1. Seed CMS content & media references
     $cmsDefaults = [
@@ -1548,8 +1527,8 @@ if (str_starts_with($pathInfo, '/admin')) {
                 'opcache_active' => function_exists('opcache_get_status') && is_array(@opcache_get_status())
             ],
             'database' => [
-                'driver' => $pdo->getAttribute(PDO::ATTR_DRIVER_NAME),
-                'engine' => ($pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'mysql') ? 'MySQL Enterprise' : 'SQLite 3 (WAL)',
+                'driver' => 'mysql',
+                'engine' => 'MySQL Enterprise (InnoDB)',
                 'total_orders' => $totalOrders,
                 'pending_orders' => $pendingOrders,
                 'total_reviews' => $totalReviews,
