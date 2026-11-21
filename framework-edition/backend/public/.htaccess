@@ -1,0 +1,4 @@
+# Block direct access to database, config, log, and hidden files
+<FilesMatch "(?i)\.(sqlite|sqlite3|db|log|env|ini|sh|bak|sql|git.*)$">
+    Require all denied
+</FilesMatch>

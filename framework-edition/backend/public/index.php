@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 // --------------------------------------------------------------------------
 // Configuration & External Secrets Loader (Zero Hardcoded Prod Credentials)
 // --------------------------------------------------------------------------
-const DB_PATH = __DIR__ . '/nomu_database.sqlite';
+const DB_PATH = dirname(__DIR__) . '/database/nomu_database.sqlite';
 
 $secrets = [];
 $secretCandidatePaths = [
@@ -772,78 +772,153 @@ if ($method === 'POST' && $pathInfo === '/orders') {
     $email = filter_var(trim((string)($input['customer_email'] ?? '')), FILTER_VALIDATE_EMAIL);
     $address = htmlspecialchars(trim((string)($input['delivery_address'] ?? '')), ENT_QUOTES, 'UTF-8');
     $notes = isset($input['notes']) ? htmlspecialchars(trim((string)$input['notes']), ENT_QUOTES, 'UTF-8') : null;
-    $items = $input['items'] ?? [];
-    $totalBottles = (int)($input['total_bottles'] ?? 1);
-    $totalAmount = (float)($input['total_amount'] ?? 0);
-    $orderRef = preg_replace('/[^A-Za-z0-9\-]/', '', (string)($input['order_ref'] ?? ''));
+    $items = is_array($input['items'] ?? null) ? $input['items'] : [];
+    
+    // Authoritative Nomu catalog pack definitions: 1, 4, or 12 bottles per pack (CWE-602).
+    // Client bottle counts and prices are strictly derived from authoritative definitions.
+    $canonicalPacks = [
+        'single' => 1,
+        'pack4'  => 4,
+        'pack3'  => 4,
+        'pack12' => 12,
+    ];
 
-    if (empty($orderRef)) {
-        $orderRef = 'NOMU-' . strtoupper(substr(bin2hex(random_bytes(4)), 0, 8));
+    $calculatedBottles = 0;
+    $calculatedGross = 0.0;
+    foreach ($items as &$it) {
+        $qty = max(1, (int)($it['quantity'] ?? 1));
+        $packKey = strtolower(trim((string)($it['packKey'] ?? $it['pack_key'] ?? '')));
+        if (isset($canonicalPacks[$packKey])) {
+            $bottlesPerPack = $canonicalPacks[$packKey];
+        } else {
+            $packStr = strtolower((string)($it['pack'] ?? ''));
+            if (strpos($packStr, '12') !== false) {
+                $bottlesPerPack = 12;
+            } elseif (strpos($packStr, '4') !== false || strpos($packStr, '3') !== false) {
+                $bottlesPerPack = 4;
+            } else {
+                $bottlesPerPack = 1;
+            }
+        }
+        $lineBottles = $qty * $bottlesPerPack;
+        $linePrice = (float)($lineBottles * 40.0);
+
+        // Normalize item line fields to authoritative server values
+        $it['quantity'] = $qty;
+        $it['bottles'] = $lineBottles;
+        $it['bottlesPerPack'] = $bottlesPerPack;
+        $it['price'] = $linePrice;
+
+        $calculatedBottles += $lineBottles;
+        $calculatedGross += $linePrice;
     }
+    unset($it);
+    
+    $totalBottles = max(1, $calculatedBottles);
+    $grossTotal = (float)($totalBottles * 40.0);
+    $totalAmount = $grossTotal;
+    // Always generate an authoritative unique order reference on the server to prevent replay/duplicate collisions (CWE-841)
+    $orderRef = 'NOMU-' . strtoupper(substr(bin2hex(random_bytes(5)), 0, 10));
 
-    if (empty($name) || strlen($phone) !== 10 || !$email || empty($address) || empty($items) || $totalAmount < 0 || ($totalAmount == 0 && empty($input['coupon_code']))) {
+    if (empty($name) || strlen($phone) !== 10 || !$email || empty($address) || empty($items)) {
         http_response_code(422);
-        echo json_encode(['error' => 'Validation error', 'message' => 'Please provide valid Name, 10-digit Phone, Email, and Delivery Address.']);
+        echo json_encode(['error' => 'Validation error', 'message' => 'Please provide valid Name, 10-digit Phone, Email, Delivery Address, and at least one item.']);
         exit;
     }
 
     $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
 
     $couponCode = strtoupper(preg_replace('/[^A-Za-z0-9\-_]/', '', trim((string)($input['coupon_code'] ?? ''))));
-    $discountAmount = max(0.0, (float)($input['discount_amount'] ?? 0));
-    $influencerName = strip_tags(trim((string)($input['influencer_name'] ?? '')));
+    $discountAmount = 0.0;
+    $influencerName = '';
+    $cpn = null;
 
     if (!empty($couponCode)) {
         $cStmt = $pdo->prepare("SELECT * FROM coupons WHERE UPPER(code) = ? AND is_active = 1");
         $cStmt->execute([$couponCode]);
         $cpn = $cStmt->fetch();
-        $grossBeforeDiscount = $totalAmount + $discountAmount;
         $underLimit = $cpn && ($cpn['usage_limit'] === null || (int)$cpn['times_used'] < (int)$cpn['usage_limit']);
-        $meetsMin = $cpn && ($grossBeforeDiscount >= (float)$cpn['min_order_amount']);
+        $meetsMin = $cpn && ($grossTotal >= (float)$cpn['min_order_amount']);
         if ($cpn && $underLimit && $meetsMin) {
             $influencerName = $cpn['influencer_name'];
             $expectedDiscount = ($cpn['discount_type'] === 'percentage')
-                ? round(($grossBeforeDiscount * (float)$cpn['discount_value']) / 100, 2)
+                ? round(($grossTotal * (float)$cpn['discount_value']) / 100, 2)
                 : (float)$cpn['discount_value'];
-            $discountAmount = min($discountAmount, $expectedDiscount, $grossBeforeDiscount);
-
-            $updCpn = $pdo->prepare("UPDATE coupons SET times_used = times_used + 1, total_sales_generated = total_sales_generated + ?, total_discount_granted = total_discount_granted + ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?");
-            $updCpn->execute([$totalAmount, $discountAmount, $cpn['id']]);
-            nomuLog($pdo, 'INFO', 'INFLUENCER_COUPON_REDEEMED', "Coupon {$couponCode} used by {$name} (Influencer: {$influencerName}, Discount: INR {$discountAmount})", [
-                'coupon' => $couponCode,
-                'influencer' => $influencerName,
-                'order_ref' => $orderRef,
-                'amount' => $totalAmount,
-                'discount' => $discountAmount
-            ]);
+            $discountAmount = min($expectedDiscount, $grossTotal);
+            $totalAmount = max(0.0, $grossTotal - $discountAmount);
         } else {
             // Invalid, paused, or exhausted coupon — clear attribution
             $couponCode = '';
             $discountAmount = 0.0;
             $influencerName = '';
+            $cpn = null;
         }
     }
 
-    $stmt = $pdo->prepare("
-        INSERT INTO orders (order_ref, customer_name, customer_phone, customer_email, delivery_address, notes, items_json, total_bottles, total_amount, status, ip_address, coupon_code, discount_amount, influencer_name)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?)
-    ");
-    $stmt->execute([
-        $orderRef,
-        $name,
-        $phone,
-        $email,
-        $address,
-        $notes,
-        json_encode($items),
-        $totalBottles,
-        $totalAmount,
-        $ip,
-        $couponCode ?: null,
-        $discountAmount,
-        $influencerName ?: null
-    ]);
-    $orderId = (int)$pdo->lastInsertId();
+    // Atomic transaction for order insertion and coupon accounting (CWE-841)
+    $pdo->beginTransaction();
+    try {
+        $stmt = $pdo->prepare("
+            INSERT INTO orders (order_ref, customer_name, customer_phone, customer_email, delivery_address, notes, items_json, total_bottles, total_amount, status, ip_address, coupon_code, discount_amount, influencer_name)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?)
+        ");
+        $stmt->execute([
+            $orderRef,
+            $name,
+            $phone,
+            $email,
+            $address,
+            $notes,
+            json_encode($items),
+            $totalBottles,
+            $totalAmount,
+            $ip,
+            $couponCode ?: null,
+            $discountAmount,
+            $influencerName ?: null
+        ]);
+        $orderId = (int)$pdo->lastInsertId();
+
+        // Atomically update coupon usage only within active transaction
+        if ($cpn && !empty($couponCode)) {
+            $updCpn = $pdo->prepare("
+                UPDATE coupons 
+                SET times_used = times_used + 1, 
+                    total_sales_generated = total_sales_generated + ?, 
+                    total_discount_granted = total_discount_granted + ?, 
+                    updated_at = CURRENT_TIMESTAMP 
+                WHERE id = ? AND is_active = 1 AND (usage_limit IS NULL OR times_used < usage_limit)
+            ");
+            $updCpn->execute([$totalAmount, $discountAmount, $cpn['id']]);
+            if ($updCpn->rowCount() === 0 && $cpn['usage_limit'] !== null) {
+                // Concurrently exhausted limit — rollback transaction
+                $pdo->rollBack();
+                http_response_code(409);
+                echo json_encode(['error' => 'Coupon exhausted', 'message' => 'This coupon has just reached its maximum usage limit.']);
+                exit;
+            }
+        }
+
+        $pdo->commit();
+    } catch (\Throwable $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        nomuLog($pdo, 'ERROR', 'ORDER_CREATION_FAILED', "Order creation failed: " . $e->getMessage(), ['order_ref' => $orderRef]);
+        http_response_code(500);
+        echo json_encode(['error' => 'Server error', 'message' => 'Failed to process order. Please try again.']);
+        exit;
+    }
+
+    if ($cpn && !empty($couponCode)) {
+        nomuLog($pdo, 'INFO', 'INFLUENCER_COUPON_REDEEMED', "Coupon {$couponCode} used by {$name} (Influencer: {$influencerName}, Discount: INR {$discountAmount})", [
+            'coupon' => $couponCode,
+            'influencer' => $influencerName,
+            'order_ref' => $orderRef,
+            'amount' => $totalAmount,
+            'discount' => $discountAmount
+        ]);
+    }
 
     nomuLog($pdo, 'INFO', 'ORDER_CREATED', "New ritual order {$orderRef} from {$name} (INR {$totalAmount})", [
         'order_id' => $orderId,

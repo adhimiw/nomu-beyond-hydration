@@ -21,8 +21,10 @@ class StoreOrderRequest extends FormRequest
             'delivery_address' => 'required|string|min:5|max:500',
             'notes' => 'nullable|string|max:300',
             'items' => 'required|array|min:1',
+            'items.*.flavor' => 'nullable|string|max:50',
+            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.bottles' => 'nullable|integer|min:1',
             'total_bottles' => 'nullable|integer|min:1',
-            'total_amount' => 'required|numeric|min:1',
             '_hp_security_check' => 'nullable|max:0' // Honeypot must be empty
         ];
     }
