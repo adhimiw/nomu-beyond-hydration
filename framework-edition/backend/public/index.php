@@ -569,10 +569,7 @@ if ($method === 'POST' && ($pathInfo === '/font' || $pathInfo === '/api/font')) 
     }
     $fontPreset = preg_replace('/[^a-zA-Z0-9_-]/', '', trim((string)($input['font_preset'] ?? 'custom'))) ?: 'custom';
 
-    $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
-    $upsertSql = ($driver === 'mysql')
-        ? "INSERT INTO cms_contents (field_key, field_value, field_group) VALUES (?, ?, 'design') ON DUPLICATE KEY UPDATE field_value = VALUES(field_value), updated_at = CURRENT_TIMESTAMP"
-        : "INSERT INTO cms_contents (field_key, field_value, field_group) VALUES (?, ?, 'design') ON CONFLICT(field_key) DO UPDATE SET field_value = excluded.field_value, updated_at = CURRENT_TIMESTAMP";
+    $upsertSql = "INSERT INTO cms_contents (field_key, field_value, field_group) VALUES (?, ?, 'design') ON DUPLICATE KEY UPDATE field_value = VALUES(field_value), updated_at = CURRENT_TIMESTAMP";
 
     $upd = $pdo->prepare($upsertSql);
     $upd->execute(['font_family', $fontFamily]);
@@ -1371,10 +1368,7 @@ if (str_starts_with($pathInfo, '/admin')) {
             'about_image_url', 'manifesto_image_url'
         ];
 
-        $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
-        $upsertSql = ($driver === 'mysql')
-            ? "INSERT INTO cms_contents (field_key, field_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE field_value = VALUES(field_value), updated_at = CURRENT_TIMESTAMP"
-            : "INSERT INTO cms_contents (field_key, field_value) VALUES (?, ?) ON CONFLICT(field_key) DO UPDATE SET field_value = excluded.field_value, updated_at = CURRENT_TIMESTAMP";
+        $upsertSql = "INSERT INTO cms_contents (field_key, field_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE field_value = VALUES(field_value), updated_at = CURRENT_TIMESTAMP";
         $upd = $pdo->prepare($upsertSql);
 
         $count = 0;
