@@ -34,7 +34,7 @@ if ($origin && (
     header("Access-Control-Allow-Origin: {$origin}");
     header('Access-Control-Allow-Credentials: true');
 }
-header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -182,7 +182,7 @@ try { $pdo->exec("ALTER TABLE orders ADD COLUMN discount_amount REAL DEFAULT 0")
 try { $pdo->exec("ALTER TABLE orders ADD COLUMN influencer_name VARCHAR(120) DEFAULT NULL"); } catch (\Throwable $e) {}
 
 // Database Seeder Function
-function seedDatabase(PDO $pdo, bool $force = false): array {
+function seedDatabase(PDO $pdo, bool $force = false, bool $isProdDomain = false): array {
     $seeded = ['cms' => 0, 'media' => 0, 'reviews' => 0];
     $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
     $insertIgnore = ($driver === 'mysql') ? 'INSERT IGNORE INTO' : 'INSERT OR IGNORE INTO';
@@ -259,20 +259,19 @@ function seedDatabase(PDO $pdo, bool $force = false): array {
         }
     }
 
-    // 4. Seed Initial Influencer Coupons
-    $couponDefaults = [
-        ['VARUN10', 'Varun (Founder Campaign)', '@varun.nomu', 'percentage', 10.0, 0.0, null, 14, 4480.0, 448.0, 1, 'Founder personal ritual code'],
-        ['FITNESSRITUAL', 'Rahul FitLife', '@rahul_fitness_chennai', 'percentage', 15.0, 160.0, 100, 9, 2880.0, 432.0, 1, 'Chennai athletic community collaboration'],
-        ['ANANYA15', 'Ananya Deshmukh', '@ananya.wellness', 'percentage', 15.0, 160.0, 50, 7, 2240.0, 336.0, 1, 'Holistic living & yoga community'],
-        ['WELCOME50', 'Chennai Gourmet Club', '@chennaifoodguide', 'fixed', 50.0, 320.0, null, 4, 1920.0, 200.0, 1, 'Flat ₹50 off on 8-pack and 12-pack ritual boxes']
-    ];
-
-    $chkCpn = $pdo->query("SELECT COUNT(*) FROM coupons")->fetchColumn();
-    if ($chkCpn == 0 || $force) {
-        $insCpn = $pdo->prepare("INSERT INTO coupons (code, influencer_name, influencer_handle, discount_type, discount_value, min_order_amount, usage_limit, times_used, total_sales_generated, total_discount_granted, is_active, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    // 4. Seed Demo Influencer Coupons (Non-production staging/local only, explicit force seed)
+    // Production starts clean so real influencer codes & sales tracking start at ₹0 with no fake metrics.
+    if (!$isProdDomain && $force) {
+        $couponDefaults = [
+            ['VARUN10', 'Varun (Founder Campaign)', '@varun.nomu', 'percentage', 10.0, 0.0, null, 14, 4480.0, 448.0, 1, 'Founder personal ritual code'],
+            ['FITNESSRITUAL', 'Rahul FitLife', '@rahul_fitness_chennai', 'percentage', 15.0, 160.0, 100, 9, 2880.0, 432.0, 1, 'Chennai athletic community collaboration'],
+            ['ANANYA15', 'Ananya Deshmukh', '@ananya.wellness', 'percentage', 15.0, 160.0, 50, 7, 2240.0, 336.0, 1, 'Holistic living & yoga community'],
+            ['WELCOME50', 'Chennai Gourmet Club', '@chennaifoodguide', 'fixed', 50.0, 320.0, null, 4, 1920.0, 200.0, 1, 'Flat ₹50 off on 8-pack and 12-pack ritual boxes']
+        ];
+        $insCpn = $pdo->prepare("{$insertIgnore} coupons (code, influencer_name, influencer_handle, discount_type, discount_value, min_order_amount, usage_limit, times_used, total_sales_generated, total_discount_granted, is_active, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         foreach ($couponDefaults as $cp) {
             $insCpn->execute($cp);
-            $seeded['coupons'] = ($seeded['coupons'] ?? 0) + 1;
+            if ($insCpn->rowCount() > 0) $seeded['coupons'] = ($seeded['coupons'] ?? 0) + 1;
         }
     }
 
@@ -280,7 +279,7 @@ function seedDatabase(PDO $pdo, bool $force = false): array {
 }
 
 // Auto-seed if empty
-seedDatabase($pdo, false);
+seedDatabase($pdo, false, $isProdDomain);
 
 // Helper: System Logger
 function nomuLog(PDO $pdo, string $level, string $action, string $msg, array $ctx = []): void {
@@ -574,7 +573,7 @@ if ($method === 'POST' && $pathInfo === '/orders') {
         $orderRef = 'NOMU-' . strtoupper(substr(bin2hex(random_bytes(4)), 0, 8));
     }
 
-    if (empty($name) || strlen($phone) !== 10 || !$email || empty($address) || empty($items) || $totalAmount <= 0) {
+    if (empty($name) || strlen($phone) !== 10 || !$email || empty($address) || empty($items) || $totalAmount < 0 || ($totalAmount == 0 && empty($input['coupon_code']))) {
         http_response_code(422);
         echo json_encode(['error' => 'Validation error', 'message' => 'Please provide valid Name, 10-digit Phone, Email, and Delivery Address.']);
         exit;
@@ -590,8 +589,16 @@ if ($method === 'POST' && $pathInfo === '/orders') {
         $cStmt = $pdo->prepare("SELECT * FROM coupons WHERE UPPER(code) = ? AND is_active = 1");
         $cStmt->execute([$couponCode]);
         $cpn = $cStmt->fetch();
-        if ($cpn) {
+        $grossBeforeDiscount = $totalAmount + $discountAmount;
+        $underLimit = $cpn && ($cpn['usage_limit'] === null || (int)$cpn['times_used'] < (int)$cpn['usage_limit']);
+        $meetsMin = $cpn && ($grossBeforeDiscount >= (float)$cpn['min_order_amount']);
+        if ($cpn && $underLimit && $meetsMin) {
             $influencerName = $cpn['influencer_name'];
+            $expectedDiscount = ($cpn['discount_type'] === 'percentage')
+                ? round(($grossBeforeDiscount * (float)$cpn['discount_value']) / 100, 2)
+                : (float)$cpn['discount_value'];
+            $discountAmount = min($discountAmount, $expectedDiscount, $grossBeforeDiscount);
+
             $updCpn = $pdo->prepare("UPDATE coupons SET times_used = times_used + 1, total_sales_generated = total_sales_generated + ?, total_discount_granted = total_discount_granted + ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?");
             $updCpn->execute([$totalAmount, $discountAmount, $cpn['id']]);
             nomuLog($pdo, 'INFO', 'INFLUENCER_COUPON_REDEEMED', "Coupon {$couponCode} used by {$name} (Influencer: {$influencerName}, Discount: INR {$discountAmount})", [
@@ -601,6 +608,11 @@ if ($method === 'POST' && $pathInfo === '/orders') {
                 'amount' => $totalAmount,
                 'discount' => $discountAmount
             ]);
+        } else {
+            // Invalid, paused, or exhausted coupon — clear attribution
+            $couponCode = '';
+            $discountAmount = 0.0;
+            $influencerName = '';
         }
     }
 
@@ -750,6 +762,10 @@ if (str_starts_with($pathInfo, '/admin')) {
             // CSV Export is strictly restricted to confirmed orders per operations protocol
             $csvSql = "SELECT * FROM orders WHERE status = 'confirmed'";
             $csvParams = [];
+            if (!empty($couponCodeFilter)) {
+                $csvSql .= " AND coupon_code = :coupon_code";
+                $csvParams[':coupon_code'] = $couponCodeFilter;
+            }
             if (!empty($search)) {
                 $csvSql .= " AND (customer_name LIKE :q OR customer_phone LIKE :q OR customer_email LIKE :q)";
                 $csvParams[':q'] = "%{$search}%";
@@ -1262,7 +1278,7 @@ if (str_starts_with($pathInfo, '/admin')) {
     // H. POST /admin/seed - Seed images, videos, and default records
     if ($method === 'POST' && $pathInfo === '/admin/seed') {
         $force = !empty($_GET['force']);
-        $stats = seedDatabase($pdo, $force);
+        $stats = seedDatabase($pdo, $force, $isProdDomain);
         nomuLog($pdo, 'INFO', 'DB_SEEDED', "Database seeded with images, videos, and default records", $stats);
         echo json_encode([
             'status' => 'success',

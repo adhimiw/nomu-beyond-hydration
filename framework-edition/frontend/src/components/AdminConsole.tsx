@@ -448,7 +448,8 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
   };
 
   const handleExportCsv = () => {
-    window.open(`${apiBaseUrl}/admin/orders?export=csv&status=confirmed&token=${encodeURIComponent(adminToken)}`, '_blank');
+    const couponParam = orderCouponFilter !== 'all' ? `&coupon_code=${encodeURIComponent(orderCouponFilter)}` : '';
+    window.open(`${apiBaseUrl}/admin/orders?export=csv&status=confirmed${couponParam}&token=${encodeURIComponent(adminToken)}`, '_blank');
   };
 
   const fetchCoupons = async () => {
@@ -625,12 +626,13 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
   };
 
   useEffect(() => {
+    if (!isAuthenticated || !adminToken) return;
+    fetchCoupons();
     if (activeTab === 'orders') fetchOrders();
     if (activeTab === 'reviews') fetchAdminReviews();
-    if (activeTab === 'coupons') fetchCoupons();
     if (activeTab === 'cms') fetchCmsData();
     if (activeTab === 'telemetry') { fetchTelemetry(); fetchLogs(); }
-  }, [activeTab, orderStatusFilter, orderCouponFilter, reviewStatusFilter, logLevelFilter]);
+  }, [isAuthenticated, adminToken, activeTab, orderStatusFilter, orderCouponFilter, reviewStatusFilter, logLevelFilter]);
 
   if (!isAuthenticated) {
     return (
@@ -804,7 +806,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
       </div>
 
       {/* Tabs */}
-      <div style={{ backgroundColor: '#171615', borderBottom: '1px solid #2C2926', padding: '0 1.5rem', display: 'flex', gap: '1.5rem' }}>
+      <div style={{ backgroundColor: '#171615', borderBottom: '1px solid #2C2926', padding: '0 1.5rem', display: 'flex', gap: '1.5rem', overflowX: 'auto', whiteSpace: 'nowrap' }}>
         <button
           type="button"
           className={`tab-btn ${activeTab === 'orders' ? 'is-active' : ''}`}
@@ -900,7 +902,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
               </button>
             </div>
 
-            <div className="table-card" style={{ background: '#1A1918', borderRadius: '10px', border: '1px solid #2C2926', overflow: 'hidden' }}>
+            <div className="table-card" style={{ background: '#1A1918', borderRadius: '10px', border: '1px solid #2C2926', overflowX: 'auto' }}>
               <table className="data-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
                 <thead>
                   <tr style={{ background: '#161514', borderBottom: '1px solid #2C2926' }}>
@@ -1135,7 +1137,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
             </div>
 
             {/* Influencer Performance Leaderboard */}
-            <div className="table-card" style={{ background: '#1A1918', borderRadius: '10px', border: '1px solid #2C2926', overflow: 'hidden' }}>
+            <div className="table-card" style={{ background: '#1A1918', borderRadius: '10px', border: '1px solid #2C2926', overflowX: 'auto' }}>
               <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid #2C2926', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700 }}>Influencer Performance Leaderboard</h4>
                 <span style={{ fontSize: '0.75rem', color: '#888' }}>Ranked by creator engagement & sales</span>
@@ -1293,7 +1295,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
             </div>
 
             {/* Recent Redemptions Audit Log */}
-            <div className="table-card" style={{ background: '#1A1918', borderRadius: '10px', border: '1px solid #2C2926', overflow: 'hidden' }}>
+            <div className="table-card" style={{ background: '#1A1918', borderRadius: '10px', border: '1px solid #2C2926', overflowX: 'auto' }}>
               <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid #2C2926', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700 }}>Recent Influencer Code Redemptions (Audit Trail)</h4>
                 <span style={{ fontSize: '0.75rem', color: '#888' }}>Live orders using creator codes</span>
