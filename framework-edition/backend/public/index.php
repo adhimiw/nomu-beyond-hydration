@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 // --------------------------------------------------------------------------
 // Configuration & External Secrets Loader (Zero Hardcoded Prod Credentials)
 // --------------------------------------------------------------------------
-const DB_PATH = dirname(__DIR__) . '/database/nomu_database.sqlite';
+define('DB_PATH', dirname(__DIR__) . '/database/nomu_database.sqlite');
 
 $secrets = [];
 $secretCandidatePaths = [
