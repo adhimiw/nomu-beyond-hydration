@@ -1,6 +1,11 @@
 <?php
 declare(strict_types=1);
 
+if (PHP_SAPI !== 'cli') {
+    http_response_code(403);
+    exit('Forbidden: CLI execution only.');
+}
+
 /**
  * NOMU Seeder CLI Runner
  * 
@@ -26,22 +31,30 @@ $pdo = null;
 $connectionType = 'sqlite';
 
 if (!$forceSqlite) {
-    $dbHost = getenv('DB_HOST') ?: '127.0.0.1';
-    $dbPort = getenv('DB_PORT') ?: '3306';
-    $dbName = getenv('DB_NAME') ?: 'u244089748_nomustanging';
-    $dbUser = getenv('DB_USER') ?: 'u244089748_nomustanging';
-    $dbPass = getenv('DB_PASS') ?: 'Nomu2026';
+    $secrets = [];
+    $secretFile = dirname(__DIR__, 2) . '/.nomu_secrets.php';
+    if (is_file($secretFile) && is_readable($secretFile)) {
+        $loaded = require $secretFile;
+        if (is_array($loaded)) $secrets = $loaded;
+    }
+    $dbHost = (string)(getenv('DB_HOST') ?: ($secrets['db_host'] ?? ''));
+    $dbPort = (string)(getenv('DB_PORT') ?: ($secrets['db_port'] ?? '3306'));
+    $dbName = (string)(getenv('DB_NAME') ?: ($secrets['db_name'] ?? ''));
+    $dbUser = (string)(getenv('DB_USER') ?: ($secrets['db_user'] ?? ''));
+    $dbPass = (string)(getenv('DB_PASS') ?: ($secrets['db_pass'] ?? ''));
 
-    try {
-        $dsn = "mysql:host={$dbHost};port={$dbPort};dbname={$dbName};charset=utf8mb4";
-        $pdo = new PDO($dsn, $dbUser, $dbPass, [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_TIMEOUT => 2
-        ]);
-        $connectionType = 'mysql';
-    } catch (\Throwable $e) {
-        $pdo = null;
+    if ($dbHost !== '' && $dbName !== '' && $dbUser !== '') {
+        try {
+            $dsn = "mysql:host={$dbHost};port={$dbPort};dbname={$dbName};charset=utf8mb4";
+            $pdo = new PDO($dsn, $dbUser, $dbPass, [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_TIMEOUT => 2
+            ]);
+            $connectionType = 'mysql';
+        } catch (\Throwable $e) {
+            $pdo = null;
+        }
     }
 }
 

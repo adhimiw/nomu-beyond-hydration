@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\ContentController;
 use App\Http\Controllers\Api\SystemController;
+use App\Http\Middleware\AdminTokenMiddleware;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,7 +28,7 @@ Route::post('/orders', [OrderController::class, 'store']);
 | Admin CMS, Moderation & Telemetry Routes
 |--------------------------------------------------------------------------
 */
-Route::prefix('admin')->group(function () {
+Route::prefix('admin')->middleware([AdminTokenMiddleware::class])->group(function () {
     // Orders Ledger
     Route::get('/orders', [OrderController::class, 'index']);
     Route::post('/orders/{id}/status', [OrderController::class, 'updateStatus']);

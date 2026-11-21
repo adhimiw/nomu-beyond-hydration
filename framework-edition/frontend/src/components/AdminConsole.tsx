@@ -280,27 +280,24 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
         setAdminToken(data.token);
         setIsAuthenticated(true);
         setLoginError('');
+        setLoginPassword('');
       } else {
-        setLoginError(data.error || 'Invalid credentials. Enter password or token.');
+        setLoginError(data.error || 'Invalid administrative credentials.');
       }
     } catch (err) {
-      if (loginPassword.trim() === 'nomuVCGL@2026' || loginPassword.trim() === 'nomu2026' || loginPassword.trim() === 'nomu_admin_sec_token_98400_botanical_2026') {
-        const token = 'nomu_admin_sec_token_98400_botanical_2026';
-        sessionStorage.setItem('nomu_admin_token', token);
-        setAdminToken(token);
-        setIsAuthenticated(true);
-      } else {
-        setLoginError('Authentication failed. Check your password or token.');
-      }
+      setLoginError('Unable to reach authentication server. Please verify connection and try again.');
     } finally {
       setIsLoggingIn(false);
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = (reason?: string) => {
     sessionStorage.removeItem('nomu_admin_token');
     setAdminToken('');
     setIsAuthenticated(false);
+    if (reason) {
+      setLoginError(reason);
+    }
   };
 
   // Telemetry & Logs
@@ -318,6 +315,10 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
       const res = await fetch(url.toString(), {
         headers: { 'Authorization': `Bearer ${adminToken}` }
       });
+      if (res.status === 401) {
+        handleLogout('Your admin session expired. Please sign in again.');
+        return;
+      }
       const data = await res.json();
       if (data && data.orders) {
         setOrders(data.orders);
@@ -447,9 +448,32 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
     }
   };
 
-  const handleExportCsv = () => {
-    const couponParam = orderCouponFilter !== 'all' ? `&coupon_code=${encodeURIComponent(orderCouponFilter)}` : '';
-    window.open(`${apiBaseUrl}/admin/orders?export=csv&status=confirmed${couponParam}&token=${encodeURIComponent(adminToken)}`, '_blank');
+  const handleExportCsv = async () => {
+    try {
+      const couponParam = orderCouponFilter !== 'all' ? `&coupon_code=${encodeURIComponent(orderCouponFilter)}` : '';
+      const res = await fetch(`${apiBaseUrl}/admin/orders?export=csv&status=confirmed${couponParam}`, {
+        headers: { 'Authorization': `Bearer ${adminToken}` }
+      });
+      if (res.status === 401) {
+        handleLogout('Your admin session expired. Please sign in again.');
+        return;
+      }
+      if (!res.ok) {
+        alert('Could not export CSV. Please try again.');
+        return;
+      }
+      const blob = await res.blob();
+      const downloadUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.download = `nomu_confirmed_orders_${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(downloadUrl);
+    } catch (e) {
+      alert('Network error exporting CSV.');
+    }
   };
 
   const fetchCoupons = async () => {
@@ -457,6 +481,10 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
       const res = await fetch(`${apiBaseUrl}/admin/coupons`, {
         headers: { 'Authorization': `Bearer ${adminToken}` }
       });
+      if (res.status === 401) {
+        handleLogout('Your admin session expired. Please sign in again.');
+        return;
+      }
       const data = await res.json();
       if (data && data.status === 'success') {
         setCoupons(data.coupons || []);
@@ -798,7 +826,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
             type="button"
             className="btn btn-outline"
             style={{ color: '#FF6B6B', borderColor: 'rgba(208, 28, 29, 0.4)', fontSize: '0.8125rem', padding: '0.4rem 0.85rem' }}
-            onClick={handleLogout}
+            onClick={() => handleLogout()}
           >
             Sign Out
           </button>

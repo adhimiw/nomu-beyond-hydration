@@ -6,6 +6,9 @@ on:
     - cron: '30 3 * * *'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   seo-audit:
     runs-on: ubuntu-latest

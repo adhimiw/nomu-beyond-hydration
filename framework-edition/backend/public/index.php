@@ -10,6 +10,10 @@ declare(strict_types=1);
 header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: SAMEORIGIN');
 header('Referrer-Policy: strict-origin-when-cross-origin');
+header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
+if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
+    header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
+}
 header('Content-Type: application/json; charset=UTF-8');
 header('Cache-Control: no-cache, no-store, must-revalidate');
 header('Pragma: no-cache');
@@ -43,32 +47,68 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 // --------------------------------------------------------------------------
-// Configuration & Security Constants
+// Configuration & External Secrets Loader (Zero Hardcoded Prod Credentials)
 // --------------------------------------------------------------------------
-const ADMIN_SECRET_TOKEN = 'nomu_admin_sec_token_98400_botanical_2026';
 const DB_PATH = __DIR__ . '/nomu_database.sqlite';
 
-// Database Connection Manager: MySQL (Hostinger production) with SQLite fallback
+$secrets = [];
+$secretCandidatePaths = [
+    dirname(__DIR__, 2) . '/.nomu_secrets.php',
+    dirname(__DIR__, 1) . '/.nomu_secrets.php',
+];
+foreach ($secretCandidatePaths as $sp) {
+    if (is_file($sp) && is_readable($sp)) {
+        $loaded = require $sp;
+        if (is_array($loaded)) {
+            $secrets = $loaded;
+            break;
+        }
+    }
+}
+
+$ADMIN_USERNAME = (string)(getenv('ADMIN_USERNAME') ?: ($secrets['admin_username'] ?? 'admin'));
+$ADMIN_SIGNING_SECRET = (string)(getenv('ADMIN_SIGNING_SECRET') ?: ($secrets['admin_signing_secret'] ?? ''));
+$ADMIN_PASSWORD_HASHES = [];
+if (!empty($secrets['admin_password_hashes']) && is_array($secrets['admin_password_hashes'])) {
+    $ADMIN_PASSWORD_HASHES = $secrets['admin_password_hashes'];
+}
+if (getenv('ADMIN_PASSWORD_HASH')) {
+    $ADMIN_PASSWORD_HASHES[] = (string)getenv('ADMIN_PASSWORD_HASH');
+}
+$TOKEN_TTL_SECONDS = (int)(getenv('ADMIN_TOKEN_TTL') ?: ($secrets['token_ttl_seconds'] ?? 43200));
+
+// Database Connection Manager: MySQL (Hostinger production) with SQLite fallback for local dev
 $pdo = null;
 $httpHost = $_SERVER['HTTP_HOST'] ?? '';
 $isProdDomain = (strpos($httpHost, 'drinkitnomu.com') !== false);
 
-$dbHost = getenv('DB_HOST') ?: '127.0.0.1';
-$dbPort = getenv('DB_PORT') ?: '3306';
-$dbName = getenv('DB_NAME') ?: ($isProdDomain ? 'u244089748_nomuproi' : 'u244089748_nomustanging');
-$dbUser = getenv('DB_USER') ?: ($isProdDomain ? 'u244089748_nomupro1' : 'u244089748_nomustanging');
-$dbPass = getenv('DB_PASS') ?: ($isProdDomain ? 'Nomu@2026' : 'Nomu2026');
+$dbHost = (string)(getenv('DB_HOST') ?: ($secrets['db_host'] ?? ''));
+$dbPort = (string)(getenv('DB_PORT') ?: ($secrets['db_port'] ?? '3306'));
+$dbName = (string)(getenv('DB_NAME') ?: ($secrets['db_name'] ?? ''));
+$dbUser = (string)(getenv('DB_USER') ?: ($secrets['db_user'] ?? ''));
+$dbPass = (string)(getenv('DB_PASS') ?: ($secrets['db_pass'] ?? ''));
 
-// 1. Attempt MySQL connection
-try {
-    $dsn = "mysql:host={$dbHost};port={$dbPort};dbname={$dbName};charset=utf8mb4";
-    $pdo = new PDO($dsn, $dbUser, $dbPass, [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        PDO::ATTR_TIMEOUT => 2
-    ]);
-} catch (\Throwable $e) {
-    // 2. Fall back to local SQLite WAL database if MySQL is unavailable
+// 1. Attempt MySQL connection when configured
+if ($dbHost !== '' && $dbName !== '' && $dbUser !== '') {
+    try {
+        $dsn = "mysql:host={$dbHost};port={$dbPort};dbname={$dbName};charset=utf8mb4";
+        $pdo = new PDO($dsn, $dbUser, $dbPass, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_TIMEOUT => 2
+        ]);
+    } catch (\Throwable $e) {
+        $pdo = null;
+    }
+}
+
+// 2. Fall back to local SQLite WAL database only for non-prod local/dev environments
+if (!$pdo) {
+    if ($isProdDomain) {
+        http_response_code(503);
+        echo json_encode(['error' => 'Service temporarily unavailable']);
+        exit;
+    }
     try {
         $pdo = new PDO('sqlite:' . DB_PATH, null, null, [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
@@ -78,7 +118,7 @@ try {
         $pdo->exec('PRAGMA journal_mode = WAL;');
     } catch (\Throwable $e2) {
         http_response_code(500);
-        echo json_encode(['error' => 'Database connection failed', 'details' => $e2->getMessage()]);
+        echo json_encode(['error' => 'Database connection failed']);
         exit;
     }
 }
@@ -171,6 +211,14 @@ $pdo->exec("
         is_active INTEGER DEFAULT 1,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    ) {$engine};
+
+    CREATE TABLE IF NOT EXISTS rate_limits (
+        ip_hash VARCHAR(64) NOT NULL,
+        bucket VARCHAR(40) NOT NULL,
+        hits INTEGER DEFAULT 1,
+        window_start INTEGER NOT NULL,
+        PRIMARY KEY (ip_hash, bucket)
     ) {$engine};
 ");
 
@@ -290,16 +338,146 @@ function nomuLog(PDO $pdo, string $level, string $action, string $msg, array $ct
     } catch (\Throwable $e) {}
 }
 
-// Helper: Admin Authentication Verification
+// Helper: Base64URL Encoding / Decoding
+function base64UrlEncode(string $data): string {
+    return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+}
+
+function base64UrlDecode(string $data): string {
+    $pad = strlen($data) % 4;
+    if ($pad) {
+        $data .= str_repeat('=', 4 - $pad);
+    }
+    return (string)base64_decode(strtr($data, '-_', '+/'));
+}
+
+// Helper: Issue HMAC-SHA256 Signed Expiring Admin Session Token
+function issueAdminToken(string $username, string $secret, int $ttl): string {
+    $now = time();
+    $payload = json_encode([
+        'sub' => $username,
+        'iat' => $now,
+        'exp' => $now + $ttl,
+        'jti' => bin2hex(random_bytes(12))
+    ]);
+    $encoded = base64UrlEncode((string)$payload);
+    $sig = base64UrlEncode(hash_hmac('sha256', $encoded, $secret, true));
+    return $encoded . '.' . $sig;
+}
+
+// Helper: Extract Authorization Header across Apache/LiteSpeed/FPM SAPIs
+function getAuthorizationHeader(): string {
+    if (!empty($_SERVER['HTTP_AUTHORIZATION'])) {
+        return (string)$_SERVER['HTTP_AUTHORIZATION'];
+    }
+    if (!empty($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
+        return (string)$_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
+    }
+    if (function_exists('getallheaders')) {
+        foreach (getallheaders() as $k => $v) {
+            if (strtolower((string)$k) === 'authorization') {
+                return (string)$v;
+            }
+        }
+    }
+    return '';
+}
+
+// Helper: Admin Authentication Verification (Strict Bearer Header + HMAC-SHA256 + Expiry; No Query-String Tokens)
 function verifyAdmin(): bool {
-    $token = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
-    if (str_starts_with($token, 'Bearer ')) {
-        $token = substr($token, 7);
+    global $ADMIN_SIGNING_SECRET, $ADMIN_USERNAME;
+    if (empty($ADMIN_SIGNING_SECRET)) {
+        return false;
     }
-    if (empty($token) && isset($_GET['token'])) {
-        $token = (string)$_GET['token'];
+    $auth = trim(getAuthorizationHeader());
+    if (!str_starts_with($auth, 'Bearer ')) {
+        return false;
     }
-    return hash_equals(ADMIN_SECRET_TOKEN, $token);
+    $token = trim(substr($auth, 7));
+    if ($token === '' || substr_count($token, '.') !== 1) {
+        return false;
+    }
+    [$encodedPayload, $encodedSig] = explode('.', $token, 2);
+    $expectedSig = base64UrlEncode(hash_hmac('sha256', $encodedPayload, $ADMIN_SIGNING_SECRET, true));
+    if (!hash_equals($expectedSig, $encodedSig)) {
+        return false;
+    }
+    $payload = json_decode(base64UrlDecode($encodedPayload), true);
+    if (!is_array($payload)) {
+        return false;
+    }
+    $exp = (int)($payload['exp'] ?? 0);
+    $sub = (string)($payload['sub'] ?? '');
+    if ($exp <= time() || !hash_equals($ADMIN_USERNAME, $sub)) {
+        return false;
+    }
+    return true;
+}
+
+// Helper: Sliding-Window Per-IP Rate Limiter
+function checkRateLimit(PDO $pdo, string $bucket, int $maxHits, int $windowSeconds): bool {
+    try {
+        $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+        $ipHash = hash('sha256', $ip . '|nomu_rl_v1');
+        $now = time();
+        $stmt = $pdo->prepare("SELECT hits, window_start FROM rate_limits WHERE ip_hash = ? AND bucket = ?");
+        $stmt->execute([$ipHash, $bucket]);
+        $row = $stmt->fetch();
+        if (!$row || ($now - (int)$row['window_start']) >= $windowSeconds) {
+            $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+            $sql = ($driver === 'mysql')
+                ? "INSERT INTO rate_limits (ip_hash, bucket, hits, window_start) VALUES (?, ?, 1, ?) ON DUPLICATE KEY UPDATE hits = 1, window_start = VALUES(window_start)"
+                : "INSERT INTO rate_limits (ip_hash, bucket, hits, window_start) VALUES (?, ?, 1, ?) ON CONFLICT(ip_hash, bucket) DO UPDATE SET hits = 1, window_start = excluded.window_start";
+            $pdo->prepare($sql)->execute([$ipHash, $bucket, $now]);
+            return true;
+        }
+        if ((int)$row['hits'] >= $maxHits) {
+            return false;
+        }
+        $pdo->prepare("UPDATE rate_limits SET hits = hits + 1 WHERE ip_hash = ? AND bucket = ?")->execute([$ipHash, $bucket]);
+        return true;
+    } catch (\Throwable $e) {
+        return true;
+    }
+}
+
+// Helper: Strict Google Fonts Stylesheet URL Allowlist (Blocks Arbitrary CSS Injection)
+function sanitizeFontStylesheetUrl(string $url): string {
+    $url = trim($url);
+    if ($url === '') {
+        return '';
+    }
+    if (!filter_var($url, FILTER_VALIDATE_URL)) {
+        return '';
+    }
+    $parts = parse_url($url);
+    $scheme = strtolower((string)($parts['scheme'] ?? ''));
+    $host = strtolower((string)($parts['host'] ?? ''));
+    if ($scheme !== 'https' || $host !== 'fonts.googleapis.com') {
+        return '';
+    }
+    return filter_var($url, FILTER_SANITIZE_URL) ?: '';
+}
+
+// Helper: Strict CSS Font Family Allowlist
+function sanitizeFontFamily(string $font): string {
+    $font = trim($font);
+    if ($font === '' || strlen($font) > 120) {
+        return '';
+    }
+    if (!preg_match('/^[A-Za-z0-9\s,\'\"\-]+$/', $font)) {
+        return '';
+    }
+    return $font;
+}
+
+// Helper: Neutralize Spreadsheet Formula / CSV Injection (DDE Protection)
+function sanitizeCsvCell(mixed $val): string {
+    $str = (string)($val ?? '');
+    if ($str !== '' && in_array($str[0], ['=', '+', '-', '@', "\t", "\r"], true)) {
+        return "'" . $str;
+    }
+    return $str;
 }
 
 // Helper: Sanitize Media URLs (defense against Stored XSS & path traversal)
@@ -378,8 +556,14 @@ if ($method === 'GET' && ($pathInfo === '/font' || $pathInfo === '/api/font')) {
     exit;
 }
 
-// 1c. POST /font (update storefront typography from Studio or Admin)
+// 1c. ADMIN-PROTECTED: POST /font (update storefront typography from Admin)
 if ($method === 'POST' && ($pathInfo === '/font' || $pathInfo === '/api/font')) {
+    if (!verifyAdmin()) {
+        http_response_code(401);
+        echo json_encode(['error' => 'Unauthorized', 'message' => 'Admin authentication required to update typography.']);
+        exit;
+    }
+
     $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
     if (!is_array($input)) {
         http_response_code(400);
@@ -387,15 +571,24 @@ if ($method === 'POST' && ($pathInfo === '/font' || $pathInfo === '/api/font')) 
         exit;
     }
 
-    $fontFamily = trim((string)($input['font_family'] ?? ''));
+    $fontFamily = sanitizeFontFamily((string)($input['font_family'] ?? ''));
     if (empty($fontFamily)) {
         http_response_code(422);
-        echo json_encode(['error' => 'font_family is required']);
+        echo json_encode(['error' => 'Invalid or missing font_family']);
         exit;
     }
 
-    $fontStylesheet = trim((string)($input['font_stylesheet_url'] ?? ''));
-    $fontPreset = trim((string)($input['font_preset'] ?? 'custom'));
+    $rawStylesheet = trim((string)($input['font_stylesheet_url'] ?? ''));
+    $fontStylesheet = '';
+    if ($rawStylesheet !== '') {
+        $fontStylesheet = sanitizeFontStylesheetUrl($rawStylesheet);
+        if ($fontStylesheet === '') {
+            http_response_code(422);
+            echo json_encode(['error' => 'Only https://fonts.googleapis.com/ font stylesheets are permitted.']);
+            exit;
+        }
+    }
+    $fontPreset = preg_replace('/[^a-zA-Z0-9_-]/', '', trim((string)($input['font_preset'] ?? 'custom'))) ?: 'custom';
 
     $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
     $upsertSql = ($driver === 'mysql')
@@ -425,6 +618,11 @@ if ($method === 'POST' && ($pathInfo === '/font' || $pathInfo === '/api/font')) 
 
 // 1d. PUBLIC: GET /coupons/validate (validate coupon for checkout)
 if ($method === 'GET' && ($pathInfo === '/coupons/validate' || $pathInfo === '/api/coupons/validate')) {
+    if (!checkRateLimit($pdo, 'coupon_validate', 30, 300)) {
+        http_response_code(429);
+        echo json_encode(['valid' => false, 'message' => 'Too many coupon attempts. Please wait a few minutes and try again.']);
+        exit;
+    }
     $code = strtoupper(trim((string)($_GET['code'] ?? '')));
     $amount = (float)($_GET['amount'] ?? 0);
 
@@ -506,6 +704,11 @@ if ($method === 'GET' && $pathInfo === '/reviews') {
 
 // 3. PUBLIC: POST /reviews (save as pending)
 if ($method === 'POST' && $pathInfo === '/reviews') {
+    if (!checkRateLimit($pdo, 'reviews_post', 5, 900)) {
+        http_response_code(429);
+        echo json_encode(['error' => 'Too many reviews submitted. Please try again later.']);
+        exit;
+    }
     $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
 
     // Honeypot check
@@ -551,6 +754,11 @@ if ($method === 'POST' && $pathInfo === '/reviews') {
 
 // 4. PUBLIC: POST /orders (save ritual box order)
 if ($method === 'POST' && $pathInfo === '/orders') {
+    if (!checkRateLimit($pdo, 'orders_post', 10, 600)) {
+        http_response_code(429);
+        echo json_encode(['error' => 'Too many orders submitted from this connection. Please wait a few minutes.']);
+        exit;
+    }
     $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
 
     if (!empty($input['_hp_security_check'])) {
@@ -655,38 +863,56 @@ if ($method === 'POST' && $pathInfo === '/orders') {
 }
 
 // --------------------------------------------------------------------------
-// ADMIN LOGIN AUTHENTICATION (PUBLIC)
+// ADMIN LOGIN AUTHENTICATION (PUBLIC — Rate Limited, Bcrypt + HMAC Expiring Session Token)
 // --------------------------------------------------------------------------
 if ($method === 'POST' && ($pathInfo === '/admin/login' || $pathInfo === '/login')) {
+    if (!checkRateLimit($pdo, 'admin_login', 8, 900)) {
+        nomuLog($pdo, 'WARN', 'ADMIN_LOGIN_RATE_LIMITED', 'Admin login rate limit exceeded');
+        http_response_code(429);
+        echo json_encode(['error' => 'Too many failed login attempts. Please wait 15 minutes before trying again.']);
+        exit;
+    }
+
     $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
-    $username = trim($input['username'] ?? '');
-    $password = trim($input['password'] ?? $input['token'] ?? '');
+    $username = trim((string)($input['username'] ?? ''));
+    $password = trim((string)($input['password'] ?? ''));
 
-    $validTokens = [
-        ADMIN_SECRET_TOKEN,
-        'nomuVCGL@2026',
-        'nomu2026',
-        'nomubeverages',
-        'admin123'
-    ];
+    if (empty($ADMIN_SIGNING_SECRET) || empty($ADMIN_PASSWORD_HASHES)) {
+        http_response_code(503);
+        echo json_encode(['error' => 'Administrative authentication is not configured on this server.']);
+        exit;
+    }
 
-    if ($password && (in_array($password, $validTokens, true) || hash_equals(ADMIN_SECRET_TOKEN, $password))) {
-        nomuLog($pdo, 'INFO', 'ADMIN_LOGIN_SUCCESS', "Admin {$username} logged in successfully");
+    $userMatch = ($username !== '' && hash_equals($ADMIN_USERNAME, $username));
+    $passMatch = false;
+    if ($password !== '') {
+        foreach ($ADMIN_PASSWORD_HASHES as $hash) {
+            if (is_string($hash) && password_verify($password, $hash)) {
+                $passMatch = true;
+                break;
+            }
+        }
+    }
+
+    if ($userMatch && $passMatch) {
+        $sessionToken = issueAdminToken($ADMIN_USERNAME, $ADMIN_SIGNING_SECRET, $TOKEN_TTL_SECONDS);
+        nomuLog($pdo, 'INFO', 'ADMIN_LOGIN_SUCCESS', "Admin {$ADMIN_USERNAME} logged in successfully");
         echo json_encode([
             'status' => 'success',
-            'token' => ADMIN_SECRET_TOKEN,
+            'token' => $sessionToken,
+            'expires_in' => $TOKEN_TTL_SECONDS,
             'user' => [
-                'username' => $username ?: 'admin',
+                'username' => $ADMIN_USERNAME,
                 'role' => 'Administrator',
-                'permissions' => ['orders', 'reviews', 'cms', 'telemetry']
+                'permissions' => ['orders', 'reviews', 'coupons', 'cms', 'telemetry']
             ]
         ]);
         exit;
     }
 
-    nomuLog($pdo, 'WARN', 'ADMIN_LOGIN_FAILED', "Failed login attempt for username: {$username}");
+    nomuLog($pdo, 'WARN', 'ADMIN_LOGIN_FAILED', "Failed login attempt for username: " . substr($username, 0, 40));
     http_response_code(401);
-    echo json_encode(['error' => 'Invalid administrative credentials or token']);
+    echo json_encode(['error' => 'Invalid administrative credentials']);
     exit;
 }
 
@@ -704,16 +930,6 @@ if ($method === 'GET' && $pathInfo === '/media') {
     $assets = $stmt->fetchAll();
     echo json_encode(['status' => 'success', 'count' => count($assets), 'assets' => $assets]);
     exit;
-}
-
-// Serve Admin Console Static Entrypoint
-if ($pathInfo === '/admin' || $pathInfo === '/admin/' || $pathInfo === '/admin/index.html') {
-    $adminHtmlPath = __DIR__ . '/admin/index.html';
-    if (file_exists($adminHtmlPath)) {
-        header('Content-Type: text/html; charset=UTF-8');
-        readfile($adminHtmlPath);
-        exit;
-    }
 }
 
 // --------------------------------------------------------------------------
@@ -776,18 +992,18 @@ if (str_starts_with($pathInfo, '/admin')) {
             $stmt->execute($csvParams);
             while ($r = $stmt->fetch()) {
                 fputcsv($out, [
-                    $r['created_at'],
-                    $r['customer_name'],
-                    $r['customer_phone'],
-                    $r['customer_email'],
+                    sanitizeCsvCell($r['created_at']),
+                    sanitizeCsvCell($r['customer_name']),
+                    sanitizeCsvCell($r['customer_phone']),
+                    sanitizeCsvCell($r['customer_email']),
                     $r['total_bottles'],
                     $r['total_amount'],
-                    $r['coupon_code'] ?? '',
+                    sanitizeCsvCell($r['coupon_code'] ?? ''),
                     $r['discount_amount'] ?? 0,
-                    $r['influencer_name'] ?? '',
-                    $r['status'],
-                    $r['delivery_address'],
-                    $r['notes'] ?? ''
+                    sanitizeCsvCell($r['influencer_name'] ?? ''),
+                    sanitizeCsvCell($r['status']),
+                    sanitizeCsvCell($r['delivery_address']),
+                    sanitizeCsvCell($r['notes'] ?? '')
                 ]);
             }
             fclose($out);
@@ -874,8 +1090,9 @@ if (str_starts_with($pathInfo, '/admin')) {
                 http_response_code(409);
                 echo json_encode(['error' => "Coupon code '{$code}' already exists. Please choose a unique code."]);
             } else {
+                nomuLog($pdo, 'ERROR', 'COUPON_DB_ERROR', 'Database error while saving coupon', ['err' => $e->getMessage()]);
                 http_response_code(500);
-                echo json_encode(['error' => 'Database error', 'details' => $e->getMessage()]);
+                echo json_encode(['error' => 'Internal database error']);
             }
         }
         exit;
@@ -958,8 +1175,9 @@ if (str_starts_with($pathInfo, '/admin')) {
             nomuLog($pdo, 'INFO', 'COUPON_UPDATED', "Coupon ID {$id} ({$code}) updated for {$influencerName} ({$discountType} {$discountValue})");
             echo json_encode(['status' => 'success', 'message' => "Coupon {$code} updated successfully"]);
         } catch (\PDOException $e) {
+            nomuLog($pdo, 'ERROR', 'COUPON_UPDATE_DB_ERROR', 'Database error while updating coupon', ['err' => $e->getMessage()]);
             http_response_code(500);
-            echo json_encode(['error' => 'Database error', 'details' => $e->getMessage()]);
+            echo json_encode(['error' => 'Internal database error']);
         }
         exit;
     }
@@ -1092,10 +1310,10 @@ if (str_starts_with($pathInfo, '/admin')) {
         $mediaKeys = [
             'site_logo',
             'hero_video_url', 'hero_poster_url',
-            'vetiver_bottle_img', 'vetiver_splash_img', 'vetiver_packshot_img',
-            'chamomile_bottle_img', 'chamomile_splash_img', 'chamomile_packshot_img',
-            'grapefruit_bottle_img', 'grapefruit_splash_img', 'grapefruit_packshot_img',
-            'lemongrass_bottle_img', 'lemongrass_splash_img', 'lemongrass_packshot_img',
+            'vetiver_bottle_img', 'vetiver_ingredient_img', 'vetiver_splash_img', 'vetiver_packshot_img',
+            'chamomile_bottle_img', 'chamomile_ingredient_img', 'chamomile_splash_img', 'chamomile_packshot_img',
+            'grapefruit_bottle_img', 'grapefruit_ingredient_img', 'grapefruit_splash_img', 'grapefruit_packshot_img',
+            'lemongrass_bottle_img', 'lemongrass_ingredient_img', 'lemongrass_splash_img', 'lemongrass_packshot_img',
             'about_image_url', 'manifesto_image_url'
         ];
 
@@ -1108,14 +1326,25 @@ if (str_starts_with($pathInfo, '/admin')) {
         $count = 0;
         foreach ($input as $k => $v) {
             if ($k === 'font_stylesheet_url') {
-                $sanitized = filter_var(trim((string)$v), FILTER_SANITIZE_URL);
-                $upd->execute([$k, $sanitized]);
-                $count++;
-            } elseif (in_array($k, $textKeys, true)) {
-                $sanitized = trim((string)$v);
-                if ($k !== 'font_family') {
-                    $sanitized = htmlspecialchars($sanitized, ENT_QUOTES, 'UTF-8');
+                $sanitized = sanitizeFontStylesheetUrl((string)$v);
+                if ($sanitized !== '' || trim((string)$v) === '') {
+                    $upd->execute([$k, $sanitized]);
+                    $count++;
                 }
+            } elseif ($k === 'font_family') {
+                $sanitized = sanitizeFontFamily((string)$v);
+                if ($sanitized !== '') {
+                    $upd->execute([$k, $sanitized]);
+                    $count++;
+                }
+            } elseif ($k === 'whatsapp_phone') {
+                $digits = preg_replace('/\D/', '', (string)$v);
+                if (strlen($digits) >= 10 && strlen($digits) <= 15) {
+                    $upd->execute([$k, $digits]);
+                    $count++;
+                }
+            } elseif (in_array($k, $textKeys, true)) {
+                $sanitized = htmlspecialchars(trim((string)$v), ENT_QUOTES, 'UTF-8');
                 $upd->execute([$k, $sanitized]);
                 $count++;
             } elseif (in_array($k, $mediaKeys, true)) {

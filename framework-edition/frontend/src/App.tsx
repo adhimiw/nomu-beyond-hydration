@@ -108,24 +108,30 @@ export const App: React.FC = () => {
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
-  // Helper to dynamically apply and inject web fonts from backend configuration
+  // Helper to dynamically apply and inject web fonts from backend configuration (strict Google Fonts allowlist)
   const applyFontFromConfig = (fontFamily?: string, stylesheetUrl?: string) => {
     if (!fontFamily) return;
 
-    if (stylesheetUrl && stylesheetUrl.startsWith('http')) {
-      let link = document.getElementById('nomu-dynamic-font-link') as HTMLLinkElement | null;
-      if (!link) {
-        link = document.createElement('link');
-        link.id = 'nomu-dynamic-font-link';
-        link.rel = 'stylesheet';
-        document.head.appendChild(link);
-      }
-      if (link.href !== stylesheetUrl) {
-        link.href = stylesheetUrl;
-      }
+    if (stylesheetUrl) {
+      try {
+        const parsed = new URL(stylesheetUrl);
+        if (parsed.protocol === 'https:' && parsed.hostname === 'fonts.googleapis.com') {
+          let link = document.getElementById('nomu-dynamic-font-link') as HTMLLinkElement | null;
+          if (!link) {
+            link = document.createElement('link');
+            link.id = 'nomu-dynamic-font-link';
+            link.rel = 'stylesheet';
+            document.head.appendChild(link);
+          }
+          if (link.href !== parsed.toString()) {
+            link.href = parsed.toString();
+          }
+        }
+      } catch {}
     }
 
     let family = fontFamily.trim();
+    if (!/^[A-Za-z0-9\s,'"-]{1,120}$/.test(family)) return;
     if (!family.includes('sans-serif') && !family.includes('serif') && !family.includes('monospace')) {
       family = `'${family.replace(/['"]/g, '')}', sans-serif`;
     }
@@ -171,7 +177,10 @@ export const App: React.FC = () => {
     } catch {}
 
     const checkHash = () => {
-      if (window.location.hash === '#admin') {
+      if (window.location.pathname === '/admin' || window.location.pathname === '/admin/' || window.location.pathname.startsWith('/admin/')) {
+        window.history.replaceState(null, '', '/#admin');
+        setIsAdminOpen(true);
+      } else if (window.location.hash === '#admin') {
         setIsAdminOpen(true);
       }
     };

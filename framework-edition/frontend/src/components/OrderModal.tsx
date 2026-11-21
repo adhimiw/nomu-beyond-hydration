@@ -225,7 +225,7 @@ ${pricingSection}
 Please confirm my order and share payment link / UPI instructions. Thank you!`;
 
     const waUrl = `https://wa.me/${whatsappConcierge}?text=${encodeURIComponent(waMessage)}`;
-    window.open(waUrl, '_blank');
+    window.open(waUrl, '_blank', 'noopener,noreferrer');
     onClose();
   };
 

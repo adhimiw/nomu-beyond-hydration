@@ -1432,7 +1432,17 @@
             titleGroup.appendChild(newBadge);
           }
         }
-        toast.innerHTML = 'Applied <strong>' + fontName + '</strong> to NOMU website! <a href="/" style="color:#FFF;text-decoration:underline;margin-left:8px;font-weight:700;">View Live Website →</a>';
+        toast.textContent = '';
+        toast.appendChild(document.createTextNode('Applied '));
+        const strongEl = document.createElement('strong');
+        strongEl.textContent = fontName;
+        toast.appendChild(strongEl);
+        toast.appendChild(document.createTextNode(' to NOMU website! '));
+        const linkEl = document.createElement('a');
+        linkEl.href = '/';
+        linkEl.style.cssText = 'color:#FFF;text-decoration:underline;margin-left:8px;font-weight:700;';
+        linkEl.textContent = 'View Live Website →';
+        toast.appendChild(linkEl);
         toast.classList.add('is-visible');
         setTimeout(() => toast.classList.remove('is-visible'), 5000);
       } catch (e) {

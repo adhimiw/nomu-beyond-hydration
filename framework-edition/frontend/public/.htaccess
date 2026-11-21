@@ -1,25 +1,48 @@
+Options -Indexes
+
+# Block direct HTTP access to databases, backups, secrets, env files, and version control metadata
+<FilesMatch "(^\.|(\.(sqlite|sqlite3|db|bak|sql|zip|tar|gz|env|log|ini|sh|yml|yaml))$|nomu_secrets\.php$|^seed\.php$)">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
+
+    # Preserve Authorization header for PHP Bearer token auth across Apache/LiteSpeed
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
     # HTTPS Enforcement
     RewriteCond %{HTTPS} off
     RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-    # 1. Route clean font URLs to typography showcase page
+    # Block hidden directories such as /.git/ (allow /.well-known/ for SSL/ACME)
+    RewriteRule (^|/)\.(?!well-known/) - [F,L]
+
+    # 1. Canonicalize legacy /admin and /admin/* routes to the unified React Admin Console (/#admin)
+    RewriteRule ^admin(?:/.*)?$ /#admin [R=301,NE,L]
+
+    # 2. Route clean font URLs to typography showcase page
     RewriteRule ^fonts/?$ fonts-showcase.html [L]
     RewriteRule ^typography/?$ fonts-showcase.html [L]
     RewriteRule ^font-studio/?$ fonts-showcase.html [L]
 
-    # 2. Don't rewrite existing files or directories
+    # 3. Don't rewrite existing files or directories
     RewriteCond %{REQUEST_FILENAME} -f [OR]
     RewriteCond %{REQUEST_FILENAME} -d
     RewriteRule ^ - [L]
 
-    # 3. Route all /api/* requests to /api/index.php without recursion loop
+    # 4. Route all /api/* requests to /api/index.php without recursion loop
     RewriteRule ^api/?(.*)$ api/index.php [QSA,L]
 
-    # 4. SPA fallback rewrite
+    # 5. SPA fallback rewrite
     RewriteRule ^ index.html [L]
 </IfModule>
 
@@ -60,6 +83,13 @@
 </IfModule>
 
 <IfModule mod_headers.c>
+    # Global Security Headers
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains" env=HTTPS
+
     # 1-year immutable caching for static assets
     <FilesMatch "\.(css|js|webp|png|jpg|jpeg|svg|woff2)$">
         Header set Cache-Control "max-age=31536000, public, immutable"
