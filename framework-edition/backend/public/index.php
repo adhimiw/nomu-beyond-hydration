@@ -31,10 +31,7 @@ $allowedOrigins = [
     'http://localhost:8000',
     'http://localhost:8080'
 ];
-if ($origin && (
-    in_array($origin, $allowedOrigins, true) ||
-    preg_match('/^http:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|100\.\d+\.\d+\.\d+)(:\d+)?$/', $origin)
-)) {
+if ($origin && in_array($origin, $allowedOrigins, true)) {
     header("Access-Control-Allow-Origin: {$origin}");
     header('Access-Control-Allow-Credentials: true');
 }
@@ -1122,9 +1119,9 @@ if (str_starts_with($pathInfo, '/admin')) {
         $usageLimit = isset($input['usage_limit']) && $input['usage_limit'] !== '' ? (int)$input['usage_limit'] : null;
         $notes = htmlspecialchars(trim((string)($input['notes'] ?? '')), ENT_QUOTES, 'UTF-8');
 
-        if (empty($code) || empty($influencerName) || $discountValue <= 0) {
+        if (empty($code) || empty($influencerName) || $discountValue <= 0 || ($discountType === 'percentage' && $discountValue > 100) || ($discountType === 'fixed' && $discountValue > 50000)) {
             http_response_code(422);
-            echo json_encode(['error' => 'Validation error', 'message' => 'Valid Code, Influencer Name, and Discount Value (> 0) are required.']);
+            echo json_encode(['error' => 'Validation error', 'message' => 'Valid Code, Influencer Name, and Discount Value (1-100% for percentage, <= ₹50,000 for fixed) are required.']);
             exit;
         }
 
@@ -1179,9 +1176,9 @@ if (str_starts_with($pathInfo, '/admin')) {
         $notes = htmlspecialchars(trim((string)($input['notes'] ?? '')), ENT_QUOTES, 'UTF-8');
         $isActive = isset($input['is_active']) ? ((int)$input['is_active'] ? 1 : 0) : null;
 
-        if (empty($code) || empty($influencerName) || $discountValue <= 0) {
+        if (empty($code) || empty($influencerName) || $discountValue <= 0 || ($discountType === 'percentage' && $discountValue > 100) || ($discountType === 'fixed' && $discountValue > 50000)) {
             http_response_code(422);
-            echo json_encode(['error' => 'Validation error', 'message' => 'Valid Code, Influencer Name, and Discount Value (> 0) are required.']);
+            echo json_encode(['error' => 'Validation error', 'message' => 'Valid Code, Influencer Name, and Discount Value (1-100% for percentage, <= ₹50,000 for fixed) are required.']);
             exit;
         }
 
@@ -1253,8 +1250,8 @@ if (str_starts_with($pathInfo, '/admin')) {
         exit;
     }
 
-    // B. POST /admin/orders/status
-    if ($method === 'POST' && preg_match('#^/admin/orders/(\d+)/status#', $pathInfo, $m)) {
+    // B. POST /admin/orders/{id}/status
+    if ($method === 'POST' && preg_match('#^/admin/orders/(\\d+)/status/?$#', $pathInfo, $m)) {
         $orderId = (int)$m[1];
         $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
         $newStatus = $input['status'] ?? '';
@@ -1298,7 +1295,7 @@ if (str_starts_with($pathInfo, '/admin')) {
     }
 
     // D. POST /admin/reviews/{id}/moderate
-    if ($method === 'POST' && preg_match('#^/admin/reviews/(\d+)/moderate#', $pathInfo, $m)) {
+    if ($method === 'POST' && preg_match('#^/admin/reviews/(\\d+)/moderate/?$#', $pathInfo, $m)) {
         $reviewId = (int)$m[1];
         $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
         $action = $input['action'] ?? '';
